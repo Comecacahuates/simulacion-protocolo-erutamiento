@@ -22,7 +22,7 @@
 
 package veins_proj.examples.test;
 
-import inet.physicallayer.wireless.ieee80211.packetlevel.Ieee80211ScalarRadioMedium;
+import inet.physicallayer.wireless.common.contract.packetlevel.IRadioMedium;
 import inet.visualizer.common.IntegratedMultiVisualizer;
 import inet.visualizer.common.IntegratedVisualizer;
 import org.car2x.veins.subprojects.veins_inet.VeinsInetManager;
@@ -45,10 +45,10 @@ network Scenario {
         coordinateSystem: SimpleGeographicCoordinateSystem {
             @display("p=69,176");
         }
-        visualizer: IntegratedMultiVisualizer {
+        visualizer: IntegratedVisualizer {
             @display("p=69,475");
         }
-        radioMedium: Ieee80211ScalarRadioMedium {
+        radioMedium: <default("inet.physicallayer.wireless.unitdisk.UnitDiskRadioMedium")> like IRadioMedium {
             @display("p=69,256");
         }
         manager: VeinsInetManager {
