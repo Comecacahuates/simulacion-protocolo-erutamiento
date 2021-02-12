@@ -1,0 +1,8 @@
+sim/sim1
+src/veins_proj/locationservice
+src/veins_proj/mobility
+src/veins_proj/networklayer/ipv6
+src/veins_proj/networklayer/configurator
+src/veins_proj/node
+src/veins_proj/roadnetwork
+src/veins_proj/routing
