@@ -88,7 +88,7 @@ bool RoadNetwork::getLocationOnRoadNetwork(const GeographicLib::GeoCoords &locat
         Vertex vertexB = boost::target(edge, graph);
 
         if (speed > 0) {
-            // Verificar la dirección del vehículo
+            // Verificar la direcci��n del veh��culo
             if (directionMatches(direction, graph[edge].direction2))
                 edge = boost::edge(vertexB, vertexA, graph).first;
 
@@ -96,7 +96,7 @@ bool RoadNetwork::getLocationOnRoadNetwork(const GeographicLib::GeoCoords &locat
                 continue;
         }
 
-        // Obtener y verificar la posición del vehículo respecto a la arista
+        // Obtener y verificar la posici��n del veh��culo respecto a la arista
         getOnEdgePosition(edge, location, locationOnRoadNetworkAux);
 
         if (inEdgeDomain(locationOnRoadNetworkAux)) {
@@ -132,7 +132,7 @@ bool RoadNetwork::getLocationOnRoadNetworkFromVertex(const Vertex vertex, const 
         Vertex vertexB = boost::target(edge, graph);
 
         if (speed > 0) {
-            // Verificar la dirección del vehículo
+            // Verificar la direcci��n del veh��culo
             if (directionMatches(direction, graph[edge].direction2))
                 edge = boost::edge(vertexB, vertexA, graph).first;
 
@@ -140,7 +140,7 @@ bool RoadNetwork::getLocationOnRoadNetworkFromVertex(const Vertex vertex, const 
                 continue;
         }
 
-        // Obtener y verificar la posición del vehículo respecto a la arista
+        // Obtener y verificar la posici��n del veh��culo respecto a la arista
         getOnEdgePosition(edge, location, locationOnRoadNetworkAux);
 
         if (inEdgeDomain(locationOnRoadNetworkAux)) {
@@ -187,6 +187,6 @@ void RoadNetwork::getOnEdgePosition(const Edge edge, const GeographicLib::GeoCoo
 
     locationOnRoadNetwork.edge = edge;
     locationOnRoadNetwork.distanceToEdge = b * std::sin(alpha);
-    locationOnRoadNetwork.distanceToVertexA = b * cosalpha;
-    locationOnRoadNetwork.distanceToVertexB = graph[edge].length - locationOnRoadNetwork.distanceToVertexA;
+    locationOnRoadNetwork.distanceToVertex1 = b * cosalpha;
+    locationOnRoadNetwork.distanceToVertex2 = graph[edge].length - locationOnRoadNetwork.distanceToVertex1;
 }

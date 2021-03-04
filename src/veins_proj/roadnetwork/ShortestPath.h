@@ -13,6 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+/*!
+ * \file ShortestPath.h
+ * \author Adrián Juárez Monroy
+ */
 #pragma once
 
 #include <omnetpp.h>
@@ -22,20 +26,72 @@
 
 namespace veins_proj {
 
-
-class ShortestPath : public omnetpp::cObject {
+//! Clase que implementa el algoritmo de distancia más corta.
+/*!
+ * Contiene métodos para calcular la ruta más corta desde una arista hacia
+ * el resto los vértices de un grafo, y para obtener la ruta hacia un vértice
+ * en particular.
+ */
+class ShortestPath: public omnetpp::cObject {
 
 protected:
-    VertexVector predecessors;
-    std::vector<double> routeDistances;
-    Vertex vertexA;
-    Vertex vertexB;
+
+	//! Vector de predecesores de cada vértice.
+	/*!
+	 * El valor de cada elemento indica el vértice predecesor, y el índice
+	 * indica de qué vertice es predecesor.
+	 */
+	VertexVector predecessors;
+
+	//! Vector de distancias de ruta de cada vértice.
+	/*!
+	 * Indica la distancia de la ruta desde la arista de origen hacia cada
+	 * uno de los vértices.
+	 * */
+	std::vector<double> routeDistances;
+
+	//! Arista de origen.
+	Edge sourceEdge;
 
 public:
-    void computeShortestPath(const Edge sourceEdge, const Graph &graph, const VertexVector &unavailableVertices = {}, const EdgeVector &unavailableEdges = {});
-    double getRouteDistance(Vertex vertex) const { return routeDistances[vertex]; }
-    VertexVector getShortestPathToVertex(Vertex targetVertex, const Graph &graph) const;
-};
 
+	//! Calcula la ruta más corta hacia el resto de los vértices.
+	/*!
+	 * \param [in] sourceEdge Arista de origen.
+	 * \param [in] graph Grafo por el que se realiza la búsqueda.
+	 * \param [in] inactiveEdges Aristas inactivas.
+	 */
+	void computeShortestPath(const Edge sourceEdge, const Graph &graph,
+			const VertexVector &unavailableVertices = { },
+			const EdgeVector &inactiveEdges = { });
+
+	//! Devuelve la distancia de ruta a un vértice.
+	/*!
+	 * Una vez calculada la ruta más corta al resto de los vértices, devuelve
+	 * la distancia de ruta a un vértice desde la arista de origen. Se
+	 * necesita calcular las rutas con el método #computeShortestPath antes
+	 * de llamar este método.
+	 *
+	 * \param [in] vertex Vértice del que se quiere la ruta más corta.
+	 * \return Vector de vértices que indican la ruta desde el vértice de la
+	 * arista de origen.
+	 */
+	double getRouteDistance(Vertex vertex) const {
+		return routeDistances[vertex];
+	}
+
+	//! Devuelve la ruta más corta a un vértice específico.
+	/*!
+	 * Una vez calculada las rutas más cortas, devuelve la ruta más corta a
+	 * un vértice. Se necesita calcular las rutas con el método
+	 * #computeShortestPath antes de llamar este método.
+	 *
+	 * \param [in] vertex Vértice del que se quiere la ruta más corta.
+	 * \return Vector de vértices que indican la ruta desde el vértice de la
+	 * arista de origen.
+	 */
+	VertexVector getShortestPathToVertex(Vertex targetVertex,
+			const Graph &graph) const;
+};
 
 } // namespace veins_proj

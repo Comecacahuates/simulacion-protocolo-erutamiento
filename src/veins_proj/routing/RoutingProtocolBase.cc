@@ -96,8 +96,7 @@ void RoutingProtocolBase::initialize(int stage) {
             throw omnetpp::cRuntimeError("Output interface not found");
 
     } else if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
-        inet::registerService(inet::Protocol::manet, nullptr, gate("ipIn"));
-        inet::registerProtocol(inet::Protocol::manet, gate("ipOut"), nullptr);
+        inet::registerProtocol(inet::Protocol::manet, gate("ipOut"), gate("ipIn"));
         host->subscribe(inet::linkBrokenSignal, this);
         networkProtocol->registerHook(0, this);
     }
@@ -291,8 +290,8 @@ void RoutingProtocolBase::showNeighbouringCars() const {
     for (const NeighbouringCar &neighbouringCar: neighbouringCars) {
         EV_INFO << "Address: " << neighbouringCar.first << std::endl;
         EV_INFO << "Edge: " << neighbouringCar.second.locationOnRoadNetwork.edge << std::endl;
-        EV_INFO << "Distance to vertex A: " << neighbouringCar.second.locationOnRoadNetwork.distanceToVertexA << std::endl;
-        EV_INFO << "Distance to vertex B: " << neighbouringCar.second.locationOnRoadNetwork.distanceToVertexB << std::endl;
+        EV_INFO << "Distance to vertex A: " << neighbouringCar.second.locationOnRoadNetwork.distanceToVertex1 << std::endl;
+        EV_INFO << "Distance to vertex B: " << neighbouringCar.second.locationOnRoadNetwork.distanceToVertex2 << std::endl;
     }
 }
 
@@ -305,7 +304,7 @@ void RoutingProtocolBase::removeOldNeighbouringCars(omnetpp::simtime_t time) {
     while (it != neighbouringCars.end())
         if (it->second.lastUpdateTime <= time) {
             //purgeNextHopRoutes(it->first); // Se elimina las rutas
-            neighbouringCars.erase(it++); // Se elimina del directorio de veh��culos vecinos
+            neighbouringCars.erase(it++); // Se elimina del directorio de veh������culos vecinos
 
         } else
             it++;
@@ -519,7 +518,7 @@ void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(inet::Packet *da
     Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
     Vertex vertexB = boost::target(edge, graph);
-    double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
 
     TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption = createTlvDestLocationOnRoadNetworkOption(vertexA, vertexB, distanceToVertexA);
     setTlvOption(datagram, destLocationOnRoadNetworkOption);

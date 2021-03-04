@@ -21,7 +21,7 @@
 #include "veins_proj/roadnetwork/RoadNetwork.h"
 #include "veins_proj/geohash/GeohashLocation.h"
 
-#define DATABASE_DIRECTORY "/home/adrian/src/roadway-database/"
+#define DATABASE_DIRECTORY "/home/adrian/src/roadnetwork-database/"
 
 namespace veins_proj {
 

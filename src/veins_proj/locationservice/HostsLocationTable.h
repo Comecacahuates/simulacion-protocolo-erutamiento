@@ -41,7 +41,7 @@ protected:
     HostsLocationMap hostsLocation;
 
 protected:
-    virtual void initialize() {}
+    virtual void initialize() override {}
     virtual void handleMessage(omnetpp::cMessage *message) override {}
 
 public:

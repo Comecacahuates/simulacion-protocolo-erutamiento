@@ -90,7 +90,7 @@ void CarMobility::updateLocation() {
     inet::Coord inetLocation = veins::VeinsInetMobility::getCurrentPosition();
     veins::Coord veinsLocation = veins::Coord(inetLocation.x, inetLocation.y);
 
-    // Obtener coordenadas geográficas
+    // Obtener coordenadas geogr��ficas
     double lat, lon;
     boost::tie(lon, lat) = veins::VeinsInetMobility::getCommandInterface()->getLonLat(veinsLocation);
 
@@ -98,11 +98,11 @@ void CarMobility::updateLocation() {
     inet::Coord inetSpeed = veins::VeinsInetMobility::getCurrentVelocity();
     speed = std::sqrt(inetSpeed.x * inetSpeed.x + inetSpeed.y * inetSpeed.y);
 
-    // Obtener dirección
+    // Obtener direcci��n
     if (speed > 0)
         direction = std::fmod(2.5 * 180.0 - inet::math::rad2deg(std::atan2(-inetSpeed.y, inetSpeed.x)), 360.0);
 
-    // Se verifica si la ubicación cambió
+    // Se verifica si la ubicaci��n cambi��
     if (geohashLocation.isNull() || !geohashLocation.getBounds().contains(lat, lon)) {
         geohashLocation.setLocation(lat, lon);
 
@@ -115,10 +115,10 @@ void CarMobility::updateLocation() {
         bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(getLocation(), speed, direction, locationOnRoadNetwork);
 
         if (locationSuccess)
-            EV_INFO << "Ubicación correcta" << std::endl;
+            EV_INFO << "Ubicaci��n correcta" << std::endl;
 
         else
-            EV_INFO << "Error obtenindo ubicación" << std::endl;
+            EV_INFO << "Error obtenindo ubicaci��n" << std::endl;
 
         edgeChanged_ = locationOnRoadNetwork.edge != previousEdge;
     }
@@ -130,12 +130,12 @@ std::pair<Vertex, bool> CarMobility::isAtGateway() const {
     Vertex vertexA = boost::source(locationOnRoadNetwork.edge, graph);
     Vertex vertexB = boost::target(locationOnRoadNetwork.edge, graph);
 
-    // Si el vértice A es gateway y se encuentra dentro del radio de proximidad
+    // Si el v��rtice A es gateway y se encuentra dentro del radio de proximidad
     if (isGateway(vertexA, graph)) {
         if (inVertexProximityRadius(vertexA, locationOnRoadNetwork, graph))
             return std::pair<Vertex, bool>(vertexA, true);
 
-    // Si el vértice B es gateway y se encuentra dentro del radio de proximidad
+    // Si el v��rtice B es gateway y se encuentra dentro del radio de proximidad
     } else if (isGateway(vertexB, graph)) {
         if (inVertexProximityRadius(vertexB, locationOnRoadNetwork, graph))
             return std::pair<Vertex, bool>(vertexB, true);
@@ -151,17 +151,17 @@ bool CarMobility::isAtVertex(const Vertex vertex) const {
     Vertex vertexA = boost::source(edge, graph);
     Vertex vertexB = boost::target(edge, graph);
 
-    // Si el vértice no es un vértice de la arista
+    // Si el v��rtice no es un v��rtice de la arista
     if (vertex != vertexA && vertex != vertexB)
         return false;
 
     double distanceToVertex;
 
     if (vertex == vertexA)
-        distanceToVertex = locationOnRoadNetwork.distanceToVertexA;
+        distanceToVertex = locationOnRoadNetwork.distanceToVertex1;
 
     else
-        distanceToVertex = locationOnRoadNetwork.distanceToVertexB;
+        distanceToVertex = locationOnRoadNetwork.distanceToVertex2;
 
     return distanceToVertex <= vertexProximityRadius;
 }

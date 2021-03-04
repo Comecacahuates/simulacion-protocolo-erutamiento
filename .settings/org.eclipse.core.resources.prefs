@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+encoding//src/veins_proj/mobility/CarMobility.cc=UTF-8
+encoding//src/veins_proj/roadnetwork/RoadNetwork.cc=UTF-8
+encoding//src/veins_proj/roadnetwork/RoadNetworkGraph.cc=UTF-8
+encoding//src/veins_proj/roadnetwork/RoadNetworkGraph.h=UTF-8
+encoding//src/veins_proj/roadnetwork/ShortestPath.cc=UTF-8
+encoding//src/veins_proj/roadnetwork/ShortestPath.h=UTF-8
+encoding//src/veins_proj/routing/RoutingProtocolBase.cc=UTF-8
+encoding//src/veins_proj/routing/RoutingProtocolCar.cc=UTF-8
