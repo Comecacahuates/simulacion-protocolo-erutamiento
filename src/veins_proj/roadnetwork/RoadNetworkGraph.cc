@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+/*!
+ * @file RoadNetworkGraph.cc
+ * @author Adrián Juárez Monroy
+ */
+
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "boost/swap.hpp"
 #include <utility>
@@ -26,10 +31,10 @@ using namespace veins_proj;
  * menor a la del segundo. Si las latitudes son iguales, la longitud debe ser
  * menor.
  *
- * \param vertexA [in] Primer vértice cuya ubicación se va a comparar.
- * \param vertexB [in] Segundo vértice cuya ubicación se va a comparar.
- * \param graph [in] Grafo al que pertenecen los dos vértices.
- * \return `true` si la ubicación del primer vértice es menor a la del
+ * @param vertexA [in] Primer vértice cuya ubicación se va a comparar.
+ * @param vertexB [in] Segundo vértice cuya ubicación se va a comparar.
+ * @param graph [in] Grafo al que pertenecen los dos vértices.
+ * @return `true` si la ubicación del primer vértice es menor a la del
  * segundo.
  */
 bool veins_proj::sortedVertices(Vertex vertexA, Vertex vertexB,
@@ -49,9 +54,9 @@ bool veins_proj::sortedVertices(Vertex vertexA, Vertex vertexB,
 
 //! Determina si un vértice es _gateway_.
 /*!
- * \param vertex [in] Vértice que se va a revisar.
- * \param graph [in] Grafo al que pertenece el vértice.
- * \return `true` en caso de que el vértice sea _gateway_.
+ * @param vertex [in] Vértice que se va a revisar.
+ * @param graph [in] Grafo al que pertenece el vértice.
+ * @return `true` en caso de que el vértice sea _gateway_.
  */
 bool veins_proj::isGateway(Vertex vertex, const Graph &graph) {
 	return graph[vertex].gatewayType != GeohashLocation::Direction::NONE;
@@ -62,9 +67,9 @@ bool veins_proj::isGateway(Vertex vertex, const Graph &graph) {
  * Para que dos direcciones coincidan, su diferencia debe ser menor
  * a 15 grados.
  *
- * \param direction1 [in] Primera dirección en grados.
- * \param direction2 [in] Segunda dirección en grados.
- * \return `true` si las dos direcciones coinciden.
+ * @param direction1 [in] Primera dirección en grados.
+ * @param direction2 [in] Segunda dirección en grados.
+ * @return `true` si las dos direcciones coinciden.
  */
 bool veins_proj::directionMatches(double direction1, double direction2) {
 	return getDirectionDifference(direction1, direction2) < 15.0;
@@ -74,9 +79,9 @@ bool veins_proj::directionMatches(double direction1, double direction2) {
 /*!
  * La diferencia es el ángulo menor, en grados, que forman dos direcciones.
  *
- * \param direction1 [in] Primera dirección en grados.
- * \param direction2 [in] Segunda dirección en grados.
- * \return Valor absoluto de la diferencia de las dos direcciones.
+ * @param direction1 [in] Primera dirección en grados.
+ * @param direction2 [in] Segunda dirección en grados.
+ * @return Valor absoluto de la diferencia de las dos direcciones.
  */
 double veins_proj::getDirectionDifference(double direction1,
 		double direction2) {
@@ -93,8 +98,8 @@ double veins_proj::getDirectionDifference(double direction1,
  * La ubicación vial se encuentra dentro del dominio de la arista si
  * la distancia a esta es menor a 20 metros.
  *
- * \param locationOnRoadNetwork [in] Ubicación vial a verificar.
- * \return `true` si la distancia a la arista es menor que 20.
+ * @param locationOnRoadNetwork [in] Ubicación vial a verificar.
+ * @return `true` si la distancia a la arista es menor que 20.
  */
 bool veins_proj::inEdgeDomain(
 		const LocationOnRoadNetwork &locationOnRoadNetwork) {
@@ -116,10 +121,10 @@ bool veins_proj::inEdgeDomain(
  * La ubicación se encuentra dentro del radio de proximidad del vértice si
  * su distancia a este es menor a 10 metros.
  *
- * \param locationOnRoadNetwork [in] Ubicación vial a verificar.
- * \param vertex [in] Vértice de referencia.
- * \param graph [in] Grafo al que pertenece el vértice.
- * \return `true` si la ubicación se encuentra dentro del radio de proximidad
+ * @param locationOnRoadNetwork [in] Ubicación vial a verificar.
+ * @param vertex [in] Vértice de referencia.
+ * @param graph [in] Grafo al que pertenece el vértice.
+ * @return `true` si la ubicación se encuentra dentro del radio de proximidad
  * del vértice.
  */
 bool veins_proj::inVertexProximityRadius(
@@ -155,12 +160,15 @@ bool veins_proj::inVertexProximityRadius(
  *
  * Para calcular el peso, ambas aristas deben ser adyacentes.
  *
- * \param edge [in] Arista cuyo peso se va a calcular.
- * \param sourceEdge [in] Arista desde la que se calcula el peso.
- * \param graph [in] Grafo al que pertenecen ambas aristas.
- * \return Peso de la arista
+ * @param edge [in] Arista cuyo peso se va a calcular.
+ * @param sourceEdge [in] Arista desde la que se calcula el peso.
+ * @param graph [in] Grafo al que pertenecen ambas aristas.
+ * @return Peso de la arista
  */
-double veins_proj::getEdgeWeight(Edge f, Edge e, const Graph &graph) {
+double veins_proj::getEdgeWeight(Edge edge, Edge sourceEdge,
+		const Graph &graph) {
+	Edge &f = edge;
+	Edge &e = sourceEdge;
 	Vertex vertexAE = boost::source(e, graph);
 	Vertex vertexBE = boost::target(e, graph);
 	if (sortedVertices(vertexAE, vertexBE, graph))
@@ -198,11 +206,11 @@ double veins_proj::getEdgeWeight(Edge f, Edge e, const Graph &graph) {
  * Para obtener la distancia, el vértice debe ser parte de la arista de la
  * ubicación vial.
  *
- * \param locationOnRoadNetwork [in] Ubicación vial cuya distancia al vértice
+ * @param locationOnRoadNetwork [in] Ubicación vial cuya distancia al vértice
  * se va a obtener.
- * \param vertex [in] Vértice al que se va a obtener la distancia.
- * \param graph [in] Grafo al que pertenece el vértice.
- * \return
+ * @param vertex [in] Vértice al que se va a obtener la distancia.
+ * @param graph [in] Grafo al que pertenece el vértice.
+ * @return
  */
 double veins_proj::getDistanceToVertex(
 		const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,

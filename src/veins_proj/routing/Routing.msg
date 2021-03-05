@@ -45,19 +45,19 @@ class HelloCar extends RoutingPacket {
     chunkLength = inet::B(36);
     packetType = PacketType::HELLO_CAR;
 	inet::Ipv6Address address; // Dirección IPv6 (16 bytes)
-	uint64_t geohash; // Ubicación Geohash (8 bytes)
+	uint64_t geohash; // Ubicaci��n Geohash (8 bytes)
 	double speed; // Velocidad (2 bytes)
 	double direction; // Dirección de movimiento (2 bytes)
 	unsigned int vertexA; // Vértice A (2 bytes)
 	unsigned int vertexB; // Vértice B (2 bytes)
-	double distanceToVertexA; // Distancia al vértice A (2 bytes)
+	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
 }
 
 class HelloHost extends RoutingPacket {
     chunkLength = inet::B(28);
     packetType = PacketType::HELLO_HOST;
 	inet::Ipv6Address address; // Dirección IPv6 (16 bytes)
-	uint64_t geohash; // Ubicación Geohash (8 bytes)
+	uint64_t geohash; // Ubicaci��n Geohash (8 bytes)
 }
 
 class Ping extends RoutingPacket {
@@ -94,17 +94,17 @@ class HelloEdge extends RoutingPacket {
 }
 
 class TlvDestGeohashLocationOption extends inet::TlvOptionBase {
-	uint64_t geohash; // Ubicación Geohash (8 bytes)
+	uint64_t geohash; // Ubicaci��n Geohash (8 bytes)
 }
 
 class TlvDestLocationOnRoadNetworkOption extends inet::TlvOptionBase {
 	unsigned int vertexA; // Vértice A (2 bytes)
 	unsigned int vertexB; // Vértice B (2 bytes)
-	double distanceToVertexA; // Distancia al vértice A (2 bytes)
+	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
 }
 
 class TlvRoutingOption extends inet::TlvOptionBase {
-	unsigned int visitedVertices[]; // Vértices que ha recorrido el paquete (2 bytes por vértice)
+	unsigned int visitedVertices[]; // Vértices que ha recorrido el paquete (2 bytes por Vértice)
 }
 
 message PongTimeout {

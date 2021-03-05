@@ -132,12 +132,12 @@ std::pair<Vertex, bool> CarMobility::isAtGateway() const {
 
     // Si el v��rtice A es gateway y se encuentra dentro del radio de proximidad
     if (isGateway(vertexA, graph)) {
-        if (inVertexProximityRadius(vertexA, locationOnRoadNetwork, graph))
+        if (inVertexProximityRadius(locationOnRoadNetwork, vertexA, graph))
             return std::pair<Vertex, bool>(vertexA, true);
 
     // Si el v��rtice B es gateway y se encuentra dentro del radio de proximidad
     } else if (isGateway(vertexB, graph)) {
-        if (inVertexProximityRadius(vertexB, locationOnRoadNetwork, graph))
+        if (inVertexProximityRadius(locationOnRoadNetwork, vertexB, graph))
             return std::pair<Vertex, bool>(vertexB, true);
     }
 

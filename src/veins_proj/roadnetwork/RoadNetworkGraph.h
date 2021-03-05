@@ -1,8 +1,21 @@
-/*
- * RoadNetworkGraph.h
- *
- *  Created on: Dec 31, 2020
- *      Author: adrian
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+//
+
+/*!
+ * @file RoadNetworkGraph.h
+ * @author Adrián Juárez Monroy
  */
 
 #pragma once
@@ -100,19 +113,19 @@ struct LocationOnRoadNetwork {
  * menor a la del segundo. Si las latitudes son iguales, la longitud debe ser
  * menor.
  *
- * \param vertexA [in] Primer vértice cuya ubicación se va a comparar.
- * \param vertexB [in] Segundo vértice cuya ubicación se va a comparar.
- * \param graph [in] Grafo al que pertenecen los dos vértices.
- * \return `true` si la ubicación del primer vértice es menor a la del
+ * @param vertexA [in] Primer vértice cuya ubicación se va a comparar.
+ * @param vertexB [in] Segundo vértice cuya ubicación se va a comparar.
+ * @param graph [in] Grafo al que pertenecen los dos vértices.
+ * @return `true` si la ubicación del primer vértice es menor a la del
  * segundo.
  */
 bool sortedVertices(Vertex vertexA, Vertex vertexB, const Graph &graph);
 
 //! Determina si un vértice es _gateway_.
 /*!
- * \param vertex [in] Vértice que se va a revisar.
- * \param graph [in] Grafo al que pertenece el vértice.
- * \return `true` en caso de que el vértice sea _gateway_.
+ * @param vertex [in] Vértice que se va a revisar.
+ * @param graph [in] Grafo al que pertenece el vértice.
+ * @return `true` en caso de que el vértice sea _gateway_.
  */
 bool isGateway(Vertex vertex, const Graph &graph);
 
@@ -121,9 +134,9 @@ bool isGateway(Vertex vertex, const Graph &graph);
  * Para que dos direcciones coincidan, su diferencia debe ser menor
  * a 15 grados.
  *
- * \param direction1 [in] Primera dirección en grados.
- * \param direction2 [in] Segunda dirección en grados.
- * \return `true` si las dos direcciones coinciden.
+ * @param direction1 [in] Primera dirección en grados.
+ * @param direction2 [in] Segunda dirección en grados.
+ * @return `true` si las dos direcciones coinciden.
  */
 bool directionMatches(double direction1, double direction2);
 
@@ -131,9 +144,9 @@ bool directionMatches(double direction1, double direction2);
 /*!
  * La diferencia es el ángulo menor, en grados, que forman dos direcciones.
  *
- * \param direction1 [in] Primera dirección en grados.
- * \param direction2 [in] Segunda dirección en grados.
- * \return Valor absoluto de la diferencia de las dos direcciones.
+ * @param direction1 [in] Primera dirección en grados.
+ * @param direction2 [in] Segunda dirección en grados.
+ * @return Valor absoluto de la diferencia de las dos direcciones.
  */
 double getDirectionDifference(double direction1, double direction2);
 
@@ -142,8 +155,8 @@ double getDirectionDifference(double direction1, double direction2);
  * La ubicación vial se encuentra dentro del dominio de la arista si
  * la distancia a esta es menor a 20 metros.
  *
- * \param locationOnRoadNetwork [in] Ubicación vial a verificar.
- * \return `true` si la distancia a la arista es menor que 20.
+ * @param locationOnRoadNetwork [in] Ubicación vial a verificar.
+ * @return `true` si la distancia a la arista es menor que 20.
  */
 bool inEdgeDomain(const LocationOnRoadNetwork &locationOnRoadNetwork);
 
@@ -153,10 +166,10 @@ bool inEdgeDomain(const LocationOnRoadNetwork &locationOnRoadNetwork);
  * La ubicación se encuentra dentro del radio de proximidad del vértice si
  * su distancia a este es menor a 10 metros.
  *
- * \param locationOnRoadNetwork [in] Ubicación vial a verificar.
- * \param vertex [in] Vértice de referencia.
- * \param graph [in] Grafo al que pertenece el vértice.
- * \return `true` si la ubicación se encuentra dentro del radio de proximidad
+ * @param locationOnRoadNetwork [in] Ubicación vial a verificar.
+ * @param vertex [in] Vértice de referencia.
+ * @param graph [in] Grafo al que pertenece el vértice.
+ * @return `true` si la ubicación se encuentra dentro del radio de proximidad
  * del vértice.
  */
 bool inVertexProximityRadius(const LocationOnRoadNetwork &locationOnRoadNetwork,
@@ -170,10 +183,10 @@ bool inVertexProximityRadius(const LocationOnRoadNetwork &locationOnRoadNetwork,
  *
  * Para calcular el peso, ambas aristas deben ser adyacentes.
  *
- * \param edge [in] Arista cuyo peso se va a calcular.
- * \param sourceEdge [in] Arista desde la que se calcula el peso.
- * \param graph [in] Grafo al que pertenecen ambas aristas.
- * \return Peso de la arista
+ * @param edge [in] Arista cuyo peso se va a calcular.
+ * @param sourceEdge [in] Arista desde la que se calcula el peso.
+ * @param graph [in] Grafo al que pertenecen ambas aristas.
+ * @return Peso de la arista
  */
 double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
 
@@ -182,11 +195,11 @@ double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
  * Para obtener la distancia, el vértice debe ser parte de la arista de la
  * ubicación vial.
  *
- * \param locationOnRoadNetwork [in] Ubicación vial cuya distancia al vértice
+ * @param locationOnRoadNetwork [in] Ubicación vial cuya distancia al vértice
  * se va a obtener.
- * \param vertex [in] Vértice al que se va a obtener la distancia.
- * \param graph [in] Grafo al que pertenece el vértice.
- * \return
+ * @param vertex [in] Vértice al que se va a obtener la distancia.
+ * @param graph [in] Grafo al que pertenece el vértice.
+ * @return
  */
 double getDistanceToVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
 		Vertex vertex, const Graph &graph);

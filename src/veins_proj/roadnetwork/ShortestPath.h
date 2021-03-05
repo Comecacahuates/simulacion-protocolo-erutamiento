@@ -14,9 +14,10 @@
 // 
 
 /*!
- * \file ShortestPath.h
- * \author Adrián Juárez Monroy
+ * @file ShortestPath.h
+ * @author Adrián Juárez Monroy
  */
+
 #pragma once
 
 #include <omnetpp.h>
@@ -57,13 +58,13 @@ public:
 
 	//! Calcula la ruta más corta hacia el resto de los vértices.
 	/*!
-	 * \param [in] sourceEdge Arista de origen.
-	 * \param [in] graph Grafo por el que se realiza la búsqueda.
-	 * \param [in] inactiveEdges Aristas inactivas.
+	 * @param [in] sourceEdge Arista de origen.
+	 * @param [in] graph Grafo por el que se realiza la búsqueda.
+	 * @param [in] visitedVertices Vértices por los que el paquete ya ha pasado.
+	 * @param [in] inactiveEdges Aristas inactivas.
 	 */
 	void computeShortestPath(const Edge sourceEdge, const Graph &graph,
-			const VertexVector &unavailableVertices = { },
-			const EdgeVector &inactiveEdges = { });
+			const VertexSet &visitedVertices, const EdgeSet &activeEdges);
 
 	//! Devuelve la distancia de ruta a un vértice.
 	/*!
@@ -72,8 +73,8 @@ public:
 	 * necesita calcular las rutas con el método #computeShortestPath antes
 	 * de llamar este método.
 	 *
-	 * \param [in] vertex Vértice del que se quiere la ruta más corta.
-	 * \return Vector de vértices que indican la ruta desde el vértice de la
+	 * @param [in] vertex Vértice del que se quiere la ruta más corta.
+	 * @return Vector de vértices que indican la ruta desde el vértice de la
 	 * arista de origen.
 	 */
 	double getRouteDistance(Vertex vertex) const {
@@ -86,8 +87,8 @@ public:
 	 * un vértice. Se necesita calcular las rutas con el método
 	 * #computeShortestPath antes de llamar este método.
 	 *
-	 * \param [in] vertex Vértice del que se quiere la ruta más corta.
-	 * \return Vector de vértices que indican la ruta desde el vértice de la
+	 * @param [in] vertex Vértice del que se quiere la ruta más corta.
+	 * @return Vector de vértices que indican la ruta desde el vértice de la
 	 * arista de origen.
 	 */
 	VertexVector getShortestPathToVertex(Vertex targetVertex,

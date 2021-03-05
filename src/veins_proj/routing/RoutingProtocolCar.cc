@@ -472,10 +472,10 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
     hopCount++;
     neighboursSum += getNeighbouringCarsOnEdgeCount();
 
-    // Se verifica si la direcci������n de destino es la direcci������n local
+    // Se verifica si la dirección de destino es la dirección local
     if (interfaceTable->isLocalAddress(nextHopAddress)) {
-        // Si se encuentra en el v������rtice de destino, se responde con un mensaje PONG
-        if (inVertexProximityRadius(pingVertexB, locationOnRoadNetwork, graph)) {
+        // Si se encuentra en el vértice de destino, se responde con un mensaje PONG
+        if (inVertexProximityRadius(locationOnRoadNetwork, pingVertexB, graph)) {
             EV_INFO << "PONG" << std::endl;
 
             // Responder con mensaje PONG
@@ -671,7 +671,7 @@ inet::Ipv6Address RoutingProtocolCar::getRandomNeighbouringCarAddressAheadOnEdge
     const Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
 
-    double distanceToTargetVertex = getDistanceToVertex(targetVertex, mobility->getLocationOnRoadNetwork(), graph);
+    double distanceToTargetVertex = getDistanceToVertex(mobility->getLocationOnRoadNetwork(), targetVertex, graph);
     ASSERT(distanceToTargetVertex != std::numeric_limits<double>::infinity());
 
     const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
@@ -723,7 +723,7 @@ inet::Ipv6Address RoutingProtocolCar::getNeighbouringCarAddressOnEdgeClosestToVe
         const inet::Ipv6Address neighbouringCarAddress = neighbouringCarIt->second;
         const NeighbouringCarEntry &neighbouringCar = neighbouringCars[neighbouringCarAddress];
         const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.locationOnRoadNetwork;
-        double neighbouringCarDistanceToTargetVertex = getDistanceToVertex(targetVertex, locationOnRoadNetwork, graph);
+        double neighbouringCarDistanceToTargetVertex = getDistanceToVertex(locationOnRoadNetwork, targetVertex, graph);
         ASSERT(neighbouringCarDistanceToTargetVertex != std::numeric_limits<double>::infinity());
 
         if (neighbouringCarDistanceToTargetVertex < minDistanceToTargetVertex)
@@ -947,29 +947,29 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(inet::Packet *
     const Edge &edge = locationOnRoadNetwork.edge;
 
     /*********************************************************************************
-     * Obtener v��rtices visitados
+     * Obtener vértices visitados
      *********************************************************************************/
     const TlvRoutingOption *routingOption = findTlvOption<TlvRoutingOption>(datagram);
     ASSERT(routingOption != nullptr);
     int numVisitedVertices = routingOption->getVisitedVerticesArraySize();
-    VertexVector visitedVertices(numVisitedVertices);
+    VertexSet visitedVertices;
     for (int i = 0; i < numVisitedVertices; i++)
-        visitedVertices[i] = routingOption->getVisitedVertices(i);
+        visitedVertices.insert(routingOption->getVisitedVertices(i));
 
     /*********************************************************************************
      * Obtener aristas inactivas
      *********************************************************************************/
-    int numInactiveEdges = this->inactiveEdges.size();
-    InactiveEdgesConstIterator inactiveEdgeIt = this->inactiveEdges.begin();
-    EdgeVector inactiveEdges(numInactiveEdges);
-    for (int i = 0; i < numInactiveEdges && inactiveEdgeIt != this->inactiveEdges.end(); i++, inactiveEdgeIt++)
-        inactiveEdges[i] = inactiveEdgeIt->first;
+    int numActiveEdges = this->activeEdges.size();
+    ActiveEdgesConstIterator activeEdgeIt = this->activeEdges.begin();
+    EdgeSet activeEdges;
+    for (int i = 0; i < numActiveEdges && activeEdgeIt != this->activeEdges.end(); i++, activeEdgeIt++)
+        activeEdges.insert(activeEdgeIt->first);
 
     /*********************************************************************************
-     * Calcular ruta m��s corta
+     * Calcular ruta más corta
      *********************************************************************************/
     ShortestPath shortestPath;
-    shortestPath.computeShortestPath(edge, graph, visitedVertices, inactiveEdges);
+    shortestPath.computeShortestPath(edge, graph, visitedVertices, activeEdges);
 
     /*********************************************************************************
      * Obtener v��rtice destino local
@@ -1289,7 +1289,7 @@ inet::Ipv6Address  RoutingProtocolCar::findNextHop(const VertexVector &shortestP
     vertexB = boost::target(edge, graph); // V������rtice de destino de la arista
     double minDistanceToVertexB = std::numeric_limits<double>::infinity(); // Distancia m������nima delos vecinos al v������rtice de destino de la arista
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
-    double distanceToVertexB = getDistanceToVertex(vertexB, locationOnRoadNetwork, graph); // Distancia del veh������culo al v������rtice B (puede ser infinito si el v������rtice est������ en otra arista)
+    double distanceToVertexB = getDistanceToVertex(locationOnRoadNetwork, vertexB, graph); // Distancia del veh������culo al v������rtice B (puede ser infinito si el v������rtice est������ en otra arista)
     nextHopAddress = inet::Ipv6Address::UNSPECIFIED_ADDRESS; // Direcci������n del vecino m������s cercano al v������rtice de destino de la arista
     NeighbouringCarsByEdgeConstIterator neighbouringCarIt = neighbouringCarsByEdge.lower_bound(edge);
     NeighbouringCarsByEdgeConstIterator neighbouringCarEndIt = neighbouringCarsByEdge.upper_bound(edge);
@@ -1298,7 +1298,7 @@ inet::Ipv6Address  RoutingProtocolCar::findNextHop(const VertexVector &shortestP
         const inet::Ipv6Address &neighbouringCarAddress = neighbouringCarIt->second;
         const NeighbouringCarEntry &neighbouringCar = neighbouringCars.at(neighbouringCarAddress);
         const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.locationOnRoadNetwork;
-        double neighbouringCarDistanceToVertexB = getDistanceToVertex(vertexB, locationOnRoadNetwork, graph);
+        double neighbouringCarDistanceToVertexB = getDistanceToVertex(locationOnRoadNetwork, vertexB, graph);
 
         // Si se encontr������ un vecino que est������ a una distancia menor del v������rtice de destino
         if (neighbouringCarDistanceToVertexB < minDistanceToVertexB) {
