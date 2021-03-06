@@ -9,4 +9,5 @@ encoding//src/veins_proj/routing/Routing.msg=UTF-8
 encoding//src/veins_proj/routing/RoutingProtocolBase.cc=UTF-8
 encoding//src/veins_proj/routing/RoutingProtocolBase.h=UTF-8
 encoding//src/veins_proj/routing/RoutingProtocolCar.cc=UTF-8
+encoding//src/veins_proj/routing/RoutingProtocolCar.h=UTF-8
 encoding/doxy.cfg=UTF-8

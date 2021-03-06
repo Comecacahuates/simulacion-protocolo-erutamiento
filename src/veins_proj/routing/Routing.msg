@@ -45,7 +45,7 @@ class HelloCar extends RoutingPacket {
     chunkLength = inet::B(36);
     packetType = PacketType::HELLO_CAR;
 	inet::Ipv6Address address; // Dirección IPv6 (16 bytes)
-	uint64_t geohash; // Ubicaci��n Geohash (8 bytes)
+	uint64_t geohash; // Ubicación Geohash (8 bytes)
 	double speed; // Velocidad (2 bytes)
 	double direction; // Dirección de movimiento (2 bytes)
 	unsigned int vertexA; // Vértice A (2 bytes)
@@ -56,31 +56,25 @@ class HelloCar extends RoutingPacket {
 class HelloHost extends RoutingPacket {
     chunkLength = inet::B(28);
     packetType = PacketType::HELLO_HOST;
-	inet::Ipv6Address address; // Dirección IPv6 (16 bytes)
-	uint64_t geohash; // Ubicaci��n Geohash (8 bytes)
+	inet::Ipv6Address address; // Dirección IPv6 de origen (16 bytes)
+	uint64_t geohash; // Ubicación Geohash (8 bytes)
 }
 
 class Ping extends RoutingPacket {
     chunkLength = inet::B(40);
     packetType = PacketType::PING;
-	inet::Ipv6Address address; // Dirección IPv6 (16 bytes)
-	inet::Ipv6Address nextHopAddress; // Dirección IPv6 del siguiente salto (16 bytes)
-	int hopCount; // Número de saltos (1 byte)
-	int neighboursSum; // Suma de vehículos vecinos (1 byte)
-	unsigned int vertexA; // Vértice A (2 bytes)
-	unsigned int vertexB; // Vértice B (2 bytes)
+	inet::Ipv6Address address; // Dirección IPv6 de origen (16 bytes)
+	unsigned int vertex1; // Vértice de origen (2 bytes)
+	unsigned int vertex2; // Vértice de destino (2 bytes)
 }
 
 class Pong extends RoutingPacket {
-    chunkLength = inet::B(28);
+    chunkLength = inet::B(24);
     packetType = PacketType::PONG;
-    bool N; // Respuesta a nuevo PING (1 bit)
+    bool E; // Error en la operación ping-pong (1 bit)
 	inet::Ipv6Address destAddress; // Dirección IPv6 (16 bytes)
-	omnetpp::simtime_t validityTime; // Vigencia del estatus de la arista (2 bytes)
-	int hopCount; // Número de saltos (1 byte)
-	int neighboursAverage; // Promedio de vehículos vecinos (1 byte)
-	unsigned int vertexA; // Vértice A (2 bytes)
-	unsigned int vertexB; // Vértice B (2 bytes)
+	unsigned int vertex1; // Vértice de origen (2 bytes)
+	unsigned int vertex2; // Vértice de destino (2 bytes)
 }
 
 class HelloEdge extends RoutingPacket {
@@ -103,11 +97,6 @@ class TlvDestLocationOnRoadNetworkOption extends inet::TlvOptionBase {
 	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
 }
 
-class TlvRoutingOption extends inet::TlvOptionBase {
+class TlvVisitedVerticesOption extends inet::TlvOptionBase {
 	unsigned int visitedVertices[]; // Vértices que ha recorrido el paquete (2 bytes por Vértice)
-}
-
-message PongTimeout {
-	unsigned int vertexA; // Vértice A de la arista
-	unsigned int vertexB; // Vértice B de la arista
 }

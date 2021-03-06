@@ -51,90 +51,89 @@ Register_Abstract_Class(RoutingProtocolBase);
 
 //! Inicialización.
 void RoutingProtocolBase::initialize(int stage) {
-	inet::RoutingProtocolBase::initialize(stage);
+    inet::RoutingProtocolBase::initialize(stage);
 
-	/*
-	 * Inicialización local.
-	 */
-	if (stage == inet::INITSTAGE_LOCAL) {
-		/*
-		 * Parámetros de enrutamiento.
-		 */
-		helloCarInterval = par("helloCarInterval");
-		neighbouringCarValidityTime = par("neighbouringCarValidityTime");
-		helloHostInterval = par("helloHostInterval");
-		neighbouringHostValidityTime = par("neighbouringHostValidityTime");
-		pingInterval = par("pingInterval");
-		pongTimeout = par("pongTimeout");
-		activeEdgeValidityTime = par("activeEdgeValidityTime");
-		inactiveEdgeValidityTime = par("inactiveEdgeValidityTime");
-		routeValidityTime = par("routeValidityTime");
-		vertexProximityRadius = par("vertexProximityRadius");
+    /*
+     * Inicialización local.
+     */
+    if (stage == inet::INITSTAGE_LOCAL) {
+        /*
+         * Parámetros de enrutamiento.
+         */
+        helloCarInterval = par("helloCarInterval");
+        neighbouringCarValidityTime = par("neighbouringCarValidityTime");
+        helloHostInterval = par("helloHostInterval");
+        neighbouringHostValidityTime = par("neighbouringHostValidityTime");
+        pingInterval = par("pingInterval");
+        pongTimeout = par("pongTimeout");
+        activeEdgeValidityTime = par("activeEdgeValidityTime");
+        inactiveEdgeValidityTime = par("inactiveEdgeValidityTime");
+        routeValidityTime = par("routeValidityTime");
+        vertexProximityRadius = par("vertexProximityRadius");
 
-		/*
-		 * Contexto.
-		 */
-		host = inet::getContainingNode(this);
-		interfaceTable = inet::L3AddressResolver().interfaceTableOf(host);
-		if (!interfaceTable)
-			throw omnetpp::cRuntimeError("No interface table found");
-		routingTable = inet::L3AddressResolver().findIpv6RoutingTableOf(host);
-		if (!routingTable)
-			throw omnetpp::cRuntimeError("No routing table found");
-		networkProtocol = inet::getModuleFromPar<inet::INetfilter>(
-				par("networkProtocolModule"), this);
-		if (!networkProtocol)
-			throw omnetpp::cRuntimeError("No network protocol module found");
-		addressCache = omnetpp::check_and_cast<AddressCache*>(
-				host->getSubmodule("addressCache"));
-		if (!addressCache)
-			throw omnetpp::cRuntimeError("No host configurator module found");
-		roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase*>(
-				getModuleByPath(par("roadNetworkDatabaseModule")));
-		if (!roadNetworkDatabase)
-			throw omnetpp::cRuntimeError("No roadway database module found");
+        /*
+         * Contexto.
+         */
+        host = inet::getContainingNode(this);
+        interfaceTable = inet::L3AddressResolver().interfaceTableOf(host);
+        if (!interfaceTable)
+            throw omnetpp::cRuntimeError("No interface table found");
+        routingTable = inet::L3AddressResolver().findIpv6RoutingTableOf(host);
+        if (!routingTable)
+            throw omnetpp::cRuntimeError("No routing table found");
+        networkProtocol = inet::getModuleFromPar<inet::INetfilter>(
+                par("networkProtocolModule"), this);
+        if (!networkProtocol)
+            throw omnetpp::cRuntimeError("No network protocol module found");
+        addressCache = omnetpp::check_and_cast<AddressCache*>(
+                host->getSubmodule("addressCache"));
+        if (!addressCache)
+            throw omnetpp::cRuntimeError("No host configurator module found");
+        roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase*>(
+                getModuleByPath(par("roadNetworkDatabaseModule")));
+        if (!roadNetworkDatabase)
+            throw omnetpp::cRuntimeError("No roadway database module found");
 
-		/*
-		 * Mensajes propios
-		 */
-		purgeNeighbouringCarsTimer = new omnetpp::cMessage(
-				"purgeNeighbouringCarsTimer");
+        /*
+         * Mensajes propios
+         */
+        purgeNeighbouringCarsTimer = new omnetpp::cMessage(
+                "purgeNeighbouringCarsTimer");
 
-		/*
-		 * Inicialización de interfaces de red.
-		 */
-	} else if (stage == inet::INITSTAGE_NETWORK_INTERFACE_CONFIGURATION) {
-		networkInterface = interfaceTable->findInterfaceByName(
-				par("outputInterface"));
-		if (!networkInterface)
-			throw omnetpp::cRuntimeError("Output interface not found");
+        /*
+         * Inicialización de interfaces de red.
+         */
+    } else if (stage == inet::INITSTAGE_NETWORK_INTERFACE_CONFIGURATION) {
+        networkInterface = interfaceTable->findInterfaceByName(
+                par("outputInterface"));
+        if (!networkInterface)
+            throw omnetpp::cRuntimeError("Output interface not found");
 
-		/*
-		 * Inicialización de protocolos de enrutamiento.
-		 */
-	} else if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
-		inet::registerProtocol(inet::Protocol::manet, gate("ipOut"),
-				gate("ipIn"));
-		host->subscribe(inet::linkBrokenSignal, this);
-		networkProtocol->registerHook(0, this);
-	}
+        /*
+         * Inicialización de protocolos de enrutamiento.
+         */
+    } else if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
+        inet::registerProtocol(inet::Protocol::manet, gate("ipOut"),
+                gate("ipIn"));
+        host->subscribe(inet::linkBrokenSignal, this);
+        networkProtocol->registerHook(0, this);
+    }
 }
 
 //! Manejo de mensajes.
 void RoutingProtocolBase::handleMessageWhenUp(omnetpp::cMessage *message) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::handleMessageWhenUp");
-	EV_INFO << message->getName() << std::endl;
-	//EV_INFO << boost::stacktrace::stacktrace() << std::endl;
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::handleMessageWhenUp");
+    EV_INFO << message->getName() << std::endl;
+    //EV_INFO << boost::stacktrace::stacktrace() << std::endl;
 
-	if (message->isSelfMessage())
-		processSelfMessage(message);
+    if (message->isSelfMessage())
+        processSelfMessage(message);
 
-	else
-		processMessage(message);
+    else
+        processMessage(message);
 }
 
 /*
@@ -146,21 +145,20 @@ void RoutingProtocolBase::handleMessageWhenUp(omnetpp::cMessage *message) {
  * @param message [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::processMessage(omnetpp::cMessage *message) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::processMessage");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::processMessage");
 
-	inet::Packet *packet = omnetpp::check_and_cast<inet::Packet*>(message);
+    inet::Packet *packet = omnetpp::check_and_cast<inet::Packet*>(message);
 
-	if (packet != nullptr)
-		processUdpPacket(packet);
+    if (packet != nullptr)
+        processUdpPacket(packet);
 
-	else
-		throw omnetpp::cRuntimeError("Unknown message");
+    else
+        throw omnetpp::cRuntimeError("Unknown message");
 
-	delete packet;
+    delete packet;
 }
 
 //! Manejo de mensajes propios.
@@ -168,17 +166,16 @@ void RoutingProtocolBase::processMessage(omnetpp::cMessage *message) {
  * @param message [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::processSelfMessage(omnetpp::cMessage *message) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::processSelfMessage");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::processSelfMessage");
 
-	if (message == purgeNeighbouringCarsTimer)
-		processPurgeNeighbouringCarsTimer();
+    if (message == purgeNeighbouringCarsTimer)
+        processPurgeNeighbouringCarsTimer();
 
-	else
-		throw omnetpp::cRuntimeError("Unknown self message");
+    else
+        throw omnetpp::cRuntimeError("Unknown self message");
 }
 
 /*
@@ -188,44 +185,41 @@ void RoutingProtocolBase::processSelfMessage(omnetpp::cMessage *message) {
 //! Programar el temporizador de limpieza del directorio de
 //! vehículos vecinos.
 void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer");
 
-	omnetpp::simtime_t nextExpirationTime =
-			getNextNeighbouringCarExpirationTime();
+    omnetpp::simtime_t nextExpirationTime = getNextNeighbouringCarExpirationTime();
 
-	EV_INFO << "Next expiration time: " << nextExpirationTime << std::endl;
+    EV_INFO << "Next expiration time: " << nextExpirationTime << std::endl;
 
-	if (nextExpirationTime == omnetpp::SimTime::getMaxTime()) {
-		if (purgeNeighbouringCarsTimer->isScheduled())
-			cancelEvent(purgeNeighbouringCarsTimer);
+    if (nextExpirationTime == omnetpp::SimTime::getMaxTime()) {
+        if (purgeNeighbouringCarsTimer->isScheduled())
+            cancelEvent(purgeNeighbouringCarsTimer);
 
-	} else {
-		if (!purgeNeighbouringCarsTimer->isScheduled())
-			scheduleAt(nextExpirationTime, purgeNeighbouringCarsTimer);
+    } else {
+        if (!purgeNeighbouringCarsTimer->isScheduled())
+            scheduleAt(nextExpirationTime, purgeNeighbouringCarsTimer);
 
-		else if (purgeNeighbouringCarsTimer->getArrivalTime()
-				!= nextExpirationTime) {
-			cancelEvent(purgeNeighbouringCarsTimer);
-			scheduleAt(nextExpirationTime, purgeNeighbouringCarsTimer);
-		}
-	}
+        else if (purgeNeighbouringCarsTimer->getArrivalTime()
+                != nextExpirationTime) {
+            cancelEvent(purgeNeighbouringCarsTimer);
+            scheduleAt(nextExpirationTime, purgeNeighbouringCarsTimer);
+        }
+    }
 }
 
 //! Procesar el temporizador de limpieza del directorio de
 //! vehículos vecinos.
 void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
 
-	purgeNeighbouringCars();
-	schedulePurgeNeighbouringCarsTimer();
+    purgeNeighbouringCars();
+    schedulePurgeNeighbouringCarsTimer();
 }
 
 /*
@@ -240,12 +234,11 @@ void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
  * @param packet [in] Paque a enviar.
  */
 void RoutingProtocolBase::sendUdpPacket(inet::Packet *packet) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::sendUdpPacket");
-	send(packet, "ipOut");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::sendUdpPacket");
+    send(packet, "ipOut");
 }
 
 //! Procesar paquete UDP.
@@ -256,59 +249,58 @@ void RoutingProtocolBase::sendUdpPacket(inet::Packet *packet) {
  * @param packet [in] Paquete a procesar.
  */
 void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::processUdpPacket");
-	EV_INFO << "UDP packet: " << udpPacket->getName() << std::endl;
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::processUdpPacket");
+    EV_INFO << "UDP packet: " << udpPacket->getName() << std::endl;
 
-	udpPacket->popAtFront<inet::UdpHeader>();
+    udpPacket->popAtFront<inet::UdpHeader>();
 
-	const inet::Ptr<const RoutingPacket> &routingPacket = udpPacket->popAtFront<
-			RoutingPacket>();
+    const inet::Ptr<const RoutingPacket> &routingPacket = udpPacket->popAtFront<
+            RoutingPacket>();
 
-	PacketType packetType = routingPacket->getPacketType();
+    PacketType packetType = routingPacket->getPacketType();
 
-	switch (packetType) {
+    switch (packetType) {
 
-	case PacketType::ACK: {
-		inet::Ptr<Ack> ack = inet::dynamicPtrCast<Ack>(
-				routingPacket->dupShared());
-		processAck(ack);
+        case PacketType::ACK: {
+            inet::Ptr<Ack> ack = inet::dynamicPtrCast<Ack>(
+                    routingPacket->dupShared());
+            processAck(ack);
 
-		break;
-	}
+            break;
+        }
 
-	case PacketType::HELLO_CAR: {
-		inet::Ptr<HelloCar> helloCar = inet::dynamicPtrCast<HelloCar>(
-				routingPacket->dupShared());
-		processHelloCar(helloCar);
+        case PacketType::HELLO_CAR: {
+            inet::Ptr<HelloCar> helloCar = inet::dynamicPtrCast<HelloCar>(
+                    routingPacket->dupShared());
+            processHelloCar(helloCar);
 
-		break;
-	}
+            break;
+        }
 
-	case PacketType::HELLO_HOST: {
-		inet::Ptr<HelloHost> helloHost = inet::dynamicPtrCast<HelloHost>(
-				routingPacket->dupShared());
-		processHelloHost(helloHost);
+        case PacketType::HELLO_HOST: {
+            inet::Ptr<HelloHost> helloHost = inet::dynamicPtrCast<HelloHost>(
+                    routingPacket->dupShared());
+            processHelloHost(helloHost);
 
-		break;
-	}
+            break;
+        }
 
-	case PacketType::PING: {
-		inet::Ptr<Ping> ping = inet::dynamicPtrCast<Ping>(
-				routingPacket->dupShared());
-		processPing(ping);
+        case PacketType::PING: {
+            inet::Ptr<Ping> ping = inet::dynamicPtrCast<Ping>(
+                    routingPacket->dupShared());
+            processPing(ping);
 
-		break;
-	}
+            break;
+        }
 
-	default:
-		throw omnetpp::cRuntimeError(
-				"Routing packet arrived with undefined packet type: %d",
-				packetType);
-	}
+        default:
+            throw omnetpp::cRuntimeError(
+                    "Routing packet arrived with undefined packet type: %d",
+                    packetType);
+    }
 }
 
 /*
@@ -321,20 +313,19 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
  * @return Mensaje ACK.
  */
 const inet::Ptr<Ack> RoutingProtocolBase::createAck(
-		const inet::Ipv6Address &address) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::createAck");
+        const inet::Ipv6Address &address) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::createAck");
 
-	const inet::Ptr<Ack> &ack = inet::makeShared<Ack>();
+    const inet::Ptr<Ack> &ack = inet::makeShared<Ack>();
 
-	EV_INFO << "Address: " << address.str() << std::endl;
+    EV_INFO << "Address: " << address.str() << std::endl;
 
-	ack->setAddress(address);
+    ack->setAddress(address);
 
-	return ack;
+    return ack;
 }
 
 //! Enviar mensaje ACK.
@@ -343,43 +334,42 @@ const inet::Ptr<Ack> RoutingProtocolBase::createAck(
  * indicada.
  *
  * @param ack [in] Mensaje a enviar.
- * @param destinationAddress [in] Dirección de destino del mensaje.
+ * @param destAddress [in] Dirección de destino del mensaje.
  */
 void RoutingProtocolBase::sendAck(const inet::Ptr<Ack> &ack,
-		const inet::Ipv6Address &destAddress) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::sendAck");
-	EV_INFO << "Destination address: " << destAddress.str() << std::endl;
+        const inet::Ipv6Address &destAddress) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::sendAck");
+    EV_INFO << "Destination address: " << destAddress.str() << std::endl;
 
-	inet::Packet *udpPacket = new inet::Packet("Ack");
-	udpPacket->insertAtBack(ack);
+    inet::Packet *udpPacket = new inet::Packet("Ack");
+    udpPacket->insertAtBack(ack);
 
-	inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
-	udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
-	udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
-	udpPacket->insertAtFront(udpHeader);
+    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
+    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
+    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
+    udpPacket->insertAtFront(udpHeader);
 
-	inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
-			inet::L3AddressReq>();
-	addresses->setSrcAddress(ack->getAddress());
-	addresses->setDestAddress(inet::L3Address(destAddress));
+    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
+            inet::L3AddressReq>();
+    addresses->setSrcAddress(ack->getAddress());
+    addresses->setDestAddress(inet::L3Address(destAddress));
 
-	inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
-			inet::HopLimitReq>();
-	hopLimit->setHopLimit(255);
+    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
+            inet::HopLimitReq>();
+    hopLimit->setHopLimit(255);
 
-	inet::Ptr<inet::PacketProtocolTag> packetProtocol =
-			udpPacket->addTagIfAbsent<inet::PacketProtocolTag>();
-	packetProtocol->setProtocol(&inet::Protocol::manet);
+    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
+            inet::PacketProtocolTag>();
+    packetProtocol->setProtocol(&inet::Protocol::manet);
 
-	inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol =
-			udpPacket->addTagIfAbsent<inet::DispatchProtocolReq>();
-	dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
+    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
+            inet::DispatchProtocolReq>();
+    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
 
-	sendUdpPacket(udpPacket);
+    sendUdpPacket(udpPacket);
 }
 
 //! Procesar mensaje ACK.
@@ -387,12 +377,11 @@ void RoutingProtocolBase::sendAck(const inet::Ptr<Ack> &ack,
  * @param ack [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::processAck(const inet::Ptr<Ack> &ack) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::processAck");
-	EV_INFO << "Address: " << ack->getAddress().str() << std::endl;
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::processAck");
+    EV_INFO << "Address: " << ack->getAddress().str() << std::endl;
 }
 
 /*
@@ -401,23 +390,22 @@ void RoutingProtocolBase::processAck(const inet::Ptr<Ack> &ack) {
 
 //! Imprime el directorio de vehículos vecinos.
 void RoutingProtocolBase::showNeighbouringCars() const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::showNeighbouringCars");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::showNeighbouringCars");
 
-	for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
-		EV_INFO << "Address: " << neighbouringCar.first << std::endl;
-		EV_INFO << "Edge: " << neighbouringCar.second.locationOnRoadNetwork.edge
-						<< std::endl;
-		EV_INFO << "Distance to vertex A: "
-						<< neighbouringCar.second.locationOnRoadNetwork.distanceToVertex1
-						<< std::endl;
-		EV_INFO << "Distance to vertex B: "
-						<< neighbouringCar.second.locationOnRoadNetwork.distanceToVertex2
-						<< std::endl;
-	}
+    for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
+        EV_INFO << "Address: " << neighbouringCar.first << std::endl;
+        EV_INFO << "Edge: " << neighbouringCar.second.locationOnRoadNetwork.edge
+                << std::endl;
+        EV_INFO << "Distance to vertex A: "
+                << neighbouringCar.second.locationOnRoadNetwork.distanceToVertex1
+                << std::endl;
+        EV_INFO << "Distance to vertex B: "
+                << neighbouringCar.second.locationOnRoadNetwork.distanceToVertex2
+                << std::endl;
+    }
 }
 
 //! Elimina los registros viejos del directorio de vehículos vecinos.
@@ -429,20 +417,19 @@ void RoutingProtocolBase::showNeighbouringCars() const {
  * los registros.
  */
 void RoutingProtocolBase::removeOldNeighbouringCars(omnetpp::simtime_t time) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::removeOldNeighbouringCars");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::removeOldNeighbouringCars");
 
-	NeighbouringCarsIterator it = neighbouringCars.begin();
-	while (it != neighbouringCars.end())
-		if (it->second.lastUpdateTime <= time) {
-			//purgeNextHopRoutes(it->first); // Se elimina las rutas
-			neighbouringCars.erase(it++); // Se elimina del directorio de veh������culos vecinos
+    NeighbouringCarsIterator it = neighbouringCars.begin();
+    while (it != neighbouringCars.end())
+        if (it->second.lastUpdateTime <= time) {
+            //purgeNextHopRoutes(it->first); // Se elimina las rutas
+            neighbouringCars.erase(it++);    // Se elimina del directorio de veh������culos vecinos
 
-		} else
-			it++;
+        } else
+            it++;
 }
 
 //! Obtener hora de última actualización del registro más viejo
@@ -451,22 +438,21 @@ void RoutingProtocolBase::removeOldNeighbouringCars(omnetpp::simtime_t time) {
  * @return Hora de última actualización del registro más viejo.
  */
 omnetpp::simtime_t RoutingProtocolBase::getOldestNeighbouringCarTime() const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::getOldestNeighbouringCarTime");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::getOldestNeighbouringCarTime");
 
-	omnetpp::simtime_t oldestTime = omnetpp::SimTime::getMaxTime();
+    omnetpp::simtime_t oldestTime = omnetpp::SimTime::getMaxTime();
 
-	for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
-		const omnetpp::simtime_t &time = neighbouringCar.second.lastUpdateTime;
+    for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
+        const omnetpp::simtime_t &time = neighbouringCar.second.lastUpdateTime;
 
-		if (time < oldestTime)
-			oldestTime = time;
-	}
+        if (time < oldestTime)
+            oldestTime = time;
+    }
 
-	return oldestTime;
+    return oldestTime;
 }
 
 //! Obtener siguiente la hora de expiración más próxima de los registros
@@ -475,19 +461,18 @@ omnetpp::simtime_t RoutingProtocolBase::getOldestNeighbouringCarTime() const {
  * @return Hora de expiración más próxima.
  */
 omnetpp::simtime_t RoutingProtocolBase::getNextNeighbouringCarExpirationTime() const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::getNextNeighbouringCarExpirationTime");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::getNextNeighbouringCarExpirationTime");
 
-	omnetpp::simtime_t oldestEntryTime = getOldestNeighbouringCarTime();
+    omnetpp::simtime_t oldestEntryTime = getOldestNeighbouringCarTime();
 
-	if (oldestEntryTime == omnetpp::SimTime::getMaxTime())
-		return oldestEntryTime;
+    if (oldestEntryTime == omnetpp::SimTime::getMaxTime())
+        return oldestEntryTime;
 
-	else
-		return oldestEntryTime + neighbouringCarValidityTime;
+    else
+        return oldestEntryTime + neighbouringCarValidityTime;
 }
 
 //! Limpiar el directorio de vehículos vecinos.
@@ -496,14 +481,13 @@ omnetpp::simtime_t RoutingProtocolBase::getNextNeighbouringCarExpirationTime() c
  * de expiración ya haya pasado.
  */
 void RoutingProtocolBase::purgeNeighbouringCars() {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::purgeNeighbouringCars");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::purgeNeighbouringCars");
 
-	removeOldNeighbouringCars(omnetpp::simTime() - neighbouringCarValidityTime);
-	removeOldRoutes(omnetpp::simTime());
+    removeOldNeighbouringCars(omnetpp::simTime() - neighbouringCarValidityTime);
+    removeOldRoutes(omnetpp::simTime());
 }
 
 //! Obtener el vehículo vecino más cercano.
@@ -516,28 +500,26 @@ void RoutingProtocolBase::purgeNeighbouringCars() {
  * @return Dirección IPv6 del vehículo vecino más cercano.
  */
 inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCarAddress(
-		const GeohashLocation &geohashLocation) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::getClosestNeighbouringCarAddress");
+        const GeohashLocation &geohashLocation) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::getClosestNeighbouringCarAddress");
 
-	double minDistance = std::numeric_limits<double>::infinity();
-	inet::Ipv6Address closestNeighbourAddress =
-			inet::Ipv6Address::UNSPECIFIED_ADDRESS;
+    double minDistance = std::numeric_limits<double>::infinity();
+    inet::Ipv6Address closestNeighbourAddress = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
 
-	for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
-		double distance = geohashLocation.getDistance(
-				neighbouringCar.second.geohashLocation);
+    for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
+        double distance = geohashLocation.getDistance(
+                neighbouringCar.second.geohashLocation);
 
-		if (distance < minDistance) {
-			minDistance = distance;
-			closestNeighbourAddress = neighbouringCar.first;
-		}
-	}
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestNeighbourAddress = neighbouringCar.first;
+        }
+    }
 
-	return closestNeighbourAddress;
+    return closestNeighbourAddress;
 }
 
 /*
@@ -546,14 +528,13 @@ inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCarAddress(
 
 //! Mostrar rutas en la tabla de enrutamiento.
 void RoutingProtocolBase::showRoutes() const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::showRoutes");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::showRoutes");
 
-	for (int i = 0; i < routingTable->getNumRoutes(); i++)
-		EV_INFO << "Route: " << routingTable->getRoute(i) << std::endl;
+    for (int i = 0; i < routingTable->getNumRoutes(); i++)
+        EV_INFO << "Route: " << routingTable->getRoute(i) << std::endl;
 }
 
 //! Agregar una ruta a la tabla de enrutamiento.
@@ -568,44 +549,43 @@ void RoutingProtocolBase::showRoutes() const {
  * @param expiryTime [in] Hora de expiración de la ruta.
  */
 void RoutingProtocolBase::addRoute(const inet::Ipv6Address &destPrefix,
-		const short prefixLength, const inet::Ipv6Address &nextHop, int metric,
-		omnetpp::simtime_t expiryTime) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::addRoute");
+        const short prefixLength, const inet::Ipv6Address &nextHop, int metric,
+        omnetpp::simtime_t expiryTime) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::addRoute");
 
-	// Se revisa si ya existe una ruta
-	bool routeExists = false;
-	inet::Ipv6Route *route;
-	for (int i = 0; i < routingTable->getNumRoutes(); i++) {
-		route = routingTable->getRoute(i);
-		if (route->getDestPrefix().matches(destPrefix, prefixLength)
-				&& route->getNextHop() == nextHop) {
-			routeExists = true;
-			break;
-		}
-	}
+    // Se revisa si ya existe una ruta
+    bool routeExists = false;
+    inet::Ipv6Route *route;
+    for (int i = 0; i < routingTable->getNumRoutes(); i++) {
+        route = routingTable->getRoute(i);
+        if (route->getDestPrefix().matches(destPrefix, prefixLength)
+                && route->getNextHop() == nextHop) {
+            routeExists = true;
+            break;
+        }
+    }
 
-	// Si existe la ruta, se actualiza
-	if (routeExists) {
-		route->setMetric(metric);
-		route->setExpiryTime(expiryTime);
+    // Si existe la ruta, se actualiza
+    if (routeExists) {
+        route->setMetric(metric);
+        route->setExpiryTime(expiryTime);
 
-		// Si no existe la ruta, se grega
-	} else {
-		route = new inet::Ipv6Route(destPrefix, prefixLength,
-				inet::IRoute::MANET);
-		route->setNextHop(nextHop);
-		route->setMetric(metric);
-		route->setSource(this);
-		route->setInterface(networkInterface);
-		route->setExpiryTime(expiryTime);
-		routingTable->addRoute(route);
+        // Si no existe la ruta, se grega
+    } else {
+        route = new inet::Ipv6Route(destPrefix, prefixLength,
+                inet::IRoute::MANET);
+        route->setNextHop(nextHop);
+        route->setMetric(metric);
+        route->setSource(this);
+        route->setInterface(networkInterface);
+        route->setExpiryTime(expiryTime);
+        routingTable->addRoute(route);
 
-		EV_INFO << "Route: " << route->str() << std::endl;
-	}
+        EV_INFO << "Route: " << route->str() << std::endl;
+    }
 }
 
 //! Eliminar rutas por dirección IPv6 de siguiente salto.
@@ -617,22 +597,21 @@ void RoutingProtocolBase::addRoute(const inet::Ipv6Address &destPrefix,
  * rutas a eliminar.
  */
 void RoutingProtocolBase::purgeNextHopRoutes(
-		const inet::Ipv6Address &nextHopAddress) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::purgeNextHopRoutes");
+        const inet::Ipv6Address &nextHopAddress) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::purgeNextHopRoutes");
 
-	inet::Ipv6Route *route;
+    inet::Ipv6Route *route;
 
-	for (int i = routingTable->getNumRoutes() - 1; i >= 0; i--) {
-		route = routingTable->getRoute(i);
+    for (int i = routingTable->getNumRoutes() - 1; i >= 0; i--) {
+        route = routingTable->getRoute(i);
 
-		if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
-			if (nextHopAddress == route->getNextHop())
-				routingTable->deleteRoute(route);
-	}
+        if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
+            if (nextHopAddress == route->getNextHop())
+                routingTable->deleteRoute(route);
+    }
 }
 
 //! Eliminar rutas viejas.
@@ -643,21 +622,20 @@ void RoutingProtocolBase::purgeNextHopRoutes(
  * @param time [in] Hora de expiración máxima para eliminar las rutas.
  */
 void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t time) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::purgeNextHopRoutes");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::purgeNextHopRoutes");
 
-	inet::Ipv6Route *route;
+    inet::Ipv6Route *route;
 
-	for (int i = routingTable->getNumRoutes() - 1; i >= 0; i--) {
-		route = routingTable->getRoute(i);
+    for (int i = routingTable->getNumRoutes() - 1; i >= 0; i--) {
+        route = routingTable->getRoute(i);
 
-		if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
-			if (route->getExpiryTime() <= time)
-				routingTable->deleteRoute(route);
-	}
+        if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
+            if (route->getExpiryTime() <= time)
+                routingTable->deleteRoute(route);
+    }
 }
 
 /*
@@ -670,43 +648,40 @@ void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t time) {
  * @param tlvOption [in] Opción TLV a agregar al datagrama.
  */
 void RoutingProtocolBase::setTlvOption(inet::Packet *datagram,
-		inet::TlvOptionBase *tlvOption) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::setTlvOption");
+        inet::TlvOptionBase *tlvOption) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::setTlvOption");
 
-	datagram->trimFront();
+    datagram->trimFront();
 
-	inet::Ptr<inet::Ipv6Header> ipv6Header = inet::removeNetworkProtocolHeader<
-			inet::Ipv6Header>(datagram);
-	inet::B oldHeaderLength = ipv6Header->calculateHeaderByteLength();
-	inet::Ipv6ExtensionHeader *extensionHeader =
-			ipv6Header->findExtensionHeaderByTypeForUpdate(
-					inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
-	inet::Ipv6HopByHopOptionsHeader *optionsHeader =
-			omnetpp::check_and_cast_nullable<inet::Ipv6HopByHopOptionsHeader*>(
-					extensionHeader);
+    inet::Ptr<inet::Ipv6Header> ipv6Header = inet::removeNetworkProtocolHeader<
+            inet::Ipv6Header>(datagram);
+    inet::B oldHeaderLength = ipv6Header->calculateHeaderByteLength();
+    inet::Ipv6ExtensionHeader *extensionHeader = ipv6Header->findExtensionHeaderByTypeForUpdate(
+            inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
+    inet::Ipv6HopByHopOptionsHeader *optionsHeader = omnetpp::check_and_cast_nullable<
+            inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
 
-	if (!optionsHeader) {
-		optionsHeader = new inet::Ipv6HopByHopOptionsHeader();
-		optionsHeader->setByteLength(inet::B(8));
-		ipv6Header->addExtensionHeader(optionsHeader);
-	}
+    if (!optionsHeader) {
+        optionsHeader = new inet::Ipv6HopByHopOptionsHeader();
+        optionsHeader->setByteLength(inet::B(8));
+        ipv6Header->addExtensionHeader(optionsHeader);
+    }
 
-	optionsHeader->getTlvOptionsForUpdate().insertTlvOption(tlvOption);
-	optionsHeader->setByteLength(
-			inet::B(
-					inet::utils::roundUp(
-							2
-									+ inet::B(
-											optionsHeader->getTlvOptions().getLength()).get(),
-							8)));
-	inet::B newHeaderLength = ipv6Header->calculateHeaderByteLength();
-	ipv6Header->addChunkLength(newHeaderLength - oldHeaderLength);
-	inet::insertNetworkProtocolHeader(datagram, inet::Protocol::ipv6,
-			ipv6Header);
+    optionsHeader->getTlvOptionsForUpdate().insertTlvOption(tlvOption);
+    optionsHeader->setByteLength(
+            inet::B(
+                    inet::utils::roundUp(
+                            2
+                                    + inet::B(
+                                            optionsHeader->getTlvOptions().getLength()).get(),
+                            8)));
+    inet::B newHeaderLength = ipv6Header->calculateHeaderByteLength();
+    ipv6Header->addChunkLength(newHeaderLength - oldHeaderLength);
+    inet::insertNetworkProtocolHeader(datagram, inet::Protocol::ipv6,
+            ipv6Header);
 }
 
 //! Crear opción TLV de ubicación del destino.
@@ -715,19 +690,17 @@ void RoutingProtocolBase::setTlvOption(inet::Packet *datagram,
  * @return Opción TLV.
  */
 TlvDestGeohashLocationOption* RoutingProtocolBase::createTlvDestGeohashLocationOption(
-		uint64_t geohashLocationBits) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::createTlvDestGeohashLocationOption");
+        uint64_t geohashLocationBits) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::createTlvDestGeohashLocationOption");
 
-	TlvDestGeohashLocationOption *tlvOption =
-			new TlvDestGeohashLocationOption();
-	tlvOption->setGeohash(geohashLocationBits);
-	tlvOption->setLength(computeTlvOptionLength(tlvOption));
-	tlvOption->setType(IPV6TLVOPTION_TLV_DEST_GEOHASH_LOCATION);
-	return tlvOption;
+    TlvDestGeohashLocationOption *tlvOption = new TlvDestGeohashLocationOption();
+    tlvOption->setGeohash(geohashLocationBits);
+    tlvOption->setLength(computeTlvOptionLength(tlvOption));
+    tlvOption->setType(IPV6TLVOPTION_TLV_DEST_GEOHASH_LOCATION);
+    return tlvOption;
 }
 
 //! Calcular la longitud en octetos de una opción TLV de ubicación
@@ -737,15 +710,14 @@ TlvDestGeohashLocationOption* RoutingProtocolBase::createTlvDestGeohashLocationO
  * @return Longitud de la opción TLV.
  */
 int RoutingProtocolBase::computeTlvOptionLength(
-		TlvDestGeohashLocationOption *tlvOption) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::computeTlvOptionLength");
+        TlvDestGeohashLocationOption *tlvOption) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::computeTlvOptionLength");
 
-	int geohashBytes = 8;
-	return geohashBytes;
+    int geohashBytes = 8;
+    return geohashBytes;
 }
 
 //! Crear opción TLV de ubicación vial del destino.
@@ -756,21 +728,19 @@ int RoutingProtocolBase::computeTlvOptionLength(
  * @return Opción TLV.
  */
 TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOnRoadNetworkOption(
-		Vertex vertexA, Vertex vertexB, double distanceToVertexA) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::createTlvDestLocationOnRoadNetworkOption");
+        Vertex vertexA, Vertex vertexB, double distanceToVertexA) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::createTlvDestLocationOnRoadNetworkOption");
 
-	TlvDestLocationOnRoadNetworkOption *tlvOption =
-			new TlvDestLocationOnRoadNetworkOption();
-	tlvOption->setVertexA(vertexA);
-	tlvOption->setVertexB(vertexB);
-	tlvOption->setDistanceToVertexA(distanceToVertexA);
-	tlvOption->setLength(computeTlvOptionLength(tlvOption));
-	tlvOption->setType(IPV6TLVOPTION_TLV_DEST_ON_ROAD_NETWORK_LOCATION);
-	return tlvOption;
+    TlvDestLocationOnRoadNetworkOption *tlvOption = new TlvDestLocationOnRoadNetworkOption();
+    tlvOption->setVertexA(vertexA);
+    tlvOption->setVertexB(vertexB);
+    tlvOption->setDistanceToVertexA(distanceToVertexA);
+    tlvOption->setLength(computeTlvOptionLength(tlvOption));
+    tlvOption->setType(IPV6TLVOPTION_TLV_DEST_ON_ROAD_NETWORK_LOCATION);
+    return tlvOption;
 }
 
 //! Agregar opción TLV de ubicación vial del destino a un datagrama.
@@ -779,29 +749,27 @@ TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOn
  * destGeohashLocation tlvOption [in] Ubicación Geohash del destino.
  */
 void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(
-		inet::Packet *datagram,
-		const GeohashLocation &destGeohashLocation) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption");
+        inet::Packet *datagram,
+        const GeohashLocation &destGeohashLocation) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption");
 
-	RoadNetwork *roadNetwork = roadNetworkDatabase->getRoadNetwork(
-			destGeohashLocation);
-	LocationOnRoadNetwork locationOnRoadNetwork;
-	roadNetwork->getLocationOnRoadNetwork(destGeohashLocation.getLocation(), 0,
-			0, locationOnRoadNetwork);
-	const Graph &graph = roadNetwork->getGraph();
-	Edge &edge = locationOnRoadNetwork.edge;
-	Vertex vertexA = boost::source(edge, graph);
-	Vertex vertexB = boost::target(edge, graph);
-	double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
+    RoadNetwork *roadNetwork = roadNetworkDatabase->getRoadNetwork(
+            destGeohashLocation);
+    LocationOnRoadNetwork locationOnRoadNetwork;
+    roadNetwork->getLocationOnRoadNetwork(destGeohashLocation.getLocation(), 0,
+            0, locationOnRoadNetwork);
+    const Graph &graph = roadNetwork->getGraph();
+    Edge &edge = locationOnRoadNetwork.edge;
+    Vertex vertexA = boost::source(edge, graph);
+    Vertex vertexB = boost::target(edge, graph);
+    double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
 
-	TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption =
-			createTlvDestLocationOnRoadNetworkOption(vertexA, vertexB,
-					distanceToVertexA);
-	setTlvOption(datagram, destLocationOnRoadNetworkOption);
+    TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption = createTlvDestLocationOnRoadNetworkOption(
+            vertexA, vertexB, distanceToVertexA);
+    setTlvOption(datagram, destLocationOnRoadNetworkOption);
 }
 
 //! Calcular la longitud en octetos de una opción TLV de ubicación vial
@@ -811,45 +779,42 @@ void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(
  * @return Longitud de la opción TLV.
  */
 int RoutingProtocolBase::computeTlvOptionLength(
-		TlvDestLocationOnRoadNetworkOption *tlvOption) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::computeTlvOptionLength");
+        TlvDestLocationOnRoadNetworkOption *tlvOption) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::computeTlvOptionLength");
 
-	int vertexABytes = 2;
-	int vertexBBytes = 2;
-	int distanceToVertexABytes = 2;
-	return vertexABytes + vertexBBytes + distanceToVertexABytes;
+    int vertexABytes = 2;
+    int vertexBBytes = 2;
+    int distanceToVertexABytes = 2;
+    return vertexABytes + vertexBBytes + distanceToVertexABytes;
 }
 
 //! Crear opción TLV de vértices visitados vacía.
-TlvRoutingOption* RoutingProtocolBase::createTlvRoutingOption() const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::createTlvRoutingOption");
+TlvVisitedVerticesOption* RoutingProtocolBase::createTlvVisitedVerticesOption() const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::createTlvVisitedVerticesOption");
 
-	TlvRoutingOption *tlvOption = new TlvRoutingOption();
-	tlvOption->setVisitedVerticesArraySize(0);
-	return tlvOption;
+    TlvVisitedVerticesOption *tlvOption = new TlvVisitedVerticesOption();
+    tlvOption->setVisitedVerticesArraySize(0);
+    return tlvOption;
 }
 
 //! Agregar opción TLV de vértices visitados a un datagrama.
 /*!
  * @param datagram [in] Datagrama al que se le agregará la opción TLV.
  */
-void RoutingProtocolBase::setTlvRoutingOption(inet::Packet *datagram) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::setTlvRoutingOption");
+void RoutingProtocolBase::setTlvVisitedVerticesOption(inet::Packet *datagram) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::setTlvVisitedVerticesOption");
 
-	TlvRoutingOption *routingOption = createTlvRoutingOption();
-	setTlvOption(datagram, routingOption);
+    TlvVisitedVerticesOption *visitedVerticesOption = createTlvVisitedVerticesOption();
+    setTlvOption(datagram, visitedVerticesOption);
 }
 
 //! Calcular la longitud en octetos de una opción TLV de vértices visitados.
@@ -858,15 +823,14 @@ void RoutingProtocolBase::setTlvRoutingOption(inet::Packet *datagram) const {
  * @return Longitud de la opción TLV.
  */
 int RoutingProtocolBase::computeTlvOptionLength(
-		TlvRoutingOption *tlvOption) const {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::computeTlvOptionLength");
+        TlvVisitedVerticesOption *tlvOption) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::computeTlvOptionLength");
 
-	int visitedVerticesBytes = 2 * tlvOption->getVisitedVerticesArraySize();
-	return visitedVerticesBytes;
+    int visitedVerticesBytes = 2 * tlvOption->getVisitedVerticesArraySize();
+    return visitedVerticesBytes;
 }
 
 /*
@@ -874,34 +838,31 @@ int RoutingProtocolBase::computeTlvOptionLength(
  */
 
 void RoutingProtocolBase::handleStartOperation(
-		inet::LifecycleOperation *operation) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::handleStartOperation");
+        inet::LifecycleOperation *operation) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::handleStartOperation");
 }
 
 void RoutingProtocolBase::handleStopOperation(
-		inet::LifecycleOperation *operation) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::handleStopOperation");
+        inet::LifecycleOperation *operation) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::handleStopOperation");
 
-	cancelAndDelete(purgeNeighbouringCarsTimer);
-	neighbouringCars.clear();
+    cancelAndDelete(purgeNeighbouringCarsTimer);
+    neighbouringCars.clear();
 }
 
 void RoutingProtocolBase::handleCrashOperation(
-		inet::LifecycleOperation *operation) {
-	EV_INFO
-					<< "******************************************************************************************************************************************************************"
-					<< std::endl;
-	Enter_Method
-	("RoutingProtocolBase::handleCrashOperation");
+        inet::LifecycleOperation *operation) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolBase::handleCrashOperation");
 
-	cancelAndDelete(purgeNeighbouringCarsTimer);
-	neighbouringCars.clear();
+    cancelAndDelete(purgeNeighbouringCarsTimer);
+    neighbouringCars.clear();
 }
