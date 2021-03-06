@@ -1,7 +1,5 @@
-# Veins Proj {#manual}
+# Protocolo de enrutamiento para VANETs con nodos autoconfigurables {#manual}
 
 [TOC]
 
-Welcome to the Veins Proj user manual.
-This page is the starting point for additional documentation of the Veins Proj project.
-
+Simulación de OMNeT++ del protocolo de enrutamiento.
