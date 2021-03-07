@@ -7,4 +7,4 @@ Simulación de OMNeT++ del protoclo de enrutamiento.
 - OMNeT++ 6.0 (ver <https://omnetpp.org/>)
 - SUMO 1.8 (ver <https://www.eclipse.org/sumo/>)
 - INET 4.3 (ver <https://inet.omnetpp.org/>)
-- Veins 5.0 (ver <https://veins.car2x.org/>)
+- Veins 5.1 (ver <https://veins.car2x.org/>)
