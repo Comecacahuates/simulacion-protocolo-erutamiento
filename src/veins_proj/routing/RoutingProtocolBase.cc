@@ -179,50 +179,6 @@ void RoutingProtocolBase::processSelfMessage(omnetpp::cMessage *message) {
 }
 
 /*
- * Temporizador de limpieza de directorio de vehículos vecinos.
- */
-
-//! Programar el temporizador de limpieza del directorio de
-//! vehículos vecinos.
-void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer");
-
-    omnetpp::simtime_t nextExpirationTime = getNextNeighbouringCarExpirationTime();
-
-    EV_INFO << "Next expiration time: " << nextExpirationTime << std::endl;
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime()) {
-        if (purgeNeighbouringCarsTimer->isScheduled())
-            cancelEvent(purgeNeighbouringCarsTimer);
-
-    } else {
-        if (!purgeNeighbouringCarsTimer->isScheduled())
-            scheduleAt(nextExpirationTime, purgeNeighbouringCarsTimer);
-
-        else if (purgeNeighbouringCarsTimer->getArrivalTime()
-                != nextExpirationTime) {
-            cancelEvent(purgeNeighbouringCarsTimer);
-            scheduleAt(nextExpirationTime, purgeNeighbouringCarsTimer);
-        }
-    }
-}
-
-//! Procesar el temporizador de limpieza del directorio de
-//! vehículos vecinos.
-void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
-
-    purgeNeighbouringCars();
-    schedulePurgeNeighbouringCarsTimer();
-}
-
-/*
  * Paquetes UDP.
  */
 
@@ -395,99 +351,60 @@ void RoutingProtocolBase::showNeighbouringCars() const {
     Enter_Method
     ("RoutingProtocolBase::showNeighbouringCars");
 
-    for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
-        EV_INFO << "Address: " << neighbouringCar.first << std::endl;
-        EV_INFO << "Edge: " << neighbouringCar.second.locationOnRoadNetwork.edge
+    NeighbouringCarsConstIterator neighbouringCarsIt = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator neighbouringCarsEndIt = neighbouringCars.getMap().end();
+    while (neighbouringCarsIt != neighbouringCarsEndIt) {
+        EV_INFO << "Address: " << neighbouringCarsIt->first << std::endl;
+        EV_INFO << "Edge: "
+                << neighbouringCarsIt->second.value.locationOnRoadNetwork.edge
                 << std::endl;
         EV_INFO << "Distance to vertex A: "
-                << neighbouringCar.second.locationOnRoadNetwork.distanceToVertex1
+                << neighbouringCarsIt->second.value.locationOnRoadNetwork.distanceToVertex1
                 << std::endl;
         EV_INFO << "Distance to vertex B: "
-                << neighbouringCar.second.locationOnRoadNetwork.distanceToVertex2
+                << neighbouringCarsIt->second.value.locationOnRoadNetwork.distanceToVertex2
                 << std::endl;
     }
 }
 
-//! Elimina los registros viejos del directorio de vehículos vecinos.
-/*!
- * Se eliminan los registros cuya hora de última actualización es anterior
- * a la indicada.
- *
- * @param time [in] Hora de última actualización mínima para conservar
- * los registros.
- */
-void RoutingProtocolBase::removeOldNeighbouringCars(omnetpp::simtime_t time) {
+//! Programar el temporizador de limpieza del directorio de
+//! vehículos vecinos.
+void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolBase::removeOldNeighbouringCars");
+    ("RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer");
 
-    NeighbouringCarsIterator it = neighbouringCars.begin();
-    while (it != neighbouringCars.end())
-        if (it->second.lastUpdateTime <= time) {
-            //purgeNextHopRoutes(it->first); // Se elimina las rutas
-            neighbouringCars.erase(it++);    // Se elimina del directorio de veh������culos vecinos
+    omnetpp::simtime_t nextExpiryTime = neighbouringCars.getNextExpiryTime();
 
-        } else
-            it++;
-}
+    EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
 
-//! Obtener hora de última actualización del registro más viejo
-//! en el directorio de vehículos vecinos.
-/*!
- * @return Hora de última actualización del registro más viejo.
- */
-omnetpp::simtime_t RoutingProtocolBase::getOldestNeighbouringCarTime() const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::getOldestNeighbouringCarTime");
+    if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
+        if (purgeNeighbouringCarsTimer->isScheduled())
+            cancelEvent(purgeNeighbouringCarsTimer);
 
-    omnetpp::simtime_t oldestTime = omnetpp::SimTime::getMaxTime();
+    } else {
+        if (!purgeNeighbouringCarsTimer->isScheduled())
+            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer);
 
-    for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
-        const omnetpp::simtime_t &time = neighbouringCar.second.lastUpdateTime;
-
-        if (time < oldestTime)
-            oldestTime = time;
+        else if (purgeNeighbouringCarsTimer->getArrivalTime()
+                != nextExpiryTime) {
+            cancelEvent(purgeNeighbouringCarsTimer);
+            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer);
+        }
     }
-
-    return oldestTime;
 }
 
-//! Obtener siguiente la hora de expiración más próxima de los registros
-//! del directorio de vehículos vecinos.
-/*!
- * @return Hora de expiración más próxima.
- */
-omnetpp::simtime_t RoutingProtocolBase::getNextNeighbouringCarExpirationTime() const {
+//! Procesar el temporizador de limpieza del directorio de
+//! vehículos vecinos.
+void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolBase::getNextNeighbouringCarExpirationTime");
+    ("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
 
-    omnetpp::simtime_t oldestEntryTime = getOldestNeighbouringCarTime();
-
-    if (oldestEntryTime == omnetpp::SimTime::getMaxTime())
-        return oldestEntryTime;
-
-    else
-        return oldestEntryTime + neighbouringCarValidityTime;
-}
-
-//! Limpiar el directorio de vehículos vecinos.
-/*!
- * Elimina los registros del directorio de vehículos vecinos cuya hora
- * de expiración ya haya pasado.
- */
-void RoutingProtocolBase::purgeNeighbouringCars() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::purgeNeighbouringCars");
-
-    removeOldNeighbouringCars(omnetpp::simTime() - neighbouringCarValidityTime);
-    removeOldRoutes(omnetpp::simTime());
+    neighbouringCars.removeOldValues(omnetpp::simTime());
+    schedulePurgeNeighbouringCarsTimer();
 }
 
 //! Obtener el vehículo vecino más cercano.
@@ -509,14 +426,18 @@ inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCarAddress(
     double minDistance = std::numeric_limits<double>::infinity();
     inet::Ipv6Address closestNeighbourAddress = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
 
-    for (const NeighbouringCar &neighbouringCar : neighbouringCars) {
+    NeighbouringCarsConstIterator neighbouringCarsIt = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator neighbouringCarsEndIt = neighbouringCars.getMap().end();
+    while (neighbouringCarsIt != neighbouringCarsEndIt) {
         double distance = geohashLocation.getDistance(
-                neighbouringCar.second.geohashLocation);
+                neighbouringCarsIt->second.value.geohashLocation);
 
         if (distance < minDistance) {
             minDistance = distance;
-            closestNeighbourAddress = neighbouringCar.first;
+            closestNeighbourAddress = neighbouringCarsIt->first;
         }
+
+        neighbouringCarsIt++;
     }
 
     return closestNeighbourAddress;
@@ -807,7 +728,8 @@ TlvVisitedVerticesOption* RoutingProtocolBase::createTlvVisitedVerticesOption() 
 /*!
  * @param datagram [in] Datagrama al que se le agregará la opción TLV.
  */
-void RoutingProtocolBase::setTlvVisitedVerticesOption(inet::Packet *datagram) const {
+void RoutingProtocolBase::setTlvVisitedVerticesOption(
+        inet::Packet *datagram) const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
@@ -853,7 +775,7 @@ void RoutingProtocolBase::handleStopOperation(
     ("RoutingProtocolBase::handleStopOperation");
 
     cancelAndDelete(purgeNeighbouringCarsTimer);
-    neighbouringCars.clear();
+    neighbouringCars.getMap().clear();
 }
 
 void RoutingProtocolBase::handleCrashOperation(
@@ -864,5 +786,5 @@ void RoutingProtocolBase::handleCrashOperation(
     ("RoutingProtocolBase::handleCrashOperation");
 
     cancelAndDelete(purgeNeighbouringCarsTimer);
-    neighbouringCars.clear();
+    neighbouringCars.getMap().clear();
 }

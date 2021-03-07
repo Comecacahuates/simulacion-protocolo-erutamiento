@@ -72,12 +72,11 @@ void RoutingProtocolCar::initialize(int stage) {
          * Mensajes propios.
          */
         helloCarTimer = new omnetpp::cMessage("helloCarTimer");
-        pongTimeoutTimer = new omnetpp::cMessage("pongTimeoutTimer");
         purgeNeighbouringHostsTimer = new omnetpp::cMessage(
                 "purgeNeighbouringHostsTimer");
         purgeActiveEdgesTimer = new omnetpp::cMessage("purgeActiveEdgesTimer");
-        purgeInactiveEdgesTimer = new omnetpp::cMessage(
-                "purgeInactiveEdgesTimer");
+        purgePendingPongsTimer = new omnetpp::cMessage(
+                "purgePendingPongsTimer");
     }
 }
 
@@ -98,21 +97,21 @@ void RoutingProtocolCar::processSelfMessage(omnetpp::cMessage *message) {
     if (message == helloCarTimer)
         processHelloCarTimer();
 
-    else if (message == pongTimeoutTimer)
-        processPongTimeoutTimer();
-
     else if (message == purgeNeighbouringHostsTimer)
         processPurgeNeighbouringHostsTimer();
 
     else if (message == purgeActiveEdgesTimer)
         processPurgeActiveEdgesTimer();
 
+    else if (message == purgePendingPongsTimer)
+        processPurgePendingPongsTimer();
+
     else
         RoutingProtocolBase::processSelfMessage(message);
 }
 
 /*
- * Temporizador de transmisión de mensajes HOLA_VEHIC.
+ * Mensajes HOLA_VEHIC.
  */
 
 //! Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
@@ -134,13 +133,13 @@ void RoutingProtocolCar::processHelloCarTimer() {
     ("RoutingProtocolCar::processHelloCarTimer");
 
     const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
+    PRIMARY_ADDRESS);
     const inet::Ipv6Address &primaryMulticastAddress = addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+    PRIMARY_ADDRESS);
     const inet::Ipv6Address &secondaryUnicastAddress = addressCache->getUnicastAddress(
-            SECONDARY_ADDRESS);
+    SECONDARY_ADDRESS);
     const inet::Ipv6Address &secondaryMulticastAddress = addressCache->getMulticastAddress(
-            SECONDARY_ADDRESS);
+    SECONDARY_ADDRESS);
 
     const inet::Ipv6InterfaceData *ipv6Data = networkInterface->findProtocolData<
             inet::Ipv6InterfaceData>();
@@ -154,158 +153,6 @@ void RoutingProtocolCar::processHelloCarTimer() {
                 secondaryMulticastAddress);
 
     scheduleHelloCarTimer();
-}
-
-/*
- * Temporizador de limpieza de mensajes PONG pendientes.
- */
-
-//! Programar el temporizador de limpieza de mensajes PONG pendientes.
-void RoutingProtocolCar::schedulePongTimeoutTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::schedulePongTimeoutTimer");
-
-    scheduleAt(omnetpp::simTime() + pongTimeout, pongTimeoutTimer);
-}
-
-//! Provesar el temporizador de limpieza de mensajes PONG pendientes.
-void RoutingProtocolCar::processPongTimeoutTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::processPongTimeoutTimer");
-
-    Edge edge = mobility->getLocationOnRoadNetwork().edge;
-
-    // Eliminar la arista de las aristas activas
-    if (activeEdges.find(edge) != activeEdges.end()) {
-        activeEdges.erase(edge);
-        schedulePurgeActiveEdgesTimer();
-    }
-
-    // Enviar mensaje de estatus de arista inactiva
-}
-
-/*
- * Temporizador de limpieza del directorio de _hosts_ vecinos.
- */
-
-//! Programar el temporizador de limpieza del directorio de _hosts_ vecinos.
-void RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer");
-
-    omnetpp::simtime_t nextExpirationTime = getNextNeighbouringHostExpirationTime();
-
-    EV_INFO << "Next expiration time: " << nextExpirationTime << std::endl;
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime()) {
-        if (purgeNeighbouringHostsTimer->isScheduled())
-            cancelEvent(purgeNeighbouringHostsTimer);
-
-    } else {
-        if (!purgeNeighbouringHostsTimer->isScheduled())
-            scheduleAt(nextExpirationTime, purgeNeighbouringHostsTimer);
-
-        else if (purgeNeighbouringHostsTimer->getArrivalTime()
-                != nextExpirationTime) {
-            cancelEvent(purgeNeighbouringHostsTimer);
-            scheduleAt(nextExpirationTime, purgeNeighbouringHostsTimer);
-        }
-    }
-}
-
-//! Procesar el temporizador de limpieza del directorio de _hosts_ vecinos.
-void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::processPurgeNeighbouringHostsTimer");
-
-    purgeNeighbouringHosts();
-    schedulePurgeNeighbouringHostsTimer();
-}
-
-/*
- * Temporizador de limpieza de aristas activas.
- */
-
-//! Programar el temporizador de limpieza de aristas activas.
-void RoutingProtocolCar::schedulePurgeActiveEdgesTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::schedulePurgeActiveEdgesTimer");
-
-    omnetpp::simtime_t nextExpirationTime = getNextActiveEdgeExpirationTime();
-
-    EV_INFO << "Next expiration time: " << nextExpirationTime << std::endl;
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime()) {
-        if (purgeActiveEdgesTimer->isScheduled())
-            cancelEvent(purgeActiveEdgesTimer);
-
-    } else {
-        if (!purgeActiveEdgesTimer->isScheduled())
-            scheduleAt(nextExpirationTime, purgeActiveEdgesTimer);
-
-        else if (purgeActiveEdgesTimer->getArrivalTime()
-                != nextExpirationTime) {
-            cancelEvent(purgeActiveEdgesTimer);
-            scheduleAt(nextExpirationTime, purgeActiveEdgesTimer);
-        }
-    }
-}
-
-//! Procesar el temporizador de limpieza de aristas activas.
-void RoutingProtocolCar::processPurgeActiveEdgesTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::processPurgeActiveEdgesTimer");
-
-    purgeActiveEdges();
-    schedulePurgeActiveEdgesTimer();
-}
-
-void RoutingProtocolCar::schedulePurgeInactiveEdgesTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::schedulePurgeInactiveEdgesTimer");
-
-    omnetpp::simtime_t nextExpirationTime = getNextInactiveEdgeExpirationTime();
-
-    EV_INFO << "Next expiration time: " << nextExpirationTime << std::endl;
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime()) {
-        if (purgeInactiveEdgesTimer->isScheduled())
-            cancelEvent(purgeInactiveEdgesTimer);
-
-    } else {
-        if (!purgeInactiveEdgesTimer->isScheduled())
-            scheduleAt(nextExpirationTime, purgeInactiveEdgesTimer);
-
-        else if (purgeInactiveEdgesTimer->getArrivalTime()
-                != nextExpirationTime) {
-            cancelEvent(purgeInactiveEdgesTimer);
-            scheduleAt(nextExpirationTime, purgeInactiveEdgesTimer);
-        }
-    }
-}
-
-void RoutingProtocolCar::processPurgeInactiveEdgesTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::processPurgeInactiveEdgesTimer");
-
-    purgeInactiveEdges();
-    schedulePurgeInactiveEdgesTimer();
 }
 
 /*
@@ -438,14 +285,15 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
     EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
-    neighbouringCars[carAddress] = { omnetpp::simTime(), geohashLocation, speed,
+    neighbouringCars.getMap()[carAddress].expiryTime = omnetpp::simTime();
+    neighbouringCars.getMap()[carAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
     neighbouringCarsByEdge.insert(NeighbouringCarByEdge(edge, carAddress));
 
     addRoute(carAddress, 128, carAddress, 1,
             omnetpp::simTime() + neighbouringCarValidityTime);
 
-    EV_INFO << "Number of car neighbours: " << neighbouringCars.size()
+    EV_INFO << "Number of car neighbours: " << neighbouringCars.getMap().size()
             << std::endl;
 
     showRoutes();
@@ -475,13 +323,14 @@ void RoutingProtocolCar::processHelloHost(
     EV_INFO << "                : " << geohashLocation.getGeohashString()
             << std::endl;
 
-    neighbouringHosts[hostAddress] = { omnetpp::simTime(), geohashLocation };
+    neighbouringHosts.getMap()[hostAddress] = { omnetpp::simTime(),
+            geohashLocation };
 
     addRoute(hostAddress, 128, hostAddress, 1,
             omnetpp::simTime() + neighbouringHostValidityTime);
 
-    EV_INFO << "Number of host neighbours: " << neighbouringHosts.size()
-            << std::endl;
+    EV_INFO << "Number of host neighbours: "
+            << neighbouringHosts.getMap().size() << std::endl;
 
     showRoutes();
 
@@ -502,8 +351,8 @@ void RoutingProtocolCar::processHelloHost(
  * @return Mensaje PING.
  */
 const inet::Ptr<Ping> RoutingProtocolCar::createPing(
-        const inet::Ipv6Address &carAddress, Vertex vertex1,
-        Vertex vertex2) const {
+        const inet::Ipv6Address &carAddress, Vertex srcVertex,
+        Vertex destVertex) const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
@@ -512,8 +361,8 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
     const inet::Ptr<Ping> &ping = inet::makeShared<Ping>();
 
     EV_INFO << "Address: " << carAddress.str() << std::endl;
-    EV_INFO << "Target vertex: " << vertex2 << std::endl;
-    EV_INFO << "Source vertex: " << vertex1 << std::endl;
+    EV_INFO << "Target vertex: " << destVertex << std::endl;
+    EV_INFO << "Source vertex: " << srcVertex << std::endl;
 
     int neighbouringCarsCount = getNeighbouringCarsOnEdgeCount();
 
@@ -522,7 +371,7 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
         return nullptr;
 
     inet::Ipv6Address nextHopAddress = getRandomNeighbouringCarAddressAheadOnEdge(
-            vertex2);
+            destVertex);
 
     EV_INFO << "Next hop: " << nextHopAddress.str() << std::endl;
 
@@ -530,8 +379,8 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
         return nullptr;
 
     ping->setAddress(carAddress);
-    ping->setVertex1(vertex1);
-    ping->setVertex2(vertex2);
+    ping->setSrcVertex(srcVertex);
+    ping->setDestVertex(destVertex);
 
     return ping;
 }
@@ -593,21 +442,21 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
 
     // Obtener datos del mensaje PING
     const inet::Ipv6Address &pingAddress = ping->getAddress();
-    Vertex pingVertex1 = (Vertex) ping->getVertex1();
-    Vertex pingVertex2 = (Vertex) ping->getVertex2();
-    Edge pingEdge = boost::edge(pingVertex1, pingVertex2, graph).first;
+    Vertex pingSrcVertex = (Vertex) ping->getSrcVertex();
+    Vertex pingDestVertex = (Vertex) ping->getDestVertex();
+    Edge pingEdge = boost::edge(pingSrcVertex, pingDestVertex, graph).first;
 
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
 
     EV_INFO << "Address: " << pingAddress.str() << std::endl;
     EV_INFO << "Edge: " << pingEdge << std::endl;
-    EV_INFO << "Target vertex: " << pingVertex2 << std::endl;
+    EV_INFO << "Target vertex: " << pingDestVertex << std::endl;
 
     const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
+    PRIMARY_ADDRESS);
     const inet::Ipv6Address &primaryMulticastAddress = addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+    PRIMARY_ADDRESS);
 
     // Si el mensaje PING no corresponde a la arista donde circula el vehículo, se descarta
     if (pingEdge != edge) {
@@ -619,20 +468,20 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
     if (interfaceTable->isLocalAddress(
             inet::Ipv6Address::UNSPECIFIED_ADDRESS)) {    // TODO Verificar si el vehículo se encuentra en el vértice 2
         // Si se encuentra en el vértice de destino, se responde con un mensaje PONG
-        if (inVertexProximityRadius(locationOnRoadNetwork, pingVertex2,
+        if (inVertexProximityRadius(locationOnRoadNetwork, pingDestVertex,
                 graph)) {
             EV_INFO << "PONG" << std::endl;
 
             // Responder con mensaje PONG
             inet::Ipv6Address newNextHopAddress = getNeighbouringCarAddressOnEdgeClosestToVertex(
-                    pingVertex1);
+                    pingSrcVertex);
 
             const inet::Ptr<Pong> pong = createPong(pingAddress, false,
-                    pingVertex1, pingVertex2);
+                    pingSrcVertex, pingDestVertex);
             sendPong(pong, newNextHopAddress);
 
             // Agregar la arista a la lista de aristas activas
-            activeEdges[edge] = omnetpp::simTime();
+            activeEdges.getMap()[edge].expiryTime = omnetpp::simTime();
             schedulePurgeActiveEdgesTimer();
 
             // Enviar mensaje de estatus de arista activa
@@ -640,7 +489,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
             // Si no se encuentra en el vértice de destino
         } else {
             inet::Ipv6Address newNextHopAddress = getRandomNeighbouringCarAddressAheadOnEdge(
-                    pingVertex2);
+                    pingDestVertex);
 
             // Se env������a a la direcci������n multicast
             ASSERT(primaryUnicastAddress.matches(pingAddress, 64));
@@ -664,8 +513,8 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
  * @return
  */
 const inet::Ptr<Pong> RoutingProtocolCar::createPong(
-        const inet::Ipv6Address &destAddress, bool E, Vertex vertex1,
-        Vertex vertex2) const {
+        const inet::Ipv6Address &destAddress, bool E, Vertex srcVertex,
+        Vertex destVertex) const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
@@ -675,13 +524,13 @@ const inet::Ptr<Pong> RoutingProtocolCar::createPong(
 
     EV_INFO << "Destination address: " << destAddress.str() << std::endl;
     EV_INFO << "N: " << E << std::endl;
-    EV_INFO << "Target vertex: " << vertex1 << std::endl;
-    EV_INFO << "Source vertex: " << vertex2 << std::endl;
+    EV_INFO << "Target vertex: " << srcVertex << std::endl;
+    EV_INFO << "Source vertex: " << destVertex << std::endl;
 
     pong->setE(E);
     pong->setDestAddress(destAddress);
-    pong->setVertex1(vertex1);
-    pong->setVertex2(vertex2);
+    pong->setSrcVertex(srcVertex);
+    pong->setDestVertex(destVertex);
 
     return pong;
 }
@@ -742,29 +591,29 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
 
     const inet::Ipv6Address &destAddress = pong->getDestAddress();
     bool E = pong->getE();
-    Vertex vertex1 = (Vertex) pong->getVertex1();
-    Vertex vertexB = (Vertex) pong->getVertex2();
+    Vertex srcVertex = (Vertex) pong->getSrcVertex();
+    Vertex destVertex = (Vertex) pong->getDestVertex();
 
     const Graph &graph = mobility->getRoadNetwork()->getGraph();
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
-    Edge edge = boost::edge(vertex1, vertexB, graph).first;
+    Edge edge = boost::edge(srcVertex, destVertex, graph).first;
 
     EV_INFO << "Destination address: " << destAddress.str() << std::endl;
     EV_INFO << "E: " << E << std::endl;
     EV_INFO << "Edge: " << edge;
-    EV_INFO << "Target vertex: " << vertex1 << std::endl;
+    EV_INFO << "Target vertex: " << srcVertex << std::endl;
 
     // Si llegó al vehículo que originó el mensaje PING
     if (interfaceTable->isLocalAddress(destAddress)) {
         // Si ya se terminó el tiempo de espera, se ignora el mensaje
-        if (!pongTimeoutTimer->isScheduled())
+        if (pendingPongs.getMap().find(edge) == pendingPongs.getMap().end())
             return;
 
         // Si todavía no terminaba el tiempo de espera, se cancela
-        cancelEvent(pongTimeoutTimer);
+        pendingPongs.getMap().erase(edge);
 
         // Agregar la arista a la lista de aristas activas
-        activeEdges[edge] = omnetpp::simTime();
+        activeEdges.getMap()[edge].expiryTime = omnetpp::simTime();
         schedulePurgeActiveEdgesTimer();
 
         // Enviar mensaje de estatus de la arista activa
@@ -773,13 +622,14 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
         inet::Ipv6Address newNextHopAddress;
 
         // Si el destino está en el directorio de vecinos, se selecciona como siguiente salto
-        if (neighbouringCars.find(destAddress) != neighbouringCars.end())
+        if (neighbouringCars.getMap().find(destAddress)
+                != neighbouringCars.getMap().end())
             newNextHopAddress = destAddress;
 
         // Si no, se selecciona un nuevo siguiente salto
         else
             newNextHopAddress = getNeighbouringCarAddressOnEdgeClosestToVertex(
-                    vertex1);
+                    srcVertex);
 
         sendPong(pong, newNextHopAddress);
     }
@@ -788,44 +638,6 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
 /*
  * Directorio de vehículos vecinos.
  */
-
-//! Eliminar los registros viejos del directorio de vehículos vecinos,
-//! además de las rutas que los incluyen.
-/*!
- * Se eliminan los registros cuya hora de última actualización es anterior
- * a la indicada. Además, se eliminan las rutas que incluyen a estos
- * vehículos.
- *
- * @param time [in] Hora de última actualización mínima para conservar
- * los registros.
- */
-void RoutingProtocolCar::removeOldNeighbouringCars(omnetpp::simtime_t time) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::removeOldNeighbouringCars");
-
-    NeighbouringCarsIterator it = neighbouringCars.begin();
-    while (it != neighbouringCars.end())
-        if (it->second.lastUpdateTime <= time) {
-            //purgeNextHopRoutes(it->first); // Se elimina las rutas
-            neighbouringCars.erase(it++);    // Se elimina del directorio de vehículos vecinos
-
-            inet::Ipv6Address neighbouringCarAddress = it->first;
-            Edge &edge = it->second.locationOnRoadNetwork.edge;
-            NeighbouringCarsByEdgeIterator neighbouringCarIt = neighbouringCarsByEdge.lower_bound(
-                    edge);
-            NeighbouringCarsByEdgeIterator neighbouringCarEndIt = neighbouringCarsByEdge.upper_bound(
-                    edge);
-            while (neighbouringCarIt != neighbouringCarEndIt) {
-                if (neighbouringCarIt->second == neighbouringCarAddress)
-                    neighbouringCarsByEdge.erase(neighbouringCarIt);
-                neighbouringCarIt++;
-            }
-
-        } else
-            it++;
-}
 
 //! Obtener vehículo vecino aleatorio en la misma arista.
 /*!
@@ -861,9 +673,10 @@ inet::Ipv6Address RoutingProtocolCar::getRandomNeighbouringCarAddressAheadOnEdge
             edge);
     while (neighbouringCarIt != neighbouringCarEndIt) {
         inet::Ipv6Address neighbouringCarAddress = neighbouringCarIt->second;
-        NeighbouringCarsConstIterator neighbouringCarIt = neighbouringCars.find(
-                neighbouringCarAddress);
-        /*        if (neighbouringCarIt != neighbouringCars.end()) {
+        // TODO Arreglar
+        /*const NeighbouringCarsConstIterator neighbouringCarIt = neighbouringCars.find(
+         neighbouringCarAddress);
+         /*        if (neighbouringCarIt != neighbouringCars.end()) {
          LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCarIt->second.locationOnRoadNetwork;
          double neighbouringCarDistanceToTargetVertex = getDistanceToVertex(targetVertex, locationOnRoadNetwork, graph);
          ASSERT(neighbouringCarDistanceToTargetVertex != std::numeric_limits<double>::infinity());
@@ -874,7 +687,7 @@ inet::Ipv6Address RoutingProtocolCar::getRandomNeighbouringCarAddressAheadOnEdge
 
     }
 
-    // Se devuelve una direcci������n aleatoria
+    // Se devuelve una dirección aleatoria
     if (addresses.size() > 0)
         return addresses[rand() % addresses.size()];
 
@@ -915,8 +728,8 @@ inet::Ipv6Address RoutingProtocolCar::getNeighbouringCarAddressOnEdgeClosestToVe
             edge);
     while (neighbouringCarIt != neighbouringCarEndIt) {
         const inet::Ipv6Address neighbouringCarAddress = neighbouringCarIt->second;
-        const NeighbouringCarEntry &neighbouringCar = neighbouringCars[neighbouringCarAddress];
-        const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.locationOnRoadNetwork;
+        const NeighbouringCar &neighbouringCar = neighbouringCars.getMap()[neighbouringCarAddress];
+        const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.value.locationOnRoadNetwork;
         double neighbouringCarDistanceToTargetVertex = getDistanceToVertex(
                 locationOnRoadNetwork, vertex, graph);
         ASSERT(
@@ -951,16 +764,26 @@ int RoutingProtocolCar::getNeighbouringCarsOnEdgeCount() const {
     showStatus();
     showNeighbouringCars();
 
-    for (const NeighbouringCar &neighbouringCar : neighbouringCars)
-        if (neighbouringCar.second.locationOnRoadNetwork.edge == edge)
+    NeighbouringCarsConstIterator neighbouringCarsIt = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator neighbouringCarsEndIt = neighbouringCars.getMap().end();
+    while (neighbouringCarsIt != neighbouringCarsEndIt) {
+        if (neighbouringCarsIt->second.value.locationOnRoadNetwork.edge == edge)
             n++;
+
+        neighbouringCarsIt++;
+    }
 
     return n;
 }
 
+//! Procesar el temporizador de limpieza del directorio de
+//! vehículos vecinos.
+void RoutingProtocolCar::processPurgeNeighbouringCarsTimer() {
+    // TODO Implementar para que se eliminen las rutas de los vehículos vecinos que se eliminaron.
+}
 
 /*
- * Directorio de hosts vecinos.
+ * Directorio de _hosts_ vecinos.
  */
 
 //! Imrpimir el directorio de _hosts_ vecinos.
@@ -972,87 +795,42 @@ void RoutingProtocolCar::showNeighbouringHosts() const {
 
 }
 
-//! Eliminar los registros viejos del directorio de _hosts_ vecinos.
-/*!
- * Se eliminan los registros cuya hora de última actualización es anterior
- * a la indicada.
- *
- * @param time [in] Hora de última actualización mínima para conservar
- * los registros.
- */
-void RoutingProtocolCar::removeOldNeighbouringHosts(omnetpp::simtime_t time) {
+//! Programar el temporizador de limpieza del directorio de _hosts_ vecinos.
+void RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::removeOldNeighbouringHosts");
+    ("RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer");
 
-    NeighbouringHostsIterator it = neighbouringHosts.begin();
-    while (it != neighbouringHosts.end())
-        if (it->second.lastUpdateTime <= time) {
-            //purgeNextHopRoutes(it->first);
-            neighbouringHosts.erase(it++);
+    omnetpp::simtime_t nextExpiryTime = neighbouringHosts.getNextExpiryTime();
 
-        } else
-            it++;
-}
+    EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
 
-//! Obtener la hora de última actualización del registro más viejo
-//! en el directorio de _hosts_ vecinos.
-/*!
- * @return Hora de última actualización del registro más viejo.
- */
-omnetpp::simtime_t RoutingProtocolCar::getOldestNeighbouringHostTime() const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::getOldestNeighbouringHostTime");
+    if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
+        if (purgeNeighbouringHostsTimer->isScheduled())
+            cancelEvent(purgeNeighbouringHostsTimer);
 
-    omnetpp::simtime_t oldestUpdateTime = omnetpp::SimTime::getMaxTime();
+    } else {
+        if (!purgeNeighbouringHostsTimer->isScheduled())
+            scheduleAt(nextExpiryTime, purgeNeighbouringHostsTimer);
 
-    for (const NeighbouringHost &neighbouringHost : neighbouringHosts) {
-        const omnetpp::simtime_t &time = neighbouringHost.second.lastUpdateTime;
-
-        if (time < oldestUpdateTime)
-            oldestUpdateTime = time;
+        else if (purgeNeighbouringHostsTimer->getArrivalTime()
+                != nextExpiryTime) {
+            cancelEvent(purgeNeighbouringHostsTimer);
+            scheduleAt(nextExpiryTime, purgeNeighbouringHostsTimer);
+        }
     }
-
-    return oldestUpdateTime;
 }
 
-//! Obtener la siguiente hora de expiración más proxima a expirar
-//! de los registros del directorio de _hosts_ vecinos.
-/*!
- * @return Hora de expiración más próxima.
- */
-omnetpp::simtime_t RoutingProtocolCar::getNextNeighbouringHostExpirationTime() const {
+//! Procesar el temporizador de limpieza del directorio de _hosts_ vecinos.
+void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::getNextNeighbouringHostExpirationTime");
+    ("RoutingProtocolCar::processPurgeNeighbouringHostsTimer");
 
-    omnetpp::simtime_t nextExpirationTime = getOldestNeighbouringHostTime();
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime())
-        return nextExpirationTime;
-
-    else
-        return nextExpirationTime + neighbouringHostValidityTime;
-}
-
-//! Limpiar el directorio de _hosts_ vecinos.
-/*!
- * Elimina los registros del directorio de _hosts_ vecinos cuya hora
- * de expiración ya haya pasado.
- */
-void RoutingProtocolCar::purgeNeighbouringHosts() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::purgeNeighbouringHosts");
-
-    removeOldNeighbouringHosts(
-            omnetpp::simTime() - neighbouringHostValidityTime);
-    removeOldRoutes(omnetpp::simTime());
+    neighbouringHosts.removeOldValues(omnetpp::simTime());
+    schedulePurgeNeighbouringHostsTimer();
 }
 
 /*
@@ -1068,151 +846,141 @@ void RoutingProtocolCar::showActiveEdges() const {
 
 }
 
-//! Eliminar los registros viejos de aristas activas.
-/*!
- * Se eliminan los registros cuya hora de expiración ya haya pasado.
- *
- * @param time [in] Hora de expiración mínima para conservar los registros.
- */
-void RoutingProtocolCar::removeOldActiveEdges(omnetpp::simtime_t time) {
+//! Programar el temporizador de limpieza de aristas activas.
+void RoutingProtocolCar::schedulePurgeActiveEdgesTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::removeOldActiveEdges");
+    ("RoutingProtocolCar::schedulePurgeActiveEdgesTimer");
 
-    ActiveEdgesIterator it = activeEdges.begin();
-    while (it != activeEdges.end())
-        if (it->second <= time)
-            activeEdges.erase(it++);
+    omnetpp::simtime_t nextExpiryTime = activeEdges.getNextExpiryTime();
 
-        else
-            it++;
-}
+    EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
 
-//! Obtener la hora de expiración del registro de aristas activas
-//! más viejo.
-/*!
- * @return Hora de expiración del registro más viejo.
- */
-omnetpp::simtime_t RoutingProtocolCar::getOldestActiveEdgeExpirationTime() const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::getOldestActiveEdgeExpirationTime");
+    if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
+        if (purgeActiveEdgesTimer->isScheduled())
+            cancelEvent(purgeActiveEdgesTimer);
 
-    omnetpp::simtime_t oldestExpirationTime = omnetpp::SimTime::getMaxTime();
+    } else {
+        if (!purgeActiveEdgesTimer->isScheduled())
+            scheduleAt(nextExpiryTime, purgeActiveEdgesTimer);
 
-    for (const ActiveEdge &activeEdge : activeEdges) {
-        const omnetpp::simtime_t &time = activeEdge.second;
-
-        if (time < oldestExpirationTime)
-            oldestExpirationTime = time;
+        else if (purgeActiveEdgesTimer->getArrivalTime() != nextExpiryTime) {
+            cancelEvent(purgeActiveEdgesTimer);
+            scheduleAt(nextExpiryTime, purgeActiveEdgesTimer);
+        }
     }
-
-    return oldestExpirationTime;
 }
 
-//! Obtener la siguiente hora de expiración más próxima a expirar
-//! de los registros de aristas activas.
-/*!
- * @return Hora de expiración más próxima.
- */
-omnetpp::simtime_t RoutingProtocolCar::getNextActiveEdgeExpirationTime() const {
+//! Procesar el temporizador de limpieza de aristas activas.
+void RoutingProtocolCar::processPurgeActiveEdgesTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::getNextActiveEdgeExpirationTime");
+    ("RoutingProtocolCar::processPurgeActiveEdgesTimer");
 
-    omnetpp::simtime_t nextExpirationTime = getOldestActiveEdgeExpirationTime();
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime())
-        return nextExpirationTime;
-
-    else
-        return nextExpirationTime + activeEdgeValidityTime;
-}
-
-//! Limpiar las aristas activas.
-/*!
- * Elimina los registro de aristas activas cuya hora de expiración
- * ya haya pasado.
- */
-void RoutingProtocolCar::purgeActiveEdges() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::purgeActiveEdges");
-
-    removeOldActiveEdges(omnetpp::simTime() - activeEdgeValidityTime);
+    activeEdges.removeOldValues(omnetpp::simTime());
+    schedulePurgeActiveEdgesTimer();
 }
 
 /*
- * TODO Revisar si hace falta.
+ * Datagramas demorados.
  */
-void RoutingProtocolCar::removeOldInactiveEdges(omnetpp::simtime_t time) {
+
+//! Imprimir los datagramas demorados.
+void RoutingProtocolCar::showDelayedDatagrams() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::removeOldInactiveEdges");
+    ("RoutingProtocolCar::showDelayedDatagrams");
 
-    InactiveEdgesIterator it = inactiveEdges.begin();
-    while (it != inactiveEdges.end())
-        if (it->second <= time)
-            inactiveEdges.erase(it++);
-
-        else
-            it++;
 }
 
-/*
- * TODO Revisar si hace falta.
- */
-omnetpp::simtime_t RoutingProtocolCar::getOldestInactiveEdgeTime() const {
+//! Programar el temporizador de limpieza de datagramas demorados.
+void RoutingProtocolCar::schedulePurgeDelayedDatagramsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::getOldestInactiveEdgeTime");
+    ("RoutingProtocolCar::schedulePurgeDelayedDatagramsTimer");
 
-    omnetpp::simtime_t oldestUpdateTime = omnetpp::SimTime::getMaxTime();
+    omnetpp::simtime_t nextExpiryTime = delayedDatagrams.getNextExpiryTime();
 
-    for (const InactiveEdge &inactiveEdge : inactiveEdges) {
-        const omnetpp::simtime_t &time = inactiveEdge.second;
+    EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
 
-        if (time < oldestUpdateTime)
-            oldestUpdateTime = time;
+    if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
+        if (purgeDelayedDatagramsTimer->isScheduled())
+            cancelEvent(purgeDelayedDatagramsTimer);
+
+    } else {
+        if (!purgeDelayedDatagramsTimer->isScheduled())
+            scheduleAt(nextExpiryTime, purgeDelayedDatagramsTimer);
+
+        else if (purgeDelayedDatagramsTimer->getArrivalTime() != nextExpiryTime) {
+            cancelEvent(purgeDelayedDatagramsTimer);
+            scheduleAt(nextExpiryTime, purgeDelayedDatagramsTimer);
+        }
     }
-
-    return oldestUpdateTime;
 }
 
-/*
- * TODO Revisar si hace falta.
- */
-omnetpp::simtime_t RoutingProtocolCar::getNextInactiveEdgeExpirationTime() const {
+//! Procesar el temporizador de limpieza de datagramas demorados.
+void RoutingProtocolCar::processPurgeDelayedDatagramsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::getNextInactiveEdgeExpirationTime");
+    ("RoutingProtocolCar::processPurgeDelayedDatagramsTimer");
 
-    omnetpp::simtime_t nextExpirationTime = getOldestInactiveEdgeTime();
-
-    if (nextExpirationTime == omnetpp::SimTime::getMaxTime())
-        return nextExpirationTime;
-
-    else
-        return nextExpirationTime + inactiveEdgeValidityTime;
+    delayedDatagrams.removeOldValues(omnetpp::simTime());
+    schedulePurgeDelayedDatagramsTimer();
 }
 
 /*
- * TODO Revisar si hace falta.
+ * Mensajes PONG pendientes.
  */
-void RoutingProtocolCar::purgeInactiveEdges() {
+
+//! Imprimir los mensajes PONG pendientes.
+void RoutingProtocolCar::showPendingPongs() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::inactiveEdgeValidityTime");
+    ("RoutingProtocolCar::showPendingPongs");
 
-    removeOldInactiveEdges(omnetpp::simTime() - activeEdgeValidityTime);
+}
+
+//! Programar el temporizador de limpieza de mensajes PONG pendientes.
+void RoutingProtocolCar::schedulePurgePendingPongsTimer() {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolCar::schedulePurgePendingPongsTimer");
+
+    omnetpp::simtime_t nextExpiryTime = pendingPongs.getNextExpiryTime();
+
+    EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
+
+    if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
+        if (purgePendingPongsTimer->isScheduled())
+            cancelEvent(purgePendingPongsTimer);
+
+    } else {
+        if (!purgePendingPongsTimer->isScheduled())
+            scheduleAt(nextExpiryTime, purgePendingPongsTimer);
+
+        else if (purgePendingPongsTimer->getArrivalTime() != nextExpiryTime) {
+            cancelEvent(purgePendingPongsTimer);
+            scheduleAt(nextExpiryTime, purgePendingPongsTimer);
+        }
+    }
+}
+
+//! Procesar el temporizador de limpieza de mensajes PONG pendientes.
+void RoutingProtocolCar::processPurgePendingPongsTimer() {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolCar::processPurgePendingPongsTimer");
+
+    pendingPongs.removeOldValues(omnetpp::simTime());
+    schedulePurgePendingPongsTimer();
 }
 
 /*
@@ -1258,15 +1026,15 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
     const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
     const Graph &graph = roadNetwork->getGraph();
 
-    // Se obtiene la ubicaci��n vial del veh��culo
+// Se obtiene la ubicación vial del vehículo
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
 
     /*********************************************************************************
      * Obtener vértices visitados
      *********************************************************************************/
-    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<TlvVisitedVerticesOption>(
-            datagram);
+    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
+            TlvVisitedVerticesOption>(datagram);
     ASSERT(visitedVerticesOption != nullptr);
     int numVisitedVertices = visitedVerticesOption->getVisitedVerticesArraySize();
     VertexSet visitedVertices;
@@ -1276,11 +1044,12 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
     /*********************************************************************************
      * Obtener aristas inactivas
      *********************************************************************************/
-    int numActiveEdges = this->activeEdges.size();
-    ActiveEdgesConstIterator activeEdgeIt = this->activeEdges.begin();
+    int numActiveEdges = this->activeEdges.getMap().size();
+    ActiveEdgesConstIterator activeEdgeIt = this->activeEdges.getMap().begin();
     EdgeSet activeEdges;
     for (int i = 0;
-            i < numActiveEdges && activeEdgeIt != this->activeEdges.end();
+            i < numActiveEdges
+                    && activeEdgeIt != this->activeEdges.getMap().end();
             i++, activeEdgeIt++)
         activeEdges.insert(activeEdgeIt->first);
 
@@ -1295,11 +1064,11 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
      *********************************************************************************/
     Vertex destVertex = getLocalDestVertex(datagram, shortestPath);
 
-    // Se obtiene la ruta m��s corta al vértice de destino
+// Se obtiene la ruta m��s corta al vértice de destino
     VertexVector shortestPathToDestVertex = shortestPath.getShortestPathToVertex(
             destVertex, graph);
 
-    // Se busca el siguiente salto
+// Se busca el siguiente salto
     inet::Ipv6Address nextHopAddress = findNextHop(shortestPathToDestVertex,
             shortestPath);
 
@@ -1329,7 +1098,7 @@ bool RoutingProtocolCar::validateHopByHopOptionsHeader(
     Enter_Method
     ("RoutingProtocolCar::validateHopByHopOptionsHeader");
 
-    // Se obtiene la ubicación de destino del datagrama
+// Se obtiene la ubicación de destino del datagrama
     const TlvDestGeohashLocationOption *destGeohashLocationOption = findTlvOption<
             TlvDestGeohashLocationOption>(datagram);
 
@@ -1339,7 +1108,7 @@ bool RoutingProtocolCar::validateHopByHopOptionsHeader(
     GeohashLocation destGeohashLocation(destGeohashLocationOption->getGeohash(),
             12);
 
-    // Si el destino está en la misma región Geohash
+// Si el destino está en la misma región Geohash
     const GeohashLocation &geohashRegion = mobility->getRoadNetwork()->getGeohashRegion();
     if (geohashRegion.contains(destGeohashLocation)) {
         // Si el datagrama no incluye la opción de ubicación vial del destino, se agrega
@@ -1351,9 +1120,9 @@ bool RoutingProtocolCar::validateHopByHopOptionsHeader(
         }
     }
 
-    // Si el datagrama no incluye la opción de vértices visitados, se agrega
-    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<TlvVisitedVerticesOption>(
-            datagram);
+// Si el datagrama no incluye la opción de vértices visitados, se agrega
+    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
+            TlvVisitedVerticesOption>(datagram);
     if (visitedVerticesOption == nullptr) {
         setTlvVisitedVerticesOption(datagram);
     }
@@ -1378,8 +1147,8 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
             TlvDestGeohashLocationOption>(datagram);
     ASSERT(destGeohashLocationOption != nullptr);
 
-    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<TlvVisitedVerticesOption>(
-            datagram);
+    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
+            TlvVisitedVerticesOption>(datagram);
     ASSERT(visitedVerticesOption != nullptr);
 
     GeohashLocation destGeohashLocation(destGeohashLocationOption->getGeohash(),
@@ -1389,7 +1158,7 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
 
     Vertex destVertex;
 
-    // Si el destino se encuentra en la misma subred
+// Si el destino se encuentra en la misma subred
     if (geohashRegion.contains(destGeohashLocation)) {
         const TlvDestLocationOnRoadNetworkOption *locationOnRoadNetworkOption = findTlvOption<
                 TlvDestLocationOnRoadNetworkOption>(datagram);
@@ -1473,7 +1242,7 @@ VertexSet RoutingProtocolCar::getVisitedVertices(
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::getUnavailableVertices");
+    ("RoutingProtocolCar::getVisitedVertices");
 
     VertexSet visitedVertices;
     Vertex visitedVertex;
@@ -1484,40 +1253,6 @@ VertexSet RoutingProtocolCar::getVisitedVertices(
     }
 
     return visitedVertices;
-}
-
-/*
- * TODO Revisar si hace falta.
- */
-VertexVector RoutingProtocolCar::getUnavailableVertices(
-        TlvVisitedVerticesOption *visitedVerticesOption) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::getUnavailableVertices");
-
-    const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
-    const Graph &graph = roadNetwork->getGraph();
-    int numVisitedVertices = visitedVerticesOption->getVisitedVerticesArraySize();    // Número de vértices que el paquete ha visitado
-    int numInactiveEdges = inactiveEdges.size();    // Número de aristas inactivas
-    VertexVector unavailableVertices(numVisitedVertices + numInactiveEdges);
-
-    // Se agregan los vértices que el paquete ha visitado
-    VertexVectorIterator it = unavailableVertices.begin();
-    for (int i = 0; i < numVisitedVertices; i++) {
-        *it = (Vertex) visitedVerticesOption->getVisitedVertices(i);
-        it++;
-    }
-
-    // Se agregan los vértices de las aristas inactivas
-    InactiveEdgesConstIterator inactiveEdgesIt = inactiveEdges.begin();
-    while (inactiveEdgesIt != inactiveEdges.end()) {
-        *it = boost::target(inactiveEdgesIt->first, graph);
-        inactiveEdgesIt++;
-        it++;
-    }
-
-    return unavailableVertices;
 }
 
 //! Obtener el vértice de destino.
@@ -1541,7 +1276,7 @@ Vertex RoutingProtocolCar::getDestVertex(
     Vertex destVertexB = boost::target(destEdge, graph);
     Vertex destVertex;
 
-    // Si el destino está en otra subred
+// Si el destino está en otra subred
     if (!roadNetwork->getGeohashRegion().contains(destGeohashLocation)) {
         const GeohashLocation &geohashLocation = roadNetwork->getGeohashRegion();
         const GeographicLib::GeoCoords &A = mobility->getLocation();
@@ -1631,7 +1366,7 @@ EdgeVector RoutingProtocolCar::getReachableEdges(
     VertexVectorConstIterator vertexIt = shortestPathToDestVertex.begin();
     VertexVectorConstIterator vertexEndIt = shortestPathToDestVertex.end();
 
-    // Se agrega la primera arista
+// Se agrega la primera arista
     Vertex vertexA = *vertexIt++;
     Vertex vertexB = *vertexIt++;
     Edge edge = boost::edge(vertexA, vertexB, graph).first;
@@ -1694,7 +1429,7 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
     Vertex vertexB;
     inet::Ipv6Address nextHopAddress;
 
-    // Si hay ������nicamente una arista alcanzable
+    // Si hay únicamente una arista alcanzable
     if (reachableEdges.size() == 1) {
         edge = reachableEdges[0];
         vertexB = boost::target(edge, graph);
@@ -1713,7 +1448,7 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
         }
     }
 
-    // Mientras no se encuentre un vehículo vecino en la arista
+// Mientras no se encuentre un vehículo vecino en la arista
     while (neighbouringCarsByEdge.find(*edgeIt) == neighbouringCarsByEdge.end())
         // Se obtiene la siguiente arista
         edgeIt--;
@@ -1732,9 +1467,9 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
 
     while (neighbouringCarIt != neighbouringCarEndIt) {
         const inet::Ipv6Address &neighbouringCarAddress = neighbouringCarIt->second;
-        const NeighbouringCarEntry &neighbouringCar = neighbouringCars.at(
+        const NeighbouringCar &neighbouringCar = neighbouringCars.getMap().at(
                 neighbouringCarAddress);
-        const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.locationOnRoadNetwork;
+        const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.value.locationOnRoadNetwork;
         double neighbouringCarDistanceToVertexB = getDistanceToVertex(
                 locationOnRoadNetwork, vertexB, graph);
 
@@ -1773,13 +1508,13 @@ inet::Ipv6Address RoutingProtocolCar::findNeighbourInNeighbourinRegion(
     Enter_Method
     ("RoutingProtocolCar::findNeighbourInNeighbourinRegion");
 
-    NeighbouringCarsConstIterator it = neighbouringCars.begin();
-    NeighbouringCarsConstIterator endIt = neighbouringCars.end();
+    NeighbouringCarsConstIterator neighbouringCarsIt = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator neighbouringCarsEndIt = neighbouringCars.getMap().end();
 
-    while (it != endIt) {
-        const GeohashLocation &neighbouringCarGeohashLocation = it->second.geohashLocation;
+    while (neighbouringCarsIt != neighbouringCarsEndIt) {
+        const GeohashLocation &neighbouringCarGeohashLocation = neighbouringCarsIt->second.value.geohashLocation;
         if (neighbouringGeohashRegion.contains(neighbouringCarGeohashLocation))
-            return it->first;
+            return neighbouringCarsIt->first;
     }
 
     return inet::Ipv6Address::UNSPECIFIED_ADDRESS;
@@ -1829,7 +1564,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
             || !destAddress.isSiteLocal() || destAddress.isMulticast())
         return inet::INetfilter::IHook::ACCEPT;
 
-    //return routeDatagram(datagram, destAddress);
+//return routeDatagram(datagram, destAddress);
     return inet::INetfilter::IHook::ACCEPT;
 }
 
@@ -1876,11 +1611,12 @@ void RoutingProtocolCar::handleStopOperation(
 
     RoutingProtocolBase::handleStopOperation(operation);
     cancelAndDelete(helloCarTimer);
-    cancelAndDelete(pongTimeoutTimer);
     cancelAndDelete(purgeNeighbouringHostsTimer);
     cancelAndDelete(purgeActiveEdgesTimer);
-    neighbouringHosts.clear();
-    activeEdges.clear();
+    cancelAndDelete (purgeDelayedDatagramsTimer);
+    cancelAndDelete (purgePendingPongsTimer);
+    neighbouringHosts.getMap().clear();
+    activeEdges.getMap().clear();
 }
 
 void RoutingProtocolCar::handleCrashOperation(
@@ -1892,11 +1628,12 @@ void RoutingProtocolCar::handleCrashOperation(
 
     RoutingProtocolBase::handleCrashOperation(operation);
     cancelAndDelete(helloCarTimer);
-    cancelAndDelete(pongTimeoutTimer);
     cancelAndDelete(purgeNeighbouringHostsTimer);
     cancelAndDelete(purgeActiveEdgesTimer);
-    neighbouringHosts.clear();
-    activeEdges.clear();
+    cancelAndDelete (purgeDelayedDatagramsTimer);
+    cancelAndDelete (purgePendingPongsTimer);
+    neighbouringHosts.getMap().clear();
+    activeEdges.getMap().clear();
 }
 
 void RoutingProtocolCar::receiveSignal(omnetpp::cComponent *source,

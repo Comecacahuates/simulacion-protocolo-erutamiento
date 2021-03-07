@@ -21,7 +21,6 @@
 #pragma once
 
 #include "veins_proj/networklayer/configurator/AddressCache.h"
-#include "veins_inet/veins_inet.h"
 #include <omnetpp.h>
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Ptr.h"
@@ -36,6 +35,7 @@
 #include "veins_proj/roadnetwork/RoadNetworkDatabase.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "veins_proj/roadnetwork/ShortestPath.h"
+#include "veins_proj/util/ExpiringValuesMap.h"
 #include <string>
 #include <map>
 #include <utility>
@@ -47,18 +47,7 @@ namespace veins_proj {
 class RoutingProtocolCar: public RoutingProtocolBase {
 
 protected:
-    /*
-     * Registro de _host_ vecino
-     */
-    //! Registro de _host_ vecino.
-    struct NeighbouringHostEntry {
-        //! Hora de última actualización.
-        omnetpp::simtime_t lastUpdateTime;
-        //! Ubicación Geohash del _host_.
-        GeohashLocation geohashLocation;
-    };
 
-protected:
     /*
      * Contexto.
      */
@@ -67,6 +56,7 @@ protected:
 
     /*
      * Vehículos vecinos por arista.
+     * TODO Revisar si hace falta.
      */
     typedef std::pair<Edge, inet::Ipv6Address> NeighbouringCarByEdge;
     typedef std::multimap<Edge, inet::Ipv6Address> NeighbouringCarsByEdgeMap;
@@ -75,124 +65,18 @@ protected:
     NeighbouringCarsByEdgeMap neighbouringCarsByEdge;
 
     /*
-     * Directorio de _hosts_ vecinos.
-     */
-    //! Mapa de directorio de _hosts_ vecinos.
-    /*!
-     * La clave es la dirección IPv6 del _host_ vecino, y el valor es el
-     * registro de _host_ vecino.
-     */
-    typedef std::map<inet::Ipv6Address, NeighbouringHostEntry> NeighbouringHostsMap;
-    //! Registro de mapa de directorio de _hosts_ vecinos.
-    /*!
-     * La clave es la dirección IPv6 del _host_ vecino, y el valor es el
-     * registro de _host_ vecino.
-     */
-    typedef std::pair<inet::Ipv6Address, NeighbouringHostEntry> NeighbouringHost;
-    //! Iterador de registros para mapa del directorio de _hosts_ vecinos.
-    typedef NeighbouringHostsMap::iterator NeighbouringHostsIterator;
-    //! Iterador de registros para mapa del directorio de _hosts_
-    //! vecinos constante.
-    typedef NeighbouringHostsMap::const_iterator NeighbouringHostsConstIterator;
-    //! Directorio de _hosts_ vecinos.
-    NeighbouringHostsMap neighbouringHosts;
-
-    /*
-     * Aristas activas.
-     */
-    //! Mapa de aristas activas.
-    /*!
-     * La clave es la arista activa, y el valor es la hora de expiración
-     * del registro.
-     */
-    typedef std::map<Edge, omnetpp::simtime_t> ActiveEdgesMap;
-    //! Registro de mapa de aristas activas.
-    /*!
-     * La clave es la arista activa, y el valor es la hora de expiración.
-     */
-    typedef std::pair<Edge, omnetpp::simtime_t> ActiveEdge;
-    //! Iterador para mapa de aristas activas.
-    typedef ActiveEdgesMap::iterator ActiveEdgesIterator;
-    //! Iterador para mapa de aristas activas constante.
-    typedef ActiveEdgesMap::const_iterator ActiveEdgesConstIterator;
-    //! Aristas activas.
-    /*!
-     * Cuando se recibe un mensaje PONG indicando que la arista se
-     * encuentra activa, se agrega un registro.
-     */
-    ActiveEdgesMap activeEdges;
-
-    /*
-     * TODO Revisar si hace falta.
-     */
-    // Inactive edges
-    typedef std::pair<Edge, omnetpp::simtime_t> InactiveEdge;
-    typedef std::map<Edge, omnetpp::simtime_t> InactiveEdgesMap;
-    typedef InactiveEdgesMap::iterator InactiveEdgesIterator;
-    typedef InactiveEdgesMap::const_iterator InactiveEdgesConstIterator;
-    InactiveEdgesMap inactiveEdges;
-
-    /*
-     * Mensajes PONG pendientes.
-     */
-    //! Mapa de mensajes PONG pendientes.
-    /*!
-     * La clave es la arista por la que se envió el mensaje PING,
-     * y el valor es la hora de expiración.
-     */
-    typedef std::map<Edge, omnetpp::simtime_t*> PongTimeoutTimersMap;
-    //! Registro de mensaje PONG pendientes.
-    /*!
-     * La clave es la arista por la que se envió el mensaje PING,
-     * y el valor es la hora de expiración.
-     */
-    typedef std::pair<Edge, omnetpp::simtime_t*> PongTimeoutTimer;
-    //! Iterador para mapa de mensajes PONG pendientes.
-    typedef PongTimeoutTimersMap::iterator PongTimeoutTimersIterator;
-    //! Iterador para mapa de mensajes PONG pendientes constante.
-    typedef PongTimeoutTimersMap::const_iterator PongTimeoutTimersConstIterator;
-    //! Mensajes PONG pendientes.
-    /*!
-     * Cuando se transmite un mensaje PING, se agrega un registro para indicar
-     * que se espera un mensaje PONG de respuesta y la hora máxima hasta la que
-     * se espera el mensaje PONG de respuesta.
-     */
-    PongTimeoutTimersMap pongTimeoutTimers;
-
-    /*
-     * Paquetes demorados.
-     */
-    //! Mapa de paquetes demorado.
-    /*!
-     * La clave es la dirección de destino del paquete, y el valor es
-     * el paquete.
-     */
-    typedef std::multimap<inet::Ipv6Address, inet::Packet*> DelayedPacketsMultimap;
-    //! Registro de paquete demorado.
-    /*!
-     * La clave es la dirección de destino del paquete, y el valor es
-     * el paquete.
-     */
-    typedef std::pair<inet::Ipv6Address, inet::Packet*> DelayedPacket;
-    //! Iterador para mapa de paquetes demorados.
-    typedef DelayedPacketsMultimap::iterator DelayedPacketsIterator;
-    //! Iterador para mapa de paquetes demorados constante.
-    typedef DelayedPacketsMultimap::const_iterator DelayedPacketsConstIterator;
-    //! Paquetes demorados.
-    DelayedPacketsMultimap delayedPackets;
-
-    /*
      * Mensajes propios.
      */
     //! Temporizador de transmisión de mensajes HOLA_VEHIC.
     omnetpp::cMessage *helloCarTimer;
-    //! Temporizador de limpieza de mensajes PONG pendientes.
-    omnetpp::cMessage *pongTimeoutTimer;
     //! Temporizador de limpieza del directorio de _hosts_ vecinos.
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
     //! Temporizador de limpieza de aristas activas.
     omnetpp::cMessage *purgeActiveEdgesTimer;
-    omnetpp::cMessage *purgeInactiveEdgesTimer;    // TODO Revisar si hace falta.
+    //! Temporizador de datagramas demorados.
+    omnetpp::cMessage *purgeDelayedDatagramsTimer;
+    //! Temporizador de limpieza de mensajes PONG pendientes.
+    omnetpp::cMessage *purgePendingPongsTimer;
 
     /*
      * Interfaz del módulo.
@@ -214,47 +98,12 @@ protected:
     virtual void processSelfMessage(omnetpp::cMessage *message) override;
 
     /*
-     * Temporizador de transmisión de mensajes HOLA_VEHIC.
+     * Mensajes HOLA_VEHIC.
      */
     //! Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
     virtual void scheduleHelloCarTimer();
     //! Procesar el temporizador de transmisión de mensajes HOLA_VEIH.
     virtual void processHelloCarTimer();
-
-    /*
-     * Temporizador de limpieza de mensajes PONG pendientes.
-     */
-    //! Programar el temporizador de limpieza de mensajes PONG pendientes.
-    virtual void schedulePongTimeoutTimer();
-    //! Provesar el temporizador de limpieza de mensajes PONG pendientes.
-    virtual void processPongTimeoutTimer();
-
-    /*
-     * Temporizador de limpieza del directorio de _hosts_ vecinos.
-     */
-    //! Programar el temporizador de limpieza del directorio de _hosts_ vecinos.
-    virtual void schedulePurgeNeighbouringHostsTimer();
-    //! Procesar el temporizador de limpieza del directorio de _hosts_ vecinos.
-    virtual void processPurgeNeighbouringHostsTimer();
-
-    /*
-     * Temporizador de limpieza de aristas activas.
-     */
-    //! Programar el temporizador de limpieza de aristas activas.
-    virtual void schedulePurgeActiveEdgesTimer();
-    //! Procesar el temporizador de limpieza de aristas activas.
-    virtual void processPurgeActiveEdgesTimer();
-
-    /*
-     * TODO Revisar si hace falta.
-     */
-    // Purge inactive edges timer
-    virtual void schedulePurgeInactiveEdgesTimer();
-    virtual void processPurgeInactiveEdgesTimer();
-
-    /*
-     * Mensajes HOLA_VEHIC.
-     */
     //! Crear mensaje HOLA_VEHIC.
     /*!
      * @param carAddress [in] Dirección del vehículo remitente.
@@ -354,17 +203,6 @@ protected:
     /*
      * Directorio de vehículos vecinos.
      */
-    //! Eliminar los registros viejos del directorio de vehículos vecinos,
-    //! además de las rutas que los incluyen.
-    /*!
-     * Se eliminan los registros cuya hora de última actualización es anterior
-     * a la indicada. Además, se eliminan las rutas que incluyen a estos
-     * vehículos.
-     *
-     * @param time [in] Hora de última actualización mínima para conservar
-     * los registros.
-     */
-    void removeOldNeighbouringCars(omnetpp::simtime_t time) override;
     //! Obtener vehículo vecino aleatorio en la misma arista.
     /*!
      * Obtiene aleatoriamente un vehículo vecino que se encuentra en la misma
@@ -373,7 +211,7 @@ protected:
      * @param targetVertex [in] Vértice de referencia.
      * @return Dirección IPv6 del vehículo vecino seleccionado.
      */
-    inet::Ipv6Address getRandomNeighbouringCarAddressAheadOnEdge(
+    virtual inet::Ipv6Address getRandomNeighbouringCarAddressAheadOnEdge(
             Vertex targetVertex) const;
     //! Obtener vehículo vecino más cercano a un vértice que se encuentra en
     //! la misma arista.
@@ -385,7 +223,7 @@ protected:
      * @param vertex [in] Vértice de referencia.
      * @return
      */
-    inet::Ipv6Address getNeighbouringCarAddressOnEdgeClosestToVertex(
+    virtual inet::Ipv6Address getNeighbouringCarAddressOnEdgeClosestToVertex(
             Vertex vertex);
     //! Obtener la cantidad de vehículos vecinos que se encuentran
     //! en la misma arista.
@@ -393,80 +231,127 @@ protected:
      * @return Cantidad de vehículos vecinos que se encuentran en
      * la misma arista.
      */
-    int getNeighbouringCarsOnEdgeCount() const;
+    virtual int getNeighbouringCarsOnEdgeCount() const;
+    //! Procesar el temporizador de limpieza del directorio de
+    //! vehículos vecinos.
+    virtual void processPurgeNeighbouringCarsTimer() override;
 
     /*
      * Directorio de hosts vecinos.
      */
+    //! Mapa de directorio de _hosts_ vecinos.
+    /*!
+     * La clave es la dirección IPv6 del _host_ vecino, y el valor es el
+     * registro de _host_ vecino.
+     */
+    typedef ExpiringValuesMap<inet::Ipv6Address, GeohashLocation> NeighbouringHosts;
+    //! Registro de mapa de directorio de _hosts_ vecinos.
+    /*!
+     * La clave es la dirección IPv6 del _host_ vecino, y el valor es el
+     * registro de _host_ vecino.
+     */
+    typedef std::pair<inet::Ipv6Address, GeohashLocation> NeighbouringHost;
+    //! Iterador de registros para mapa del directorio de _hosts_ vecinos.
+    typedef NeighbouringHosts::Iterator NeighbouringHostsIterator;
+    //! Iterador de registros para mapa del directorio de _hosts_
+    //! vecinos constante.
+    typedef NeighbouringHosts::ConstIterator NeighbouringHostsConstIterator;
+    //! Directorio de _hosts_ vecinos.
+    NeighbouringHosts neighbouringHosts;
     //! Imrpimir el directorio de _hosts_ vecinos.
-    void showNeighbouringHosts() const;
-    //! Eliminar los registros viejos del directorio de _hosts_ vecinos.
-    /*!
-     * Se eliminan los registros cuya hora de última actualización es anterior
-     * a la indicada.
-     *
-     * @param time [in] Hora de última actualización mínima para conservar
-     * los registros.
-     */
-    void removeOldNeighbouringHosts(omnetpp::simtime_t time);
-    //! Obtener la hora de última actualización del registro más viejo
-    //! en el directorio de _hosts_ vecinos.
-    /*!
-     * @return Hora de última actualización del registro más viejo.
-     */
-    omnetpp::simtime_t getOldestNeighbouringHostTime() const;
-    //! Obtener la siguiente hora de expiración más proxima a expirar
-    //! de los registros del directorio de _hosts_ vecinos.
-    /*!
-     * @return Hora de expiración más próxima.
-     */
-    omnetpp::simtime_t getNextNeighbouringHostExpirationTime() const;
-    //! Limpiar el directorio de _hosts_ vecinos.
-    /*!
-     * Elimina los registros del directorio de _hosts_ vecinos cuya hora
-     * de expiración ya haya pasado.
-     */
-    void purgeNeighbouringHosts();
+    virtual void showNeighbouringHosts() const;
+    //! Programar el temporizador de limpieza del directorio de _hosts_ vecinos.
+    virtual void schedulePurgeNeighbouringHostsTimer();
+    //! Procesar el temporizador de limpieza del directorio de _hosts_ vecinos.
+    virtual void processPurgeNeighbouringHostsTimer();
 
     /*
      * Aristas activas.
      */
+    //! Mapa de aristas activas.
+    /*!
+     * La clave es la arista activa, y el valor es la hora de expiración
+     * del registro.
+     */
+    typedef ExpiringValuesMap<Edge, bool> ActiveEdges;
+    //! Valor.
+    typedef ActiveEdges::MapValue ActiveEdge;
+    //! Iterador para mapa de aristas activas.
+    typedef ActiveEdges::Iterator ActiveEdgesIterator;
+    //! Iterador para mapa de aristas activas constante.
+    typedef ActiveEdges::ConstIterator ActiveEdgesConstIterator;
+    //! Aristas activas.
+    /*!
+     * Cuando se recibe un mensaje PONG indicando que la arista se
+     * encuentra activa, se agrega un registro.
+     */
+    ActiveEdges activeEdges;
     //! Imprimir las aristas activas.
-    void showActiveEdges() const;
-    //! Eliminar los registros viejos de aristas activas.
-    /*!
-     * Se eliminan los registros cuya hora de expiración ya haya pasado.
-     *
-     * @param time [in] Hora de expiración mínima para conservar los registros.
-     */
-    void removeOldActiveEdges(omnetpp::simtime_t time);
-    //! Obtener la hora de expiración del registro de aristas activas
-    //! más viejo.
-    /*!
-     * @return Hora de expiración del registro más viejo.
-     */
-    omnetpp::simtime_t getOldestActiveEdgeExpirationTime() const;
-    //! Obtener la siguiente hora de expiración más próxima a expirar
-    //! de los registros de aristas activas.
-    /*!
-     * @return Hora de expiración más próxima.
-     */
-    omnetpp::simtime_t getNextActiveEdgeExpirationTime() const;
-    //! Limpiar las aristas activas.
-    /*!
-     * Elimina los registro de aristas activas cuya hora de expiración
-     * ya haya pasado.
-     */
-    void purgeActiveEdges();
+    virtual void showActiveEdges() const;
+    //! Programar el temporizador de limpieza de aristas activas.
+    virtual void schedulePurgeActiveEdgesTimer();
+    //! Procesar el temporizador de limpieza de aristas activas.
+    virtual void processPurgeActiveEdgesTimer();
 
     /*
-     * TODO Revisar si hace falta.
+     * Datagramas demorados.
      */
-    // Inactive edges
-    void removeOldInactiveEdges(omnetpp::simtime_t time);
-    omnetpp::simtime_t getOldestInactiveEdgeTime() const;
-    omnetpp::simtime_t getNextInactiveEdgeExpirationTime() const;
-    void purgeInactiveEdges();
+    //! Mapa de datagramas demorado.
+    /*!
+     * La clave es la dirección de destino del datagrama, y el valor es
+     * el datagrama.
+     */
+    typedef ExpiringValuesMultimap<inet::Ipv6Address, inet::Packet*> DelayedDatagrams;
+    //! Valor.
+    typedef DelayedDatagrams::MultimapValue DelayedPacket;
+    //! Iterador para mapa de datagramas demorados.
+    typedef DelayedDatagrams::Iterator DelayedDatagramsIterator;
+    //! Iterador para mapa de datagramas demorados constante.
+    typedef DelayedDatagrams::ConstIterator DelayedDatagramsConstIterator;
+    //! Paquetes demorados.
+    DelayedDatagrams delayedDatagrams;
+    //! Imprimir los datagramas demorados.
+    virtual void showDelayedDatagrams();
+    //! Programar el temporizador de limpieza de datagramas demorados.
+    virtual void schedulePurgeDelayedDatagramsTimer();
+    //! Procesar el temporizador de limpieza de datagramas demorados.
+    virtual void processPurgeDelayedDatagramsTimer();
+
+    /*
+     * Mensajes PONG pendientes.
+     */
+    //! Registro de mensaje PONG pendiente.
+    struct PendingPongValue {
+        //! Vértice de origen.
+        Vertex srcVertex;
+        //! Vértice de destino.
+        Vertex destVertex;
+    };
+    //! Mapa de mensajes PONG pendientes.
+    /*!
+     * La clave es la arista por la que se envió el mensaje PING,
+     * y el valor es la hora de expiración.
+     */
+    typedef ExpiringValuesMap<Edge, PendingPongValue> PendingPongs;
+    //! Valor.
+    typedef PendingPongs::MapValue PendingPong;
+    //! Iterador para mapa de mensajes PONG pendientes.
+    typedef PendingPongs::Iterator PendingPongsIterator;
+    //! Iterador para mapa de mensajes PONG pendientes constante.
+    typedef PendingPongs::ConstIterator PendingPongsConstIterator;
+    //! Mensajes PONG pendientes.
+    /*!
+     * Cuando se transmite un mensaje PING, se agrega un registro para indicar
+     * que se espera un mensaje PONG de respuesta y la hora máxima hasta la que
+     * se espera el mensaje PONG de respuesta.
+     */
+    PendingPongs pendingPongs;
+    //! Imprimir los mensajes PONG pendientes.
+    virtual void showPendingPongs() const;
+    //! Programar el temporizador de limpieza de mensajes PONG pendientes.
+    virtual void schedulePurgePendingPongsTimer();
+    //! Procesar el temporizador de limpieza de mensajes PONG pendientes.
+    virtual void processPurgePendingPongsTimer();
 
     /*
      * Enrutamiento.
@@ -507,8 +392,8 @@ protected:
      * @param visitedVerticesOption [in] Opción de vértices visitados.
      * @return Conjunto de vértices visitados.
      */
-    VertexSet getVisitedVertices(TlvVisitedVerticesOption *visitedVerticesOption) const;
-    VertexVector getUnavailableVertices(TlvVisitedVerticesOption *visitedVerticesOption) const; // TODO Revisar si hace falta.
+    VertexSet getVisitedVertices(
+            TlvVisitedVerticesOption *visitedVerticesOption) const;
     //! Obtener el vértice de destino.
     /*!
      * @param destGeohashLocation [in] Ubicación Geohash del destino.

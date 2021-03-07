@@ -64,8 +64,8 @@ class Ping extends RoutingPacket {
     chunkLength = inet::B(40);
     packetType = PacketType::PING;
 	inet::Ipv6Address address; // Dirección IPv6 de origen (16 bytes)
-	unsigned int vertex1; // Vértice de origen (2 bytes)
-	unsigned int vertex2; // Vértice de destino (2 bytes)
+	unsigned int srcVertex; // Vértice de origen (2 bytes)
+	unsigned int destVertex; // Vértice de destino (2 bytes)
 }
 
 class Pong extends RoutingPacket {
@@ -73,8 +73,8 @@ class Pong extends RoutingPacket {
     packetType = PacketType::PONG;
     bool E; // Error en la operación ping-pong (1 bit)
 	inet::Ipv6Address destAddress; // Dirección IPv6 (16 bytes)
-	unsigned int vertex1; // Vértice de origen (2 bytes)
-	unsigned int vertex2; // Vértice de destino (2 bytes)
+	unsigned int srcVertex; // Vértice de origen (2 bytes)
+	unsigned int destVertex; // Vértice de destino (2 bytes)
 }
 
 class HelloEdge extends RoutingPacket {

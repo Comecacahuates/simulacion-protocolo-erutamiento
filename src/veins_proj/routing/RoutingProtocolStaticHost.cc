@@ -117,13 +117,14 @@ void RoutingProtocolStaticHost::processHelloCar(const inet::Ptr<HelloCar> &hello
     EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
     EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
-    neighbouringCars[carAddress] = { omnetpp::simTime(), geohashLocation, speed, direction, locationOnRoadNetwork };
+    neighbouringCars.getMap()[carAddress].expiryTime = omnetpp::simTime();
+    neighbouringCars.getMap()[carAddress].value = { geohashLocation, speed, direction, locationOnRoadNetwork };
 
     int distance = (int) geohashLocation.getDistance(mobility->getGeohashLocation());
 
     addRoute(carAddress, 64, carAddress, distance, omnetpp::simTime() + neighbouringCarValidityTime);
 
-    EV_INFO << "Number of car neighbours: " << neighbouringCars.size() << std::endl;
+    EV_INFO << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();
@@ -189,9 +190,9 @@ bool RoutingProtocolStaticHost::addRouteIfNotExists(const inet::Ipv6Address &des
         if (nextHopAddress.isUnspecified())
             return false;
 
-        const GeohashLocation &neighbouringCarGeohashLocation = neighbouringCars[nextHopAddress].geohashLocation;
+        const GeohashLocation &neighbouringCarGeohashLocation = neighbouringCars.getMap()[nextHopAddress].value.geohashLocation;
         int distance = (int) geohashLocation.getDistance(neighbouringCarGeohashLocation);
-        addRoute(destAddress, 64, nextHopAddress, distance, neighbouringCars[nextHopAddress].lastUpdateTime + neighbouringCarValidityTime);
+        addRoute(destAddress, 64, nextHopAddress, distance, neighbouringCars.getMap()[nextHopAddress].expiryTime);
     }
 
     return true;
