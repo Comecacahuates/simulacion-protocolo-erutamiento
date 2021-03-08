@@ -343,11 +343,9 @@ void RoutingProtocolCar::processHelloHost(
 
 //! Crear mensaje PING.
 /*!
- * Crear mensaje PING.
- *
  * @param carAddress [in] Dirección del vehículo remitente.
- * @param vertex1 [in] Vértice de origen de la arista.
- * @param vertex2 [in] Vértice de destino de la arista.
+ * @param srcVertex [in] Vértice de origen de la arista.
+ * @param destVertex [in] Vértice de destino de la arista.
  * @return Mensaje PING.
  */
 const inet::Ptr<Ping> RoutingProtocolCar::createPing(
@@ -581,6 +579,20 @@ void RoutingProtocolCar::sendPong(const inet::Ptr<Pong> &pong,
 
 //! Procesar mensaje PONG.
 /*!
+ * Si la dirección de destino es una dirección local,
+ * se revisa si es un mensaje PONG pendiente, en cuyo caso,
+ * si el valor de la bandera E es falso,
+ * se establece la arista correspondiente como arista activa,
+ * y se programa el temporizador de limpieza de aristas activas.
+ * También, se transmite un mensaje HOLA_VEHIC indicando que
+ * la arista está activa.
+ * Si se acabó el tiempo de espera del mensaje, se ignora el mensaje.
+ *
+ * Si la dirección de destino no es una dirección local, se verifica
+ * si el destinatario se encuentra es un vecino. En ese caso,
+ * se retransmite directamente hacia este. En otro caso, se busca un
+ * vecino que se encuentre más cerca del vértice de destino.
+ *
  * @param pong [in] Mensaje a procesar.
  */
 void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
@@ -589,13 +601,14 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
     Enter_Method
     ("RoutingProtocolCar::processPong");
 
+    /*
+     * Se extraen los datos del mensaje.
+     */
     const inet::Ipv6Address &destAddress = pong->getDestAddress();
     bool E = pong->getE();
     Vertex srcVertex = (Vertex) pong->getSrcVertex();
     Vertex destVertex = (Vertex) pong->getDestVertex();
-
     const Graph &graph = mobility->getRoadNetwork()->getGraph();
-    const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
     Edge edge = boost::edge(srcVertex, destVertex, graph).first;
 
     EV_INFO << "Destination address: " << destAddress.str() << std::endl;
@@ -603,35 +616,47 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
     EV_INFO << "Edge: " << edge;
     EV_INFO << "Target vertex: " << srcVertex << std::endl;
 
-    // Si llegó al vehículo que originó el mensaje PING
+    /*
+     * Se revisa si la dirección de destino es una dirección local.
+     */
     if (interfaceTable->isLocalAddress(destAddress)) {
-        // Si ya se terminó el tiempo de espera, se ignora el mensaje
-        if (pendingPongs.getMap().find(edge) == pendingPongs.getMap().end())
-            return;
 
-        // Si todavía no terminaba el tiempo de espera, se cancela
-        pendingPongs.getMap().erase(edge);
+        /*
+         * Si es un mensaje PONG pendiente y el valor de la
+         * bandera E es falso, se establece como arista activa.
+         */
+        if (pendingPongs.getMap().count(edge)) {
+            if (!E) {
+                pendingPongs.getMap().erase(edge);
+                activeEdges.getMap()[edge].expiryTime = omnetpp::simTime()
+                        + activeEdgeValidityTime;
+                schedulePurgeActiveEdgesTimer();
 
-        // Agregar la arista a la lista de aristas activas
-        activeEdges.getMap()[edge].expiryTime = omnetpp::simTime();
-        schedulePurgeActiveEdgesTimer();
+                // TODO Transmitir mensaje de HOLA_VEHIC para indicar que la arista está activa.
+            }
+            // TODO Revisar si hace falta establecer la arista como inactiva si E = verdadero.
+        }
 
-        // Enviar mensaje de estatus de la arista activa
-
+        /*
+         * Si no es una dirección local, se retransmite el mensaje.
+         */
     } else {
-        inet::Ipv6Address newNextHopAddress;
+        /*
+         * Si el destinatario es un vecino, se selecciona su dirección
+         * como siguiente salto.
+         */
+        if (neighbouringCars.getMap().count(destAddress))
+            sendPong(pong, destAddress);
 
-        // Si el destino está en el directorio de vecinos, se selecciona como siguiente salto
-        if (neighbouringCars.getMap().find(destAddress)
-                != neighbouringCars.getMap().end())
-            newNextHopAddress = destAddress;
-
-        // Si no, se selecciona un nuevo siguiente salto
-        else
-            newNextHopAddress = getNeighbouringCarAddressOnEdgeClosestToVertex(
+        /*
+         * En otro caso, se selecciona un vehículo vecino más cercano
+         * al vértice de origen.
+         */
+        else {
+            inet::Ipv6Address nextHopAddress = getNeighbouringCarAddressOnEdgeClosestToVertex(
                     srcVertex);
-
-        sendPong(pong, newNextHopAddress);
+            sendPong(pong, nextHopAddress);
+        }
     }
 }
 
@@ -915,7 +940,8 @@ void RoutingProtocolCar::schedulePurgeDelayedDatagramsTimer() {
         if (!purgeDelayedDatagramsTimer->isScheduled())
             scheduleAt(nextExpiryTime, purgeDelayedDatagramsTimer);
 
-        else if (purgeDelayedDatagramsTimer->getArrivalTime() != nextExpiryTime) {
+        else if (purgeDelayedDatagramsTimer->getArrivalTime()
+                != nextExpiryTime) {
             cancelEvent(purgeDelayedDatagramsTimer);
             scheduleAt(nextExpiryTime, purgeDelayedDatagramsTimer);
         }
@@ -1124,7 +1150,8 @@ bool RoutingProtocolCar::validateHopByHopOptionsHeader(
     const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
             TlvVisitedVerticesOption>(datagram);
     if (visitedVerticesOption == nullptr) {
-        setTlvVisitedVerticesOption(datagram);
+        TlvVisitedVerticesOption *visitedVerticesOption = createTlvVisitedVerticesOption();
+        setTlvOption(datagram, visitedVerticesOption);
     }
 
     return true;
@@ -1613,8 +1640,8 @@ void RoutingProtocolCar::handleStopOperation(
     cancelAndDelete(helloCarTimer);
     cancelAndDelete(purgeNeighbouringHostsTimer);
     cancelAndDelete(purgeActiveEdgesTimer);
-    cancelAndDelete (purgeDelayedDatagramsTimer);
-    cancelAndDelete (purgePendingPongsTimer);
+    cancelAndDelete(purgeDelayedDatagramsTimer);
+    cancelAndDelete(purgePendingPongsTimer);
     neighbouringHosts.getMap().clear();
     activeEdges.getMap().clear();
 }
@@ -1630,8 +1657,8 @@ void RoutingProtocolCar::handleCrashOperation(
     cancelAndDelete(helloCarTimer);
     cancelAndDelete(purgeNeighbouringHostsTimer);
     cancelAndDelete(purgeActiveEdgesTimer);
-    cancelAndDelete (purgeDelayedDatagramsTimer);
-    cancelAndDelete (purgePendingPongsTimer);
+    cancelAndDelete(purgeDelayedDatagramsTimer);
+    cancelAndDelete(purgePendingPongsTimer);
     neighbouringHosts.getMap().clear();
     activeEdges.getMap().clear();
 }

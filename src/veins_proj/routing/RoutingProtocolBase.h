@@ -420,7 +420,7 @@ protected:
             Vertex vertexA, Vertex vertexB, double distanceToVertexA) const;
     //! Agregar opción TLV de ubicación vial del destino a un datagrama.
     /*!
-     * @param datagram [in] Datagrama al que se le agregará la opción TLV.
+     * @param datagram [inout] Datagrama al que se le agregará la opción TLV.
      * destGeohashLocation tlvOption [in] Ubicación Geohash del destino.
      */
     void setTlvDestLocationOnRoadNetworkOption(inet::Packet *datagram,
@@ -435,11 +435,6 @@ protected:
             TlvDestLocationOnRoadNetworkOption *tlvOption) const;
     //! Crear opción TLV de vértices visitados vacía.
     TlvVisitedVerticesOption* createTlvVisitedVerticesOption() const;
-    //! Agregar opción TLV de vértices visitados a un datagrama.
-    /*!
-     * @param datagram [in] Datagrama al que se le agregará la opción TLV.
-     */
-    void setTlvVisitedVerticesOption(inet::Packet *datagram) const;
     //! Calcular la longitud en octetos de una opción TLV de vértices visitados.
     /*!
      * @param tlvOption [in] Opción TLV cuya longitud se calcula.

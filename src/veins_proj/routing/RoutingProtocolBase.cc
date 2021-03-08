@@ -666,7 +666,7 @@ TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOn
 
 //! Agregar opción TLV de ubicación vial del destino a un datagrama.
 /*!
- * @param datagram [in] Datagrama al que se le agregará la opción TLV.
+ * @param datagram [inout] Datagrama al que se le agregará la opción TLV.
  * destGeohashLocation tlvOption [in] Ubicación Geohash del destino.
  */
 void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(
@@ -722,21 +722,6 @@ TlvVisitedVerticesOption* RoutingProtocolBase::createTlvVisitedVerticesOption() 
     TlvVisitedVerticesOption *tlvOption = new TlvVisitedVerticesOption();
     tlvOption->setVisitedVerticesArraySize(0);
     return tlvOption;
-}
-
-//! Agregar opción TLV de vértices visitados a un datagrama.
-/*!
- * @param datagram [in] Datagrama al que se le agregará la opción TLV.
- */
-void RoutingProtocolBase::setTlvVisitedVerticesOption(
-        inet::Packet *datagram) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::setTlvVisitedVerticesOption");
-
-    TlvVisitedVerticesOption *visitedVerticesOption = createTlvVisitedVerticesOption();
-    setTlvOption(datagram, visitedVerticesOption);
 }
 
 //! Calcular la longitud en octetos de una opción TLV de vértices visitados.

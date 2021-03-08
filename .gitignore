@@ -5,8 +5,6 @@ src/*.dylib
 src/**/*_m.h
 src/**/*_m.cc
 
-README.md.backup
-
 doc/doxy
 doc/neddoc
 

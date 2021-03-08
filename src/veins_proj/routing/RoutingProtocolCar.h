@@ -142,11 +142,9 @@ protected:
      */
     //! Crear mensaje PING.
     /*!
-     * Crear mensaje PING.
-     *
      * @param carAddress [in] Dirección del vehículo remitente.
-     * @param vertex1 [in] Vértice de origen de la arista.
-     * @param vertex2 [in] Vértice de destino de la arista.
+     * @param srcVertex [in] Vértice de origen de la arista.
+     * @param destVertex [in] Vértice de destino de la arista.
      * @return Mensaje PING.
      */
     virtual const inet::Ptr<Ping> createPing(
@@ -196,6 +194,20 @@ protected:
             const inet::Ipv6Address &destAddress);
     //! Procesar mensaje PONG.
     /*!
+     * Si la dirección de destino es una dirección local,
+     * se revisa si es un mensaje PONG pendiente, en cuyo caso,
+     * si el valor de la bandera E es falso,
+     * se establece la arista correspondiente como arista activa,
+     * y se programa el temporizador de limpieza de aristas activas.
+     * También, se transmite un mensaje HOLA_VEHIC indicando que
+     * la arista está activa.
+     * Si se acabó el tiempo de espera del mensaje, se ignora el mensaje.
+     *
+     * Si la dirección de destino no es una dirección local, se verifica
+     * si el destinatario se encuentra es un vecino. En ese caso,
+     * se retransmite directamente hacia este. En otro caso, se busca un
+     * vecino que se encuentre más cerca del vértice de destino.
+     *
      * @param pong [in] Mensaje a procesar.
      */
     virtual void processPong(const inet::Ptr<Pong> &pong) override;

@@ -67,12 +67,8 @@ public:
     const Map& getMap() const {
         return map;
     }
-/*
+
     //! Eliminar valores cuya hora de expiración es anterior a la hora indicada.
-    virtual void removeOldValues(omnetpp::simtime_t time);
-    //! Obtener la hora de expiración más próxima.
-    virtual omnetpp::simtime_t getNextExpiryTime() const;
-    */
     void removeOldValues(omnetpp::simtime_t time) {
         Iterator it = map.begin();
         Iterator endIt = map.end();
@@ -85,6 +81,7 @@ public:
                 it++;
     }
 
+    //! Obtener la hora de expiración más próxima.
     omnetpp::simtime_t getNextExpiryTime() const {
         omnetpp::simtime_t nextExpiryTime = omnetpp::SimTime::getMaxTime();
 
@@ -133,12 +130,8 @@ public:
     const Multimap& getMultimap() const {
         return multimap;
     }
-/*
+
     //! Eliminar valores cuya hora de expiración es anterior a la hora indicada.
-    virtual void removeOldValues(omnetpp::simtime_t time);
-    //! Obtener la hora de expiración más próxima.
-    virtual omnetpp::simtime_t getNextExpiryTime() const;
-    */
     void removeOldValues(omnetpp::simtime_t time) {
         Iterator it = multimap.begin();
 
@@ -150,6 +143,7 @@ public:
                 it++;
     }
 
+    //! Obtener la hora de expiración más próxima.
     omnetpp::simtime_t getNextExpiryTime() const {
         omnetpp::simtime_t nextExpiryTime = omnetpp::SimTime::getMaxTime();
 
