@@ -1,8 +1,21 @@
-/*
- * VehicleMobility.cc
- *
- *  Created on: Jun 16, 2020
- *      Author: adrian
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+//
+
+/*!
+ * @file CarMobility.h
+ * @author Adrián Juárez Monroy
  */
 
 #include "veins_proj/mobility/CarMobility.h"
@@ -19,15 +32,24 @@
 
 using namespace veins_proj;
 
-
 Define_Module(CarMobility);
 
-
+/*!
+ * @brief Destructor.
+ */
 CarMobility::~CarMobility() {
     cancelAndDelete(locationUpdateTimer);
 }
 
+/*
+ * Interfaz del módulo.
+ */
 
+/*!
+ * @brief Inicialización.
+ *
+ * @param stage [in] Etapa de inicialización.
+ */
 void CarMobility::initialize(int stage) {
     VeinsInetMobility::initialize(stage);
 
@@ -37,7 +59,8 @@ void CarMobility::initialize(int stage) {
         vertexProximityRadius = par("vertexProximityRadius");
 
         // Context
-        roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase *>(getModuleByPath(par("roadNetworkDatabaseModule")));
+        roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase*>(
+                getModuleByPath(par("roadNetworkDatabaseModule")));
 
         if (!roadNetworkDatabase)
             throw omnetpp::cRuntimeError("No roadway database module found");
@@ -51,10 +74,16 @@ void CarMobility::initialize(int stage) {
     }
 }
 
-
+/*!
+ * @brief Manejo de mensajes.
+ *
+ * @param message [in] Mensaje a procesar.
+ */
 void CarMobility::handleMessage(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarMobility::handleMessage");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("CarMobility::handleMessage");
 
     if (message == locationUpdateTimer)
         processLocationUpdateTimer();
@@ -63,24 +92,38 @@ void CarMobility::handleMessage(omnetpp::cMessage *message) {
         throw omnetpp::cRuntimeError("Unknown message");
 }
 
+/*
+ * Actualización de la ubicación.
+ */
 
+/*!
+ * @brief Programar el temporizador de actualización de la ubicación.
+ */
 void CarMobility::scheduleLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarMobility::scheduleLocationUpdateTimer");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("CarMobility::scheduleLocationUpdateTimer");
 
-    scheduleAt(omnetpp::simTime() + locationUpdateInterval, locationUpdateTimer);
+    scheduleAt(omnetpp::simTime() + locationUpdateInterval,
+            locationUpdateTimer);
 }
-
-
+/*!
+ * @brief Procesar el temporizador de actualización de la ubicacion.
+ */
 void CarMobility::processLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarMobility::scheduleLocationUpdateTimer");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("CarMobility::scheduleLocationUpdateTimer");
 
     updateLocation();
     scheduleLocationUpdateTimer();
 }
 
-
+/*!
+ * @brief Actualizar la ubicación.
+ */
 void CarMobility::updateLocation() {
     locationChanged_ = false;
     edgeChanged_ = false;
@@ -92,7 +135,8 @@ void CarMobility::updateLocation() {
 
     // Obtener coordenadas geogr��ficas
     double lat, lon;
-    boost::tie(lon, lat) = veins::VeinsInetMobility::getCommandInterface()->getLonLat(veinsLocation);
+    boost::tie(lon, lat) = veins::VeinsInetMobility::getCommandInterface()->getLonLat(
+            veinsLocation);
 
     // Obtener velocidad
     inet::Coord inetSpeed = veins::VeinsInetMobility::getCurrentVelocity();
@@ -100,10 +144,14 @@ void CarMobility::updateLocation() {
 
     // Obtener direcci��n
     if (speed > 0)
-        direction = std::fmod(2.5 * 180.0 - inet::math::rad2deg(std::atan2(-inetSpeed.y, inetSpeed.x)), 360.0);
+        direction = std::fmod(
+                2.5 * 180.0
+                        - inet::math::rad2deg(
+                                std::atan2(-inetSpeed.y, inetSpeed.x)), 360.0);
 
     // Se verifica si la ubicaci��n cambi��
-    if (geohashLocation.isNull() || !geohashLocation.getBounds().contains(lat, lon)) {
+    if (geohashLocation.isNull()
+            || !geohashLocation.getBounds().contains(lat, lon)) {
         geohashLocation.setLocation(lat, lon);
 
         locationChanged_ = true;
@@ -112,7 +160,8 @@ void CarMobility::updateLocation() {
         regionChanged_ = updateRoadNetwork();
 
         Edge previousEdge = locationOnRoadNetwork.edge;
-        bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(getLocation(), speed, direction, locationOnRoadNetwork);
+        bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(
+                getLocation(), speed, direction, locationOnRoadNetwork);
 
         if (locationSuccess)
             EV_INFO << "Ubicaci��n correcta" << std::endl;
@@ -124,27 +173,14 @@ void CarMobility::updateLocation() {
     }
 }
 
-
-std::pair<Vertex, bool> CarMobility::isAtGateway() const {
-    const Graph &graph = roadNetwork->getGraph();
-    Vertex vertexA = boost::source(locationOnRoadNetwork.edge, graph);
-    Vertex vertexB = boost::target(locationOnRoadNetwork.edge, graph);
-
-    // Si el v��rtice A es gateway y se encuentra dentro del radio de proximidad
-    if (isGateway(vertexA, graph)) {
-        if (inVertexProximityRadius(locationOnRoadNetwork, vertexA, graph))
-            return std::pair<Vertex, bool>(vertexA, true);
-
-    // Si el v��rtice B es gateway y se encuentra dentro del radio de proximidad
-    } else if (isGateway(vertexB, graph)) {
-        if (inVertexProximityRadius(locationOnRoadNetwork, vertexB, graph))
-            return std::pair<Vertex, bool>(vertexB, true);
-    }
-
-    return std::pair<Vertex, bool>(vertexA, false);
-}
-
-
+/*!
+ * @brief Verificar si el vehículo se encuentra en un vértice.
+ *
+ * @param vertex [in] Vértice de referencia.
+ * @return `true` si el vehículo se encuentra en el vértice.
+ *
+ * TODO Eliminar.
+ */
 bool CarMobility::isAtVertex(const Vertex vertex) const {
     const Graph &graph = roadNetwork->getGraph();
     const Edge &edge = locationOnRoadNetwork.edge;
@@ -166,13 +202,46 @@ bool CarMobility::isAtVertex(const Vertex vertex) const {
     return distanceToVertex <= vertexProximityRadius;
 }
 
+/*!
+ * @brief Verificar si el vehículo se encuentra en un vértice _gateway_.
+ *
+ * @return `true` si el vehículo se encuentra en un vértice _gateway_.
+ * TODO Eliminar:
+ */
+std::pair<Vertex, bool> CarMobility::isAtGateway() const {
+    const Graph &graph = roadNetwork->getGraph();
+    Vertex vertexA = boost::source(locationOnRoadNetwork.edge, graph);
+    Vertex vertexB = boost::target(locationOnRoadNetwork.edge, graph);
 
+    // Si el vértice A es gateway y se encuentra dentro del radio de proximidad
+    if (isGateway(vertexA, graph)) {
+        if (inVertexProximityRadius(locationOnRoadNetwork, vertexA, graph))
+            return std::pair<Vertex, bool>(vertexA, true);
+
+        // Si el v��rtice B es gateway y se encuentra dentro del radio de proximidad
+    } else if (isGateway(vertexB, graph)) {
+        if (inVertexProximityRadius(locationOnRoadNetwork, vertexB, graph))
+            return std::pair<Vertex, bool>(vertexB, true);
+    }
+
+    return std::pair<Vertex, bool>(vertexA, false);
+}
+
+/*!
+ * @brief Actualizar la red vial si es necesario.
+ *
+ * @return `true` si se actualizó la red vial.
+ */
 bool CarMobility::updateRoadNetwork() {
-    if (roadNetwork == nullptr || !roadNetwork->getGeohashRegion().getBounds().contains(geohashLocation.getLocation())) {
+    if (roadNetwork == nullptr
+            || !roadNetwork->getGeohashRegion().getBounds().contains(
+                    geohashLocation.getLocation())) {
         roadNetwork = roadNetworkDatabase->getRoadNetwork(geohashLocation);
 
         if (roadNetwork == nullptr)
-            throw omnetpp::cRuntimeError("Couldn't find network geohash location %s", geohashLocation.getGeohashString().c_str());
+            throw omnetpp::cRuntimeError(
+                    "Couldn't find network geohash location %s",
+                    geohashLocation.getGeohashString().c_str());
 
         return true;
     }
