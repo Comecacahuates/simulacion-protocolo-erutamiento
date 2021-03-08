@@ -42,15 +42,19 @@ class Ack extends RoutingPacket {
 }
 
 class HelloCar extends RoutingPacket {
-    chunkLength = inet::B(36);
+    chunkLength = inet::B(40);
     packetType = PacketType::HELLO_CAR;
-	inet::Ipv6Address address; // Dirección IPv6 (16 bytes)
+	inet::Ipv6Address srcAddress; // Dirección IPv6 (16 bytes)
 	uint64_t geohash; // Ubicación Geohash (8 bytes)
 	double speed; // Velocidad (2 bytes)
 	double direction; // Dirección de movimiento (2 bytes)
 	unsigned int vertexA; // Vértice A (2 bytes)
 	unsigned int vertexB; // Vértice B (2 bytes)
 	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
+	bool pingPong = false; // Bandera ping-pong (1 bit)
+	bool pingPongError = false; // Bandera de error ping-pong (1 bit)
+	unsigned int pingVertex = 0; // Vértice de origen del mensaje PING (2 bytes)
+	unsigned int pongVertex = 0; // Vértice de destino del mensaje PONG (2 bytes)
 }
 
 class HelloHost extends RoutingPacket {
@@ -64,17 +68,17 @@ class Ping extends RoutingPacket {
     chunkLength = inet::B(40);
     packetType = PacketType::PING;
 	inet::Ipv6Address address; // Dirección IPv6 de origen (16 bytes)
-	unsigned int srcVertex; // Vértice de origen (2 bytes)
-	unsigned int destVertex; // Vértice de destino (2 bytes)
+	unsigned int pingVertex; // Vértice de origen (2 bytes)
+	unsigned int pongVertex; // Vértice de destino (2 bytes)
 }
 
 class Pong extends RoutingPacket {
     chunkLength = inet::B(24);
     packetType = PacketType::PONG;
-    bool E; // Error en la operación ping-pong (1 bit)
+    bool error; // Error en la operación ping-pong (1 bit)
 	inet::Ipv6Address destAddress; // Dirección IPv6 (16 bytes)
-	unsigned int srcVertex; // Vértice de origen (2 bytes)
-	unsigned int destVertex; // Vértice de destino (2 bytes)
+	unsigned int pingVertex; // Vértice de origen (2 bytes)
+	unsigned int pongVertex; // Vértice de destino (2 bytes)
 }
 
 class HelloEdge extends RoutingPacket {

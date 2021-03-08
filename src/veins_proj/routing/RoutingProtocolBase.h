@@ -77,9 +77,7 @@ protected:
     //! Tiempo de espera para los mensahes PONG.
     omnetpp::simtime_t pongTimeout;
     //! Tiempo de vigencia de aristas activas.
-    omnetpp::simtime_t activeEdgeValidityTime;
-    //! Tiempo de vigencia de aristas inactivas.
-    omnetpp::simtime_t inactiveEdgeValidityTime;
+    omnetpp::simtime_t edgeStatusValidityTime;
     //! Tiempo de vigencia de las rutas.
     omnetpp::simtime_t routeValidityTime;
     //! Radio de proximidad a los vértices.
@@ -116,9 +114,15 @@ protected:
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;
     }
-    //! Inicialización.
+    /*!
+     * @brief Inicialización.
+     * @param stage [in] Etapa de inicialización.
+     */
     virtual void initialize(int stage) override;
-    //! Manejo de mensajes.
+    /*!
+     * @brief Manejo de mensajes.
+     * @param message [in] Mensaje a procesar.
+     */
     virtual void handleMessageWhenUp(omnetpp::cMessage *message) override;
 
     /*

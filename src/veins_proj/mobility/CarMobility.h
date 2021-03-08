@@ -69,7 +69,7 @@ protected:
     LocationOnRoadNetwork locationOnRoadNetwork;
     //! Velocidad en metros por segundo.
     double speed;
-    //! Dirección acimutal de movimiento en grados.
+    //! Ángulo acimutal de la dirección del movimiento en grados.
     double direction;
     //! Red vial en la que circula el vehículo.
     RoadNetwork *roadNetwork = nullptr;
@@ -162,7 +162,7 @@ public:
     /*!
      * @brief Acceso a la dirección de movimiento.
      *
-     * @return Dirección acimutal de movimiento en grados.
+     * @return Ángulo acimutal de la dirección del movimiento en grados.
      */
     const double getDirection() const {
         return direction;

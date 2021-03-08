@@ -31,8 +31,7 @@ simple RoutingProtocolBase like IManetRouting {
         double neighbouringHostValidityTime @unit(s) = default(2.5 * helloHostInterval);
         double pingInterval @unit(s) = default(3s);
         double pongTimeout @unit(s) = default(1s);
-        double activeEdgeValidityTime @unit(s) = default(4.5 * pingInterval);
-        double inactiveEdgeValidityTime @unit(s) = default(3s);
+        double edgeStatusValidityTime @unit(s) = default(4.5 * pingInterval);
         double routeValidityTime @unit(s) = default(1s);
         double vertexProximityRadius @unit(m) = default(10m);
 

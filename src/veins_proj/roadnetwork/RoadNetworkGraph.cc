@@ -127,7 +127,7 @@ bool veins_proj::inEdgeDomain(
  * @return `true` si la ubicación se encuentra dentro del radio de proximidad
  * del vértice.
  */
-bool veins_proj::inVertexProximityRadius(
+bool veins_proj::inVertex(
 		const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,
 		const Graph &graph) {
 	const Edge &edge = locationOnRoadNetwork.edge;

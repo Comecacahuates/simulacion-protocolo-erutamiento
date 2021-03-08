@@ -172,7 +172,7 @@ bool inEdgeDomain(const LocationOnRoadNetwork &locationOnRoadNetwork);
  * @return `true` si la ubicación se encuentra dentro del radio de proximidad
  * del vértice.
  */
-bool inVertexProximityRadius(const LocationOnRoadNetwork &locationOnRoadNetwork,
+bool inVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
 		Vertex vertex, const Graph &graph);
 
 //! Calcula el peso de una arista a partir de otra.

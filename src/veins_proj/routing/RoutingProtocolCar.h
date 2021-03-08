@@ -72,7 +72,7 @@ protected:
     //! Temporizador de limpieza del directorio de _hosts_ vecinos.
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
     //! Temporizador de limpieza de aristas activas.
-    omnetpp::cMessage *purgeActiveEdgesTimer;
+    omnetpp::cMessage *purgeEdgesStatusTimer;
     //! Temporizador de datagramas demorados.
     omnetpp::cMessage *purgeDelayedDatagramsTimer;
     //! Temporizador de limpieza de mensajes PONG pendientes.
@@ -104,13 +104,14 @@ protected:
     virtual void scheduleHelloCarTimer();
     //! Procesar el temporizador de transmisión de mensajes HOLA_VEIH.
     virtual void processHelloCarTimer();
-    //! Crear mensaje HOLA_VEHIC.
     /*!
-     * @param carAddress [in] Dirección del vehículo remitente.
+     * @brief Crear mensaje HOLA_VEHIC.
+     *
+     * @param srcAddress [in] Dirección del vehículo remitente.
      * @return Mensaje HOLA_VEHIC.
      */
     virtual const inet::Ptr<HelloCar> createHelloCar(
-            const inet::Ipv6Address &carAddress) const;
+            const inet::Ipv6Address &srcAddress) const;
     //! Enviar mensaje HOLA_VEHIC.
     /*!
      * Encapsula un mensaje HOLA_VEHIC en un datagrama UDP y lo envía
@@ -140,28 +141,49 @@ protected:
     /*
      * Mensajes PING.
      */
-    //! Crear mensaje PING.
     /*!
+     * @brief Crear mensaje PING.
+     *
      * @param carAddress [in] Dirección del vehículo remitente.
-     * @param srcVertex [in] Vértice de origen de la arista.
-     * @param destVertex [in] Vértice de destino de la arista.
+     * @param pingVertex [in] Vértice de origen.
+     * @param pongVertex [in] Vértice de destino.
      * @return Mensaje PING.
      */
     virtual const inet::Ptr<Ping> createPing(
-            const inet::Ipv6Address &carAddress, Vertex vertex1,
-            Vertex vertex2) const;
-    //! Enviar mensaje PING.
+            const inet::Ipv6Address &carAddress, Vertex pingVertex,
+            Vertex pongVertex) const;
     /*!
+     * @brief Enviar mensaje PING.
+     *
      * Encapsula un mensaje PING en un datagrama UDP y lo envía
      * a la dirección indicada.
      *
      * @param ping [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección de destino del mensaje.
+     * @param destAddress [in] Dirección IPv6 del siguiente salto..
      */
     virtual void sendPing(const inet::Ptr<Ping> &ping,
             const inet::Ipv6Address &destAddress);
-    //! Procesar mensaje PING.
     /*!
+     * @brief Procesar mensaje PING.
+     *
+     * Si el vehículo se encuentra en el vértice de destino,
+     * se crea un mensaje PONG de respuesta y se transmite al vecino
+     * que se encuentre más cerca del vértice de origen;
+     * después, transmite un mensaje HOLA_VEHIC
+     * indicando que la arista está activa.
+     *
+     * Si no se encuentra en el vértice de destino,
+     * se busca el vehículo vecino más cercano vértice de destino
+     * y se retransmite el mensaje hacia este.
+     *
+     * Si no se encuentra un vecino cerca del vértice de destino,
+     * se crea un mensaje PONG de respuesta con la bandera de error activa,
+     * y se busca el vecino que se encuentre más cerca del vertice
+     * de origen para transmitir el mensaje hacia este.
+     *
+     * Si no se encuentra un vecino cerca del vértice de origen,
+     * se descarta el mensaje.
+     *
      * @param ping [in] Mensaje a procesar.
      */
     virtual void processPing(const inet::Ptr<Ping> &ping) override;
@@ -169,31 +191,33 @@ protected:
     /*
      * Mensajes PONG.
      */
-    //! Crear mensaje PONG.
     /*!
-     * @param destAddress [in] Dirección del vehículo que originó
+     * @brief Crear mensaje PONG.
+     *
+     * @param pingAddress [in] Dirección del vehículo que originó
      * el mensaje PING.
-     * @param E [in] Bandera E. Si vale `true`, indica un error en la
-     * operación ping-pong.
-     * @param vertex1 [in]
-     * @param vertex2 [in]
-     * @return
+     * @param error [in] Bandera de error.
+     * @param pingVertex [in] Vértice de origen.
+     * @param pongVertex [in] Vértice de destino.
+     * @return Mensaje PONG.
      */
     virtual const inet::Ptr<Pong> createPong(
-            const inet::Ipv6Address &destAddress, bool E, Vertex vertex1,
-            Vertex vertex2) const;
-    //! Enviar mensaje PONG.
+            const inet::Ipv6Address &pingAddress, bool error, Vertex pingVertex,
+            Vertex pongVertex) const;
     /*!
+     * @brief Enviar mensaje PONG.
+     *
      * Encapsula un mensaje PONG en un datagrama UDP y lo envía
      * a la dirección indicada.
      *
      * @param pong [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección de destino del mensaje.
+     * @param destAddress [in] Dirección IPv6 del siguiente salto.
      */
     virtual void sendPong(const inet::Ptr<Pong> &pong,
             const inet::Ipv6Address &destAddress);
-    //! Procesar mensaje PONG.
     /*!
+     * @brief Procesar mensaje PONG.
+     *
      * Si la dirección de destino es una dirección local,
      * se revisa si es un mensaje PONG pendiente, en cuyo caso,
      * si el valor de la bandera E es falso,
@@ -225,18 +249,19 @@ protected:
      */
     virtual inet::Ipv6Address getRandomNeighbouringCarAddressAheadOnEdge(
             Vertex targetVertex) const;
-    //! Obtener vehículo vecino más cercano a un vértice que se encuentra en
-    //! la misma arista.
     /*!
+     * @brief Buscar vehículo vecino más cercano a un vértice que se encuentra en
+     * la misma arista.
+     *
      * Se bucan los vehículos vecinos que circulan sobre la misma arista,
      * y se obtiene el que se encuentra a la menor distancia del vértice
      * indicado.
      *
      * @param vertex [in] Vértice de referencia.
-     * @return
+     * @return Dirección IPv6 del vecino encontrado, o `::/128`
+     * si no se encuentra ninguno.
      */
-    virtual inet::Ipv6Address getNeighbouringCarAddressOnEdgeClosestToVertex(
-            Vertex vertex);
+    virtual inet::Ipv6Address findNeighbouringCarClosestToVertex(Vertex vertex);
     //! Obtener la cantidad de vehículos vecinos que se encuentran
     //! en la misma arista.
     /*!
@@ -278,32 +303,32 @@ protected:
     virtual void processPurgeNeighbouringHostsTimer();
 
     /*
-     * Aristas activas.
+     * Estatus de las aristas.
      */
     //! Mapa de aristas activas.
     /*!
      * La clave es la arista activa, y el valor es la hora de expiración
      * del registro.
      */
-    typedef ExpiringValuesMap<Edge, bool> ActiveEdges;
+    typedef ExpiringValuesMap<Edge, bool> EdgesStatus;
     //! Valor.
-    typedef ActiveEdges::MapValue ActiveEdge;
+    typedef EdgesStatus::MapValue EdgeStatus;
     //! Iterador para mapa de aristas activas.
-    typedef ActiveEdges::Iterator ActiveEdgesIterator;
+    typedef EdgesStatus::Iterator EdgesStatusIterator;
     //! Iterador para mapa de aristas activas constante.
-    typedef ActiveEdges::ConstIterator ActiveEdgesConstIterator;
-    //! Aristas activas.
+    typedef EdgesStatus::ConstIterator EdgesStatusConstIterator;
+    //! Estatus de las aristas.
     /*!
      * Cuando se recibe un mensaje PONG indicando que la arista se
      * encuentra activa, se agrega un registro.
      */
-    ActiveEdges activeEdges;
+    EdgesStatus edgesStatus;
     //! Imprimir las aristas activas.
-    virtual void showActiveEdges() const;
+    virtual void showEdgesStatus() const;
     //! Programar el temporizador de limpieza de aristas activas.
-    virtual void schedulePurgeActiveEdgesTimer();
+    virtual void schedulePurgeEdgesStatusTimer();
     //! Procesar el temporizador de limpieza de aristas activas.
-    virtual void processPurgeActiveEdgesTimer();
+    virtual void processPurgeEdgesStatusTimer();
 
     /*
      * Datagramas demorados.

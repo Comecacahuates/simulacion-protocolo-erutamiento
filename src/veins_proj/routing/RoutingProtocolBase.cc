@@ -66,8 +66,7 @@ void RoutingProtocolBase::initialize(int stage) {
         neighbouringHostValidityTime = par("neighbouringHostValidityTime");
         pingInterval = par("pingInterval");
         pongTimeout = par("pongTimeout");
-        activeEdgeValidityTime = par("activeEdgeValidityTime");
-        inactiveEdgeValidityTime = par("inactiveEdgeValidityTime");
+        edgeStatusValidityTime = par("edgeStatusValidityTime");
         routeValidityTime = par("routeValidityTime");
         vertexProximityRadius = par("vertexProximityRadius");
 
@@ -377,6 +376,8 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
 
     omnetpp::simtime_t nextExpiryTime = neighbouringCars.getNextExpiryTime();
 
+    omnetpp::simtime_t now = omnetpp::simTime();
+
     EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
 
     if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
@@ -385,7 +386,7 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
 
     } else {
         if (!purgeNeighbouringCarsTimer->isScheduled())
-            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer);
+            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer); // FIXME
 
         else if (purgeNeighbouringCarsTimer->getArrivalTime()
                 != nextExpiryTime) {

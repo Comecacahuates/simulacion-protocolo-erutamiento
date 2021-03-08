@@ -90,7 +90,7 @@ void RoutingProtocolStaticHost::processHelloCar(const inet::Ptr<HelloCar> &hello
     EV_INFO << "RoutingProtocolStaticHost::processHelloCar" << std::endl;
 
     // Se obtienen los datos del mensaje
-    const inet::Ipv6Address &carAddress = helloCar->getAddress();
+    const inet::Ipv6Address &srcAddress = helloCar->getSrcAddress();
     GeohashLocation geohashLocation(helloCar->getGeohash(), 12);
     double speed = helloCar->getSpeed();
     double direction = helloCar->getDirection();
@@ -107,7 +107,7 @@ void RoutingProtocolStaticHost::processHelloCar(const inet::Ptr<HelloCar> &hello
     double distanceToVertexB = graph[edge].length - distanceToVertexA;
     LocationOnRoadNetwork locationOnRoadNetwork = { edge, 0, distanceToVertexA, distanceToVertexB };
 
-    EV_INFO << "Address: " << carAddress.str() << std::endl;
+    EV_INFO << "Address: " << srcAddress.str() << std::endl;
     EV_INFO << "Geohash location: " << geohashLocation.getGeohashString() << std::endl;
     EV_INFO << "Speed: " << speed << std::endl;
     EV_INFO << "Direction: " << direction << std::endl;
@@ -117,12 +117,12 @@ void RoutingProtocolStaticHost::processHelloCar(const inet::Ptr<HelloCar> &hello
     EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
     EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
-    neighbouringCars.getMap()[carAddress].expiryTime = omnetpp::simTime();
-    neighbouringCars.getMap()[carAddress].value = { geohashLocation, speed, direction, locationOnRoadNetwork };
+    neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime();
+    neighbouringCars.getMap()[srcAddress].value = { geohashLocation, speed, direction, locationOnRoadNetwork };
 
     int distance = (int) geohashLocation.getDistance(mobility->getGeohashLocation());
 
-    addRoute(carAddress, 64, carAddress, distance, omnetpp::simTime() + neighbouringCarValidityTime);
+    addRoute(srcAddress, 64, srcAddress, distance, omnetpp::simTime() + neighbouringCarValidityTime);
 
     EV_INFO << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
 
