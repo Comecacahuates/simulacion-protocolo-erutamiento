@@ -102,9 +102,9 @@ struct LocationOnRoadNetwork {
 	//! Distancia hacia la arista.
 	double distanceToEdge;
 	//! Sistancia hacia el primer vértice de la arista.
-	double distanceToVertex1;
+	double distanceToVertexA;
 	//! Distancia hacia el segundo vértice de la arista.
-	double distanceToVertex2;
+	double distanceToVertexB;
 };
 
 //! Determina si la ubicación del primer vértice es menor a la del segundo.

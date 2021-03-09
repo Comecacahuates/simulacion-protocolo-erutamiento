@@ -375,10 +375,10 @@ void RoutingProtocolBase::showNeighbouringCars() const {
                 << neighbouringCarsIt->second.value.locationOnRoadNetwork.edge
                 << std::endl;
         EV_INFO << "Distance to vertex A: "
-                << neighbouringCarsIt->second.value.locationOnRoadNetwork.distanceToVertex1
+                << neighbouringCarsIt->second.value.locationOnRoadNetwork.distanceToVertexA
                 << std::endl;
         EV_INFO << "Distance to vertex B: "
-                << neighbouringCarsIt->second.value.locationOnRoadNetwork.distanceToVertex2
+                << neighbouringCarsIt->second.value.locationOnRoadNetwork.distanceToVertexB
                 << std::endl;
     }
 }
@@ -724,7 +724,7 @@ void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(
     Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
     Vertex vertexB = boost::target(edge, graph);
-    double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
+    double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
 
     TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption = createTlvDestLocationOnRoadNetworkOption(
             vertexA, vertexB, distanceToVertexA);

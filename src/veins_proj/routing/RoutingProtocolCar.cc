@@ -196,8 +196,8 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
     const Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
     Vertex vertexB = boost::target(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertex2;
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
     const GeohashLocation &geohashLocation = mobility->getGeohashLocation();
     double speed = mobility->getSpeed();
     double direction = mobility->getDirection();
@@ -440,7 +440,8 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         helloCar->setPingPongError(false);
         helloCar->setPingVertex(pingVertex);
         helloCar->setPongVertex(pongVertex);
-        sendRoutingMessage(helloCar, primaryUnicastAddress, primaryMulticastAddress);
+        sendRoutingMessage(helloCar, primaryUnicastAddress,
+                primaryMulticastAddress);
 
         /*
          * Si no se encuentra en el vértice de destino, se busca el vecino
@@ -462,7 +463,8 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
             if (!nextHopAddress.isUnspecified()) {
                 const inet::Ptr<Pong> pong = createPong(pingAddress, true,
                         pingVertex, pongVertex);
-                sendRoutingMessage(pong, primaryMulticastAddress, nextHopAddress);
+                sendRoutingMessage(pong, primaryMulticastAddress,
+                        nextHopAddress);
             }
         }
     }
@@ -547,44 +549,44 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
     EV_INFO << "Target vertex: " << pingVertex << std::endl;
 
     /*
-     * Se revisa si la dirección de destino es una dirección local.
+     * Se revisa si la dirección de destino es una dirección local,
+     * y si es un mensaje PONG pendiente, se guarda el estatus de la arista,
+     * y se transmite un mensaje HOLA_VEHIC para anunciarlo.
      */
+    const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
+    PRIMARY_ADDRESS);
+    const inet::Ipv6Address &primaryMulticastAddress = addressCache->getMulticastAddress(
+    PRIMARY_ADDRESS);
     if (interfaceTable->isLocalAddress(destAddress)) {
-
-        /*
-         * Si es un mensaje PONG pendiente, se guarda el estatus de la arista,
-         * y se transmite un mensaje HOLA_VEHIC para anunciarlo.
-         */
         if (pendingPongs.getMap().count(edge)) {
             pendingPongs.getMap().erase(edge);
             edgesStatus.getMap()[edge].expiryTime = omnetpp::simTime()
                     + edgeStatusValidityTime;
-            if (!error)
-                edgesStatus.getMap()[edge].value = true;
+            edgesStatus.getMap()[edge].value = !error;
+            const inet::Ptr<HelloCar> helloCar = createHelloCar(
+                    primaryUnicastAddress);
+            helloCar->setPingPong(true);
+            helloCar->setPingPongError(error);
+            helloCar->setPingVertex(pingVertex);
+            helloCar->setPongVertex(pongVertex);
+            sendRoutingMessage(helloCar, primaryUnicastAddress,
+                    primaryMulticastAddress);
 
-            // TODO Transmitir mensaje HOLA_VEHIC para indicar que la arista está activa.
-            else
-                edgesStatus.getMap()[edge].value = false;
             schedulePurgeEdgesStatusTimer();
         }
 
         /*
-         * Si no es una dirección local, se retransmite el mensaje.
+         * Si no es una dirección local, y el destinatario es un vecino,
+         * se retransmite el mensaje directamente hacia este.
          */
     } else {
-        /*
-         * Si el destinatario es un vecino, se selecciona su dirección
-         * como siguiente salto.
-         */
-        const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
         if (neighbouringCars.getMap().count(destAddress)) {
             sendRoutingMessage(pong, primaryUnicastAddress, destAddress);
 
-        /*
-         * En otro caso, se selecciona un vehículo vecino más cercano
-         * al vértice de origen.
-         */
+            /*
+             * En otro caso, se selecciona como siguiente salto
+             * un vehículo vecino más cercano al vértice de origen.
+             */
         } else {
             inet::Ipv6Address nextHopAddress = findNeighbouringCarClosestToVertex(
                     pingVertex);
@@ -659,7 +661,7 @@ inet::Ipv6Address RoutingProtocolCar::getRandomNeighbouringCarAddressAheadOnEdge
  * @brief Buscar vehículo vecino más cercano a un vértice que se encuentra en
  * la misma arista.
  *
- * Se bucan los vehículos vecinos que circulan sobre la misma arista,
+ * Se buscan los vehículos vecinos que circulan sobre la misma arista,
  * y se obtiene el que se encuentra a la menor distancia del vértice
  * indicado.
  *
@@ -681,8 +683,8 @@ inet::Ipv6Address RoutingProtocolCar::findNeighbouringCarClosestToVertex(
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertex1;
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
 
     double minDistanceToTargetVertex = std::numeric_limits<double>::infinity();
     inet::Ipv6Address address;
@@ -1542,8 +1544,8 @@ void RoutingProtocolCar::showStatus() const {
     const Graph &graph = mobility->getRoadNetwork()->getGraph();
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertex1;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertex2;
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
 
     EV_INFO << "Address: " << addressCache->getUnicastAddress(PRIMARY_ADDRESS)
             << std::endl;

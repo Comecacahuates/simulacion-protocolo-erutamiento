@@ -187,6 +187,6 @@ void RoadNetwork::getOnEdgePosition(const Edge edge, const GeographicLib::GeoCoo
 
     locationOnRoadNetwork.edge = edge;
     locationOnRoadNetwork.distanceToEdge = b * std::sin(alpha);
-    locationOnRoadNetwork.distanceToVertex1 = b * cosalpha;
-    locationOnRoadNetwork.distanceToVertex2 = graph[edge].length - locationOnRoadNetwork.distanceToVertex1;
+    locationOnRoadNetwork.distanceToVertexA = b * cosalpha;
+    locationOnRoadNetwork.distanceToVertexB = graph[edge].length - locationOnRoadNetwork.distanceToVertexA;
 }

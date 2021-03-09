@@ -255,7 +255,7 @@ protected:
      * @brief Buscar vehículo vecino más cercano a un vértice que se encuentra en
      * la misma arista.
      *
-     * Se bucan los vehículos vecinos que circulan sobre la misma arista,
+     * Se buscan los vehículos vecinos que circulan sobre la misma arista,
      * y se obtiene el que se encuentra a la menor distancia del vértice
      * indicado.
      *
