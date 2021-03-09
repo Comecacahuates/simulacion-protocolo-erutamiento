@@ -49,7 +49,11 @@ Register_Abstract_Class(RoutingProtocolBase);
  * Interfaz del módulo.
  */
 
-//! Inicialización.
+/*!
+ * @brief Inicialización.
+ *
+ * @param stage [in] Etapa de inicialización.
+ */
 void RoutingProtocolBase::initialize(int stage) {
     inet::RoutingProtocolBase::initialize(stage);
 
@@ -119,7 +123,11 @@ void RoutingProtocolBase::initialize(int stage) {
     }
 }
 
-//! Manejo de mensajes.
+/*!
+ * @brief Manejo de mensajes.
+ *
+ * @param message [in] Mensaje a procesar.
+ */
 void RoutingProtocolBase::handleMessageWhenUp(omnetpp::cMessage *message) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -139,8 +147,9 @@ void RoutingProtocolBase::handleMessageWhenUp(omnetpp::cMessage *message) {
  * Manejo de mensajes
  */
 
-//! Manejo de mensajes.
 /*!
+ * @brief Manejo de mensajes.
+ *
  * @param message [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::processMessage(omnetpp::cMessage *message) {
@@ -160,8 +169,9 @@ void RoutingProtocolBase::processMessage(omnetpp::cMessage *message) {
     delete packet;
 }
 
-//! Manejo de mensajes propios.
 /*!
+ * @brief Manejo de mensajes propios.
+ *
  * @param message [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::processSelfMessage(omnetpp::cMessage *message) {
@@ -181,8 +191,9 @@ void RoutingProtocolBase::processSelfMessage(omnetpp::cMessage *message) {
  * Paquetes UDP.
  */
 
-//! Enviar paquete UDP.
 /*!
+ * @brief Enviar paquete UDP.
+ *
  * Envía un paquete UDP hacia la compuerta que se conecta con el
  * protocolo IP.
  *
@@ -196,8 +207,9 @@ void RoutingProtocolBase::sendUdpPacket(inet::Packet *packet) {
     send(packet, "ipOut");
 }
 
-//! Procesar paquete UDP.
 /*!
+ * @brief Procesar paquete UDP.
+ *
  * Identifica el tipo de paquete y lo envía a la función de procesamiento
  * correspondiente.
  *
@@ -262,9 +274,11 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
  * Mensajes ACK.
  */
 
-//! Crear mensaje ACK.
 /*!
- * @param address [in] Dirección del remitente del mensaje.
+ * @brief Crear mensaje ACK.
+ *
+ * @param address [in] Dirección del remitente.
+ *
  * @return Mensaje ACK.
  */
 const inet::Ptr<Ack> RoutingProtocolBase::createAck(
@@ -283,10 +297,11 @@ const inet::Ptr<Ack> RoutingProtocolBase::createAck(
     return ack;
 }
 
-//! Enviar mensaje ACK.
 /*!
- * Encapsula un mensaje ACK en un datagrama UDP y lo envía a la dirección
- * indicada.
+ * @brief Enviar mensaje ACK.
+ *
+ * Encapsula un mensaje ACK en un datagrama UDP y lo envía
+ * a la dirección indicada.
  *
  * @param ack [in] Mensaje a enviar.
  * @param destAddress [in] Dirección de destino del mensaje.
@@ -327,8 +342,9 @@ void RoutingProtocolBase::sendAck(const inet::Ptr<Ack> &ack,
     sendUdpPacket(udpPacket);
 }
 
-//! Procesar mensaje ACK.
 /*!
+ * @brief Procesar mensaje ACK.
+ *
  * @param ack [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::processAck(const inet::Ptr<Ack> &ack) {
@@ -343,7 +359,9 @@ void RoutingProtocolBase::processAck(const inet::Ptr<Ack> &ack) {
  * Directorio de vehículos vecinos.
  */
 
-//! Imprime el directorio de vehículos vecinos.
+/*!
+ * @brief Imprimir el directorio de vehículos vecinos.
+ */
 void RoutingProtocolBase::showNeighbouringCars() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -366,8 +384,10 @@ void RoutingProtocolBase::showNeighbouringCars() const {
     }
 }
 
-//! Programar el temporizador de limpieza del directorio de
-//! vehículos vecinos.
+/*!
+ * @brief Programar el temporizador de limpieza del directorio de
+ * vehículos vecinos.
+ */
 void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -386,7 +406,7 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
 
     } else {
         if (!purgeNeighbouringCarsTimer->isScheduled())
-            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer); // TODO Arreglar.
+            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer);    // TODO Arreglar.
 
         else if (purgeNeighbouringCarsTimer->getArrivalTime()
                 != nextExpiryTime) {
@@ -396,8 +416,10 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
     }
 }
 
-//! Procesar el temporizador de limpieza del directorio de
-//! vehículos vecinos.
+/*!
+ * @brief Procesar el temporizador de limpieza del directorio de
+ * vehículos vecinos.
+ */
 void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -409,21 +431,23 @@ void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
     schedulePurgeNeighbouringCarsTimer();
 }
 
-//! Obtener el vehículo vecino más cercano.
 /*!
+ * @brief Obtener el vehículo vecino más cercano.
+ *
  * Encuentra el vehículo vecino cuya ubicación es la más cercana
  * a la ubicación indicada.
  *
  * @param geohashLocation [in] Ubicación Geohash de la que se quiere
  * conocer el vehículo vecino más cercano.
+ *
  * @return Dirección IPv6 del vehículo vecino más cercano.
  */
-inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCarAddress(
+inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCar(
         const GeohashLocation &geohashLocation) const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolBase::getClosestNeighbouringCarAddress");
+    ("RoutingProtocolBase::getClosestNeighbouringCar");
 
     double minDistance = std::numeric_limits<double>::infinity();
     inet::Ipv6Address closestNeighbourAddress = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
@@ -449,7 +473,9 @@ inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCarAddress(
  * Rutas.
  */
 
-//! Mostrar rutas en la tabla de enrutamiento.
+/*!
+ * @brief Mostrar rutas en la tabla de enrutamiento.
+ */
 void RoutingProtocolBase::showRoutes() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -460,8 +486,9 @@ void RoutingProtocolBase::showRoutes() const {
         EV_INFO << "Route: " << routingTable->getRoute(i) << std::endl;
 }
 
-//! Agregar una ruta a la tabla de enrutamiento.
 /*!
+ * @brief Agregar una ruta a la tabla de enrutamiento.
+ *
  * Antes de agregar la ruta, se verifica si esta ya existe en la tabla
  * de enrutamiento, en cuyo caso no se agrega.
  *
@@ -511,8 +538,9 @@ void RoutingProtocolBase::addRoute(const inet::Ipv6Address &destPrefix,
     }
 }
 
-//! Eliminar rutas por dirección IPv6 de siguiente salto.
 /*!
+ * @brief Eliminar rutas por dirección IPv6 de siguiente salto.
+ *
  * Elimina las rutas de la tabla de enrutamiento cuya dirección IPv6
  * de siguiente salto sea igual a la dirección indicada.
  *
@@ -537,8 +565,9 @@ void RoutingProtocolBase::purgeNextHopRoutes(
     }
 }
 
-//! Eliminar rutas viejas.
 /*!
+ * @brief Eliminar rutas viejas.
+ *
  * Elimina las rutas de la tabla de enrutamiento cuya hora de expiración
  * sea anterior a la hora indicada.
  *
@@ -565,8 +594,9 @@ void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t expiryTime) {
  * Opciones TLV.
  */
 
-//! Agregar opción TLV a un datagrama.
 /*!
+ * @brief Agregar opción TLV a un datagrama.
+ *
  * @param datagram [in] Datagrama al que se le agregará la opción TLV.
  * @param tlvOption [in] Opción TLV a agregar al datagrama.
  */
@@ -607,10 +637,12 @@ void RoutingProtocolBase::setTlvOption(inet::Packet *datagram,
             ipv6Header);
 }
 
-//! Crear opción TLV de ubicación del destino.
 /*!
+ * @brief Crear opción TLV de ubicación del destino.
+ *
  * @param geohashLocationBits [in] Ubicación Geohash del destino.
- * @return Opción TLV.
+ *
+ * @return Opción TLV de ubicación del destino.
  */
 TlvDestGeohashLocationOption* RoutingProtocolBase::createTlvDestGeohashLocationOption(
         uint64_t geohashLocationBits) const {
@@ -626,10 +658,12 @@ TlvDestGeohashLocationOption* RoutingProtocolBase::createTlvDestGeohashLocationO
     return tlvOption;
 }
 
-//! Calcular la longitud en octetos de una opción TLV de ubicación
-//! del destino.
 /*!
+ * @brief Calcular la longitud en octetos de una opción TLV de ubicación
+ * del destino.
+ *
  * @param tlvOption [in] Opción TLV cuya longitud se calcula.
+ *
  * @return Longitud de la opción TLV.
  */
 int RoutingProtocolBase::computeTlvOptionLength(
@@ -643,12 +677,14 @@ int RoutingProtocolBase::computeTlvOptionLength(
     return geohashBytes;
 }
 
-//! Crear opción TLV de ubicación vial del destino.
 /*!
+ * @brief Crear opción TLV de ubicación vial del destino.
+ *
  * @param vertexA [in] Primer vértice de la arista de la ubicación vial.
  * @param vertexB [in] Segundo vértice de la arista de la ubicación vial.
  * @param distanceToVertexA [in] Distancia al primer vértice.
- * @return Opción TLV.
+ *
+ * @return Opción TLV de ubicación vial del destino.
  */
 TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOnRoadNetworkOption(
         Vertex vertexA, Vertex vertexB, double distanceToVertexA) const {
@@ -666,10 +702,13 @@ TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOn
     return tlvOption;
 }
 
-//! Agregar opción TLV de ubicación vial del destino a un datagrama.
 /*!
- * @param datagram [inout] Datagrama al que se le agregará la opción TLV.
- * destGeohashLocation tlvOption [in] Ubicación Geohash del destino.
+ * @brief Calcular la longitud en octetos de una opción TLV de
+ * ubicación vial del destino.
+ *
+ * @param tlvOption [in] Opción TLV cuya longitud se calcula.
+ *
+ * @return Longitud de la opción TLV.
  */
 void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(
         inet::Packet *datagram,
@@ -695,9 +734,10 @@ void RoutingProtocolBase::setTlvDestLocationOnRoadNetworkOption(
     setTlvOption(datagram, destLocationOnRoadNetworkOption);
 }
 
-//! Calcular la longitud en octetos de una opción TLV de ubicación vial
-//! del destino.
 /*!
+ * @brief Calcular la longitud en octetos de una opción TLV de
+ * ubicación vial del destino.
+ *
  * @param tlvOption [in] Opción TLV cuya longitud se calcula.
  * @return Longitud de la opción TLV.
  */
@@ -714,7 +754,11 @@ int RoutingProtocolBase::computeTlvOptionLength(
     return vertexABytes + vertexBBytes + distanceToVertexABytes;
 }
 
-//! Crear opción TLV de vértices visitados vacía.
+/*!
+ * @brief Crear opción TLV de vértices visitados vacía.
+ *
+ * @return Opción TLV de vértices visitados.
+ */
 TlvVisitedVerticesOption* RoutingProtocolBase::createTlvVisitedVerticesOption() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -726,8 +770,10 @@ TlvVisitedVerticesOption* RoutingProtocolBase::createTlvVisitedVerticesOption() 
     return tlvOption;
 }
 
-//! Calcular la longitud en octetos de una opción TLV de vértices visitados.
 /*!
+ * @brief Calcular la longitud en octetos de una opción TLV de
+ * vértices visitados.
+ *
  * @param tlvOption [in] Opción TLV cuya longitud se calcula.
  * @return Longitud de la opción TLV.
  */

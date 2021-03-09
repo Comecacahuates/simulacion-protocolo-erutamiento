@@ -55,7 +55,11 @@ Define_Module(RoutingProtocolCar);
  * Interfaz del módulo.
  */
 
-//! Inicialización.
+/*!
+ * @brief Inicialización.
+ *
+ * @param [in] Etapa de inicialización.
+ */
 void RoutingProtocolCar::initialize(int stage) {
     RoutingProtocolBase::initialize(stage);
 
@@ -84,8 +88,9 @@ void RoutingProtocolCar::initialize(int stage) {
  * Manejo de mensajes.
  */
 
-//! Manejo de mensajes propios.
 /*!
+ * @brief Manejo de mensajes propios.
+ *
  * @param message [in] Mensaje a procesar.
  */
 void RoutingProtocolCar::processSelfMessage(omnetpp::cMessage *message) {
@@ -114,7 +119,9 @@ void RoutingProtocolCar::processSelfMessage(omnetpp::cMessage *message) {
  * Mensajes HOLA_VEHIC.
  */
 
-//! Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
+/*!
+ * @brief Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
+ */
 void RoutingProtocolCar::scheduleHelloCarTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -125,7 +132,9 @@ void RoutingProtocolCar::scheduleHelloCarTimer() {
             helloCarTimer);
 }
 
-//! Procesar el temporizador de transmisión de mensajes HOLA_VEIH.
+/*!
+ * @brief Procesar el temporizador de transmisión de mensajes HOLA_VEIC.
+ */
 void RoutingProtocolCar::processHelloCarTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -163,6 +172,7 @@ void RoutingProtocolCar::processHelloCarTimer() {
  * @brief Crear mensaje HOLA_VEHIC.
  *
  * @param srcAddress [in] Dirección del vehículo remitente.
+ *
  * @return Mensaje HOLA_VEHIC.
  */
 const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
@@ -208,8 +218,9 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
     return helloCar;
 }
 
-//! Enviar mensaje HOLA_VEHIC.
 /*!
+ * @brief Enviar mensaje HOLA_VEHIC.
+ *
  * Encapsula un mensaje HOLA_VEHIC en un datagrama UDP y lo envía
  * a la dirección indicada.
  *
@@ -251,8 +262,9 @@ void RoutingProtocolCar::sendHelloCar(const inet::Ptr<HelloCar> &helloCar,
     sendUdpPacket(udpPacket);
 }
 
-//! Procesar mensaje HOLA_VEHIC.
 /*!
+ * @brief Procesar mensaje HOLA_VEHIC.
+ *
  * @param helloCar [in] Mensaje a procesar.
  */
 void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
@@ -305,8 +317,9 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
  * Mensajes HOLA_HOST.
  */
 
-//! Procesar mensaje HOLA_HOST.
 /*!
+ * @brief Procesar mensaje HOLA_HOST.
+ *
  * @param helloHost [in] Mensaje a procesar.
  */
 void RoutingProtocolCar::processHelloHost(
@@ -348,6 +361,7 @@ void RoutingProtocolCar::processHelloHost(
  * @param carAddress [in] Dirección del vehículo remitente.
  * @param pingVertex [in] Vértice de origen.
  * @param pongVertex [in] Vértice de destino.
+ *
  * @return Mensaje PING.
  */
 const inet::Ptr<Ping> RoutingProtocolCar::createPing(
@@ -545,6 +559,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
  * @param error [in] Bandera de error.
  * @param pingVertex [in] Vértice de origen.
  * @param pongVertex [in] Vértice de destino.
+ *
  * @return Mensaje PONG.
  */
 const inet::Ptr<Pong> RoutingProtocolCar::createPong(
@@ -704,12 +719,14 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
  * Directorio de vehículos vecinos.
  */
 
-//! Obtener vehículo vecino aleatorio en la misma arista.
 /*!
+ * @brief Obtener vehículo vecino aleatorio en la misma arista.
+ *
  * Obtiene aleatoriamente un vehículo vecino que se encuentra en la misma
  * arista, y que esté más cerca del vértice indicado.
  *
  * @param targetVertex [in] Vértice de referencia.
+ *
  * @return Dirección IPv6 del vehículo vecino seleccionado.
  */
 inet::Ipv6Address RoutingProtocolCar::getRandomNeighbouringCarAddressAheadOnEdge(
@@ -769,6 +786,7 @@ inet::Ipv6Address RoutingProtocolCar::getRandomNeighbouringCarAddressAheadOnEdge
  * indicado.
  *
  * @param vertex [in] Vértice de referencia.
+ *
  * @return Dirección IPv6 del vecino encontrado, o `::/128`
  * si no se encuentra ninguno.
  *
@@ -813,9 +831,10 @@ inet::Ipv6Address RoutingProtocolCar::findNeighbouringCarClosestToVertex(
     return address;
 }
 
-//! Obtener la cantidad de vehículos vecinos que se encuentran
-//! en la misma arista.
 /*!
+ * @brief Obtener la cantidad de vehículos vecinos que se encuentran
+ * en la misma arista.
+ *
  * @return Cantidad de vehículos vecinos que se encuentran en
  * la misma arista.
  */
@@ -849,7 +868,9 @@ int RoutingProtocolCar::getNeighbouringCarsOnEdgeCount() const {
  * Directorio de _hosts_ vecinos.
  */
 
-//! Imrpimir el directorio de _hosts_ vecinos.
+/*!
+ * @brief Imrpimir el directorio de _hosts_ vecinos.
+ */
 void RoutingProtocolCar::showNeighbouringHosts() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -858,7 +879,10 @@ void RoutingProtocolCar::showNeighbouringHosts() const {
 
 }
 
-//! Programar el temporizador de limpieza del directorio de _hosts_ vecinos.
+/*!
+ * @brief Programar el temporizador de limpieza del directorio
+ * de _hosts_ vecinos.
+ */
 void RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -885,7 +909,10 @@ void RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer() {
     }
 }
 
-//! Procesar el temporizador de limpieza del directorio de _hosts_ vecinos.
+/*!
+ * @brief Procesar el temporizador de limpieza del directorio
+ * de _hosts_ vecinos.
+ */
 void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -901,7 +928,9 @@ void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
  * Estatus de las aristas.
  */
 
-//! Imprimir las aristas activas.
+/*!
+ * @brief Imprimir las aristas activas.
+ */
 void RoutingProtocolCar::showEdgesStatus() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -910,7 +939,9 @@ void RoutingProtocolCar::showEdgesStatus() const {
 
 }
 
-//! Programar el temporizador de limpieza de aristas activas.
+/*!
+ * @brief Programar el temporizador de limpieza de aristas activas.
+ */
 void RoutingProtocolCar::schedulePurgeEdgesStatusTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -936,7 +967,9 @@ void RoutingProtocolCar::schedulePurgeEdgesStatusTimer() {
     }
 }
 
-//! Procesar el temporizador de limpieza de aristas activas.
+/*!
+ * @brief Procesar el temporizador de limpieza de aristas activas.
+ */
 void RoutingProtocolCar::processPurgeEdgesStatusTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -951,7 +984,9 @@ void RoutingProtocolCar::processPurgeEdgesStatusTimer() {
  * Datagramas demorados.
  */
 
-//! Imprimir los datagramas demorados.
+/*!
+ * @brief Imprimir los datagramas demorados.
+ */
 void RoutingProtocolCar::showDelayedDatagrams() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -960,7 +995,9 @@ void RoutingProtocolCar::showDelayedDatagrams() {
 
 }
 
-//! Programar el temporizador de limpieza de datagramas demorados.
+/*!
+ * @brief Programar el temporizador de limpieza de datagramas demorados.
+ */
 void RoutingProtocolCar::schedulePurgeDelayedDatagramsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -987,7 +1024,9 @@ void RoutingProtocolCar::schedulePurgeDelayedDatagramsTimer() {
     }
 }
 
-//! Procesar el temporizador de limpieza de datagramas demorados.
+/*!
+ * @brief Procesar el temporizador de limpieza de datagramas demorados.
+ */
 void RoutingProtocolCar::processPurgeDelayedDatagramsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -1002,7 +1041,9 @@ void RoutingProtocolCar::processPurgeDelayedDatagramsTimer() {
  * Mensajes PONG pendientes.
  */
 
-//! Imprimir los mensajes PONG pendientes.
+/*!
+ * @brief Imprimir los mensajes PONG pendientes.
+ */
 void RoutingProtocolCar::showPendingPongs() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -1011,7 +1052,10 @@ void RoutingProtocolCar::showPendingPongs() const {
 
 }
 
-//! Programar el temporizador de limpieza de mensajes PONG pendientes.
+/*!
+ * @brief Programar el temporizador de limpieza de mensajes
+ * PONG pendientes.
+ */
 void RoutingProtocolCar::schedulePurgePendingPongsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -1037,7 +1081,10 @@ void RoutingProtocolCar::schedulePurgePendingPongsTimer() {
     }
 }
 
-//! Procesar el temporizador de limpieza de mensajes PONG pendientes.
+/*!
+ * @brief Procesar el temporizador de limpieza de mensajes
+ * PONG pendientes.
+ */
 void RoutingProtocolCar::processPurgePendingPongsTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -1052,14 +1099,16 @@ void RoutingProtocolCar::processPurgePendingPongsTimer() {
  * Enrutamiento.
  */
 
-//! Enrutar datagrama.
 /*!
+ * @brief Enrutar datagrama.
+ *
  * Revisa si existe en la tabla de enrutamiento una ruta hacia la
  * dirección de destino. Si no existe, se intenta descubrir y crear una
  * ruta. Si no se encuentra la ruta, se descarta el datagrama.
  *
  * @param datagram [in] Datagrama a enrutar.
  * @param destAddress [in] Dirección IPv6 de destino.
+ *
  * @return Resultado del enrutamiento.
  */
 inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
@@ -1146,8 +1195,9 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
     return inet::INetfilter::IHook::Result::DROP;
 }
 
-//! Verificar la cabecera de opciones de salto por salto.
 /*!
+ * @brief Verificar la cabecera de opciones de salto por salto.
+ *
  * Verifica si la cabecera tiene la opción de ubicación del destino.
  *
  * Si el destino se encuentra en la misma subred, se verifica si
@@ -1196,10 +1246,12 @@ bool RoutingProtocolCar::validateHopByHopOptionsHeader(
     return true;
 }
 
-//! Obtener el vértice de destino local.
 /*!
+ * @brief Obtener el vértice de destino local.
+ *
  * @param datagram [in] Datagrama a enrutar.
  * @param shortestPath [in] Rutas más cortas.
+ *
  * @return Vértice de destino local.
  */
 Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
@@ -1298,9 +1350,11 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
     return destVertex;
 }
 
-//! Se obtiene el conjunto de vértices visitados.
 /*!
+ * @brief Se obtiene el conjunto de vértices visitados.
+ *
  * @param visitedVerticesOption [in] Opción de vértices visitados.
+ *
  * @return Conjunto de vértices visitados.
  */
 VertexSet RoutingProtocolCar::getVisitedVertices(
@@ -1321,11 +1375,13 @@ VertexSet RoutingProtocolCar::getVisitedVertices(
     return visitedVertices;
 }
 
-//! Obtener el vértice de destino.
 /*!
+ * @brief Obtener el vértice de destino.
+ *
  * @param destGeohashLocation [in] Ubicación Geohash del destino.
  * @param destEdge [in] Arista de la ubicación del destno.
  * @param shortestPath [in] Rutas más cortas.
+ *
  * @return Vértice de destino.
  */
 Vertex RoutingProtocolCar::getDestVertex(
@@ -1407,14 +1463,16 @@ Vertex RoutingProtocolCar::getDestVertex(
     return destVertex;
 }
 
-//! Obtener aristas en la ruta más corta que forman un tramo recto.
 /*!
+ * @brief Obtener aristas en la ruta más corta que forman un tramo recto.
+ *
  * Se obtienen las aristas en la ruta que forman el tramo largo más recto,
  * y en las que haya vehículos vecinos circulando.
  *
  * @param shortestPathToDestVertex [in] Ruta más corta al vértice
  * de destino.
  * @param shortestPath [in] Rutas más cortas.
+ *
  * @return Aristas que forman un
  */
 EdgeVector RoutingProtocolCar::getReachableEdges(
@@ -1467,13 +1525,15 @@ EdgeVector RoutingProtocolCar::getReachableEdges(
     return reachableEdges;
 }
 
-//! Encontrar siguiente salto.
 /*!
+ * @brief Encontrar siguiente salto.
+ *
  * Se obtiene el siguiente salto en la ruta.
  *
  * @param shortestPathToDestVertex [in] Ruta más corta al vértice
  * de destino.
  * @param shortestPath [in] Rutas más cortas.
+ *
  * @return Dirección IPv6 del siguiente salto.
  */
 inet::Ipv6Address RoutingProtocolCar::findNextHop(
@@ -1562,9 +1622,11 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
     return nextHopAddress;
 }
 
-//! Obtener vehículo vecino en la región Geohash adyacente.
 /*!
+ * @brief Obtener vehículo vecino en la región Geohash adyacente.
+ *
  * @param neighbouringGeohashRegion [in] Región Geohash adyacente.
+ *
  * @return Dirección IPv6 del vehículo vecino en la región Geohash indicada.
  */
 inet::Ipv6Address RoutingProtocolCar::findNeighbourInNeighbourinRegion(
@@ -1590,7 +1652,9 @@ inet::Ipv6Address RoutingProtocolCar::findNeighbourInNeighbourinRegion(
  * Estatus del vehículo.
  */
 
-//! Mostrar la dirección IPv6 del vehículo y su ubicación vial.
+/*!
+ * @brief Mostrar la dirección IPv6 del vehículo y su ubicación vial.
+ */
 void RoutingProtocolCar::showStatus() const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
@@ -1609,6 +1673,10 @@ void RoutingProtocolCar::showStatus() const {
     EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
     EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
 }
+
+/*
+ * Netfilter.
+ */
 
 inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
         inet::Packet *datagram) {
@@ -1657,6 +1725,10 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramLocalOutHook(
     return inet::INetfilter::IHook::ACCEPT;
 }
 
+/*
+ * Lifecycle.
+ */
+
 void RoutingProtocolCar::handleStartOperation(
         inet::LifecycleOperation *operation) {
     EV_INFO << "******************************************************************************************************************************************************************"
@@ -1701,6 +1773,10 @@ void RoutingProtocolCar::handleCrashOperation(
     neighbouringHosts.getMap().clear();
     edgesStatus.getMap().clear();
 }
+
+/*
+ * Notification.
+ */
 
 void RoutingProtocolCar::receiveSignal(omnetpp::cComponent *source,
         omnetpp::simsignal_t signalID, omnetpp::cObject *obj,

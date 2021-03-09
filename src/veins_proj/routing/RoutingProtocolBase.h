@@ -49,9 +49,10 @@
 
 namespace veins_proj {
 
-//! Módulo que implementa las operaciones de enrutamiento comunes para
-//! vehículos y _hosts_.
 /*!
+ * @brief Módulo que implementa las operaciones de enrutamiento comunes para
+ * vehículos y _hosts_.
+ *
  * Contiene los parámetros de enrutamiento para configurar el protocolo.
  * Las unidades de los parámetros se especifican en el archivo de configuración.
  */
@@ -64,63 +65,105 @@ protected:
     /*
      * Parámetros de configuración.
      */
-    //! Intervalo de transmisión de mensajes HOLA_VEHIC.
+    /*!
+     * @brief Intervalo de transmisión de mensajes HOLA_VEHIC.
+     */
     omnetpp::simtime_t helloCarInterval;
-    //! Intervalo de transmisión de mensajes HOLA_HOST.
+    /*!
+     * @brief Intervalo de transmisión de mensajes HOLA_HOST.
+     */
     omnetpp::simtime_t helloHostInterval;
-    //! Tiempo de vigencia de los registros del directorio de vehículos vecinos.
+    /*!
+     * @brief Tiempo de vigencia de los registros del
+     * de vehículos vecinos.
+     */
     omnetpp::simtime_t neighbouringCarValidityTime;
-    //! Tiempo de vigencia de los registros del directorio de _hosts_ vecinos.
+    /*!
+     * @brief Tiempo de vigencia de los registros del directorio
+     * de _hosts_ vecinos.
+     */
     omnetpp::simtime_t neighbouringHostValidityTime;
-    //! Intervalo de transmisión de mensajes PING.
+    /*!
+     * @brief Intervalo de transmisión de mensajes PING.
+     */
     omnetpp::simtime_t pingInterval;
-    //! Tiempo de espera para los mensahes PONG.
+    /*!
+     * @brief Tiempo de espera para los mensahes PONG.
+     */
     omnetpp::simtime_t pongTimeout;
-    //! Tiempo de vigencia de aristas activas.
+    /*!
+     * @brief Tiempo de vigencia de aristas activas.
+     */
     omnetpp::simtime_t edgeStatusValidityTime;
-    //! Tiempo de vigencia de las rutas.
+    /*!
+     * @brief Tiempo de vigencia de las rutas.
+     */
     omnetpp::simtime_t routeValidityTime;
-    //! Radio de proximidad a los vértices.
+    /*!
+     * @brief Radio de proximidad a los vértices.
+     */
     double vertexProximityRadius;
 
     /*
      * Contexto.
      */
-    //! Módulo del _host_ o vehículo contenedor.
+    /*!
+     * @brief Módulo del _host_ o vehículo contenedor.
+     */
     omnetpp::cModule *host = nullptr;
-    //! Módulo de la tabla de interfaces.
+    /*!
+     * @brief Módulo de la tabla de interfaces.
+     */
     inet::IInterfaceTable *interfaceTable = nullptr;
-    //! Módulo de la tabla de enrutamiento IPv6.
+    /*!
+     * @brief Módulo de la tabla de enrutamiento IPv6.
+     */
     inet::Ipv6RoutingTable *routingTable = nullptr;
-    //! Módulo del protocolo de red.
+    /*!
+     * @brief Módulo del protocolo de red.
+     */
     inet::INetfilter *networkProtocol = nullptr;
-    //! Módulo de la interfaz de red.
+    /*!
+     * @brief Módulo de la interfaz de red.
+     */
     inet::NetworkInterface *networkInterface = nullptr;
-    //! Módulo de la base de datos de redes viales.
+    /*!
+     * @brief Módulo de la base de datos de redes viales.
+     */
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
-    //! Módulo de la caché de direcciones.
+    /*!
+     * @brief Módulo de la caché de direcciones.
+     */
     AddressCache *addressCache = nullptr;
 
     /*
      * Mensajes propios.
      */
-    //! Temporizador de limpieza del directorio de vehículos vecinos.
+    /*!
+     * @brief Temporizador de limpieza del directorio de vehículos vecinos.
+     */
     omnetpp::cMessage *purgeNeighbouringCarsTimer = nullptr;
 
     /*
      * Interfaz del módulo.
      */
-    //! Número de etapas de inicialización.
+    /*!
+     * @brief Número de etapas de inicialización.
+     *
+     * @return Número de etapas de inicialización.
+     */
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;
     }
     /*!
      * @brief Inicialización.
+     *
      * @param stage [in] Etapa de inicialización.
      */
     virtual void initialize(int stage) override;
     /*!
      * @brief Manejo de mensajes.
+     *
      * @param message [in] Mensaje a procesar.
      */
     virtual void handleMessageWhenUp(omnetpp::cMessage *message) override;
@@ -128,13 +171,15 @@ protected:
     /*
      * Manejo de mensajes.
      */
-    //! Manejo de mensajes.
     /*!
+     * @brief Manejo de mensajes.
+     *
      * @param message [in] Mensaje a procesar.
      */
     virtual void processMessage(omnetpp::cMessage *message);
-    //! Manejo de mensajes propios.
     /*!
+     * @brief Manejo de mensajes propios.
+     *
      * @param message [in] Mensaje a procesar.
      */
     virtual void processSelfMessage(omnetpp::cMessage *message);
@@ -142,16 +187,18 @@ protected:
     /*
      * Paquetes UDP.
      */
-    //! Enviar paquete UDP.
     /*!
+     * @brief Enviar paquete UDP.
+     *
      * Envía un paquete UDP hacia la compuerta que se conecta con el
      * protocolo IP.
      *
      * @param packet [in] Paque a enviar.
      */
     virtual void sendUdpPacket(inet::Packet *packet);
-    //! Procesar paquete UDP.
     /*!
+     * @brief Procesar paquete UDP.
+     *
      * Identifica el tipo de paquete y lo envía a la función de procesamiento
      * correspondiente.
      *
@@ -162,15 +209,18 @@ protected:
     /*
      * Mensajes ACK.
      */
-    //! Crear mensaje ACK.
     /*!
+     * @brief Crear mensaje ACK.
+     *
      * @param address [in] Dirección del remitente.
+     *
      * @return Mensaje ACK.
      */
     virtual const inet::Ptr<Ack> createAck(
             const inet::Ipv6Address &address) const;
-    //! Enviar mensaje ACK.
     /*!
+     * @brief Enviar mensaje ACK.
+     *
      * Encapsula un mensaje ACK en un datagrama UDP y lo envía
      * a la dirección indicada.
      *
@@ -179,8 +229,9 @@ protected:
      */
     virtual void sendAck(const inet::Ptr<Ack> &ack,
             const inet::Ipv6Address &destAddress);
-    //! Procesar mensaje ACK.
     /*!
+     * @brief Procesar mensaje ACK.
+     *
      * @param ack [in] Mensaje a procesar.
      */
     virtual void processAck(const inet::Ptr<Ack> &ack);
@@ -188,8 +239,9 @@ protected:
     /*
      * Mensajes HOLA_VEHIC.
      */
-    //! Procesar mensaje HOLA_VEHIC.
     /*!
+     * @brief Procesar mensaje HOLA_VEHIC.
+     *
      * @param helloCar [in] Mensaje a procesar.
      */
     virtual void processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
@@ -198,8 +250,9 @@ protected:
     /*
      * Mensajes HOLA_HOST.
      */
-    //! Procesar mensaje HOLA_HOST.
     /*!
+     * @brief Procesar mensaje HOLA_HOST.
+     *
      * @param helloHost [in] Mensaje a procesar.
      */
     virtual void processHelloHost(const inet::Ptr<HelloHost> &helloHost) {
@@ -208,8 +261,9 @@ protected:
     /*
      * Mensajes PING.
      */
-    //! Procesar mensaje PING.
     /*!
+     * @brief Procesar mensaje PING.
+     *
      * @param ping [in] Mensaje a procesar.
      */
     virtual void processPing(const inet::Ptr<Ping> &ping) {
@@ -218,8 +272,9 @@ protected:
     /*
      * Mensajes PONG.
      */
-    //! Procesar mensaje PONG.
     /*!
+     * @brief Procesar mensaje PONG.
+     *
      * @param pong [in] Mensaje a procesar.
      */
     virtual void processPong(const inet::Ptr<Pong> &pong) {
@@ -228,59 +283,90 @@ protected:
     /*
      * Directorio de vehículos vecinos.
      */
-    //! Registro de vehículo vecino.
+    /*!
+     * @brief Registro de vehículo vecino.
+     */
     struct NeighbouringCarValue {
-        //! Ubicación Geohash del vehículo.
+        /*!
+         * @brief Ubicación Geohash del vehículo.
+         */
         GeohashLocation geohashLocation;
-        //! Velocidad de movimiento del vehículo en metros por segundo.
+        /*!
+         * @brief Velocidad de movimiento del vehículo en metros por segundo.
+         */
         double speed;
-        //! Dirección acimutal del movimiento del vehículo en grados.
+        /*!
+         * @brief Dirección acimutal del movimiento del vehículo en grados.
+         */
         double direction;
-        //! Ubicación vial del vehículo.
+        /*!
+         * @brief Ubicación vial del vehículo.
+         */
         LocationOnRoadNetwork locationOnRoadNetwork;
     };
-    //! Mapa de directorio de vehículos vecinos.
     /*!
+     * @brief Diccionario de directorio de vehículos vecinos.
+     *
      * La clave es la dirección del vehículo vecino, y el valor es el
      * registro de vehículo vecino.
      * */
     typedef ExpiringValuesMap<inet::Ipv6Address, NeighbouringCarValue> NeighbouringCars;
-    //! Valor.
-    typedef NeighbouringCars::MapValue NeighbouringCar;
-    //! Iterador de registros para mapa del directorio de vehículos vecinos.
-    typedef NeighbouringCars::Iterator NeighbouringCarsIterator;
-    //! Iterador de registros para mapa de directorio de vehículos
-    //! vecinos constante.
-    typedef NeighbouringCars::ConstIterator NeighbouringCarsConstIterator;
-    //! Directorio de vehículos vecinos.
-    NeighbouringCars neighbouringCars;
-    //! Imprimir el directorio de vehículos vecinos.
-    virtual void showNeighbouringCars() const;
-    //! Programar el temporizador de limpieza del directorio de
-    //! vehículos vecinos.
-    virtual void schedulePurgeNeighbouringCarsTimer();
-    //! Procesar el temporizador de limpieza del directorio de
-    //! vehículos vecinos.
-    virtual void processPurgeNeighbouringCarsTimer();
-    //! Obtener el vehículo vecino más cercano.
     /*!
+     * @brief Valor.
+     */
+    typedef NeighbouringCars::MapValue NeighbouringCar;
+    /*!
+     * @brief Iterador de registros para diccionario del directorio de
+     * vehículos vecinos.
+     */
+    typedef NeighbouringCars::Iterator NeighbouringCarsIterator;
+    /*!
+     * @brief Iterador de registros para diccionario de directorio de vehículos
+     * vecinos constante.
+     */
+    typedef NeighbouringCars::ConstIterator NeighbouringCarsConstIterator;
+    /*!
+     * @brief Directorio de vehículos vecinos.
+     */
+    NeighbouringCars neighbouringCars;
+    /*!
+     * @brief Imprimir el directorio de vehículos vecinos.
+     */
+    virtual void showNeighbouringCars() const;
+    /*!
+     * @brief Programar el temporizador de limpieza del directorio de
+     * vehículos vecinos.
+     */
+    virtual void schedulePurgeNeighbouringCarsTimer();
+    /*!
+     * @brief Procesar el temporizador de limpieza del directorio de
+     * vehículos vecinos.
+     */
+    virtual void processPurgeNeighbouringCarsTimer();
+    /*!
+     * @brief Obtener el vehículo vecino más cercano.
+     *
      * Encuentra el vehículo vecino cuya ubicación es la más cercana
      * a la ubicación indicada.
      *
      * @param geohashLocation [in] Ubicación Geohash de la que se quiere
      * conocer el vehículo vecino más cercano.
+     *
      * @return Dirección IPv6 del vehículo vecino más cercano.
      */
-    virtual inet::Ipv6Address getClosestNeighbouringCarAddress(
+    virtual inet::Ipv6Address getClosestNeighbouringCar(
             const GeohashLocation &geohashLocation) const;
 
     /*
      * Rutas.
      */
-    //! Mostrar rutas en la tabla de enrutamiento.
-    virtual void showRoutes() const;
-    //! Agregar una ruta a la tabla de enrutamiento.
     /*!
+     * @brief Mostrar rutas en la tabla de enrutamiento.
+     */
+    virtual void showRoutes() const;
+    /*!
+     * @brief Agregar una ruta a la tabla de enrutamiento.
+     *
      * Antes de agregar la ruta, se verifica si esta ya existe en la tabla
      * de enrutamiento, en cuyo caso no se agrega.
      *
@@ -293,8 +379,9 @@ protected:
     virtual void addRoute(const inet::Ipv6Address &destPrefix,
             const short prefixLength, const inet::Ipv6Address &nextHop,
             int metric, omnetpp::simtime_t expiryTime);
-    //! Eliminar rutas por dirección IPv6 de siguiente salto.
     /*!
+     * @brief Eliminar rutas por dirección IPv6 de siguiente salto.
+     *
      * Elimina las rutas de la tabla de enrutamiento cuya dirección IPv6
      * de siguiente salto sea igual a la dirección indicada.
      *
@@ -302,8 +389,9 @@ protected:
      * rutas a eliminar.
      */
     virtual void purgeNextHopRoutes(const inet::Ipv6Address &nextHopAddress);
-    //! Eliminar rutas viejas.
     /*!
+     * @brief Eliminar rutas viejas.
+     *
      * Elimina las rutas de la tabla de enrutamiento cuya hora de expiración
      * sea anterior a la hora indicada.
      *
@@ -314,14 +402,16 @@ protected:
     /*
      * Enrutamiento
      */
-    //! Enrutar datagrama.
     /*!
+     * @brief Enrutar datagrama.
+     *
      * Revisa si existe en la tabla de enrutamiento una ruta hacia la
      * dirección de destino. Si no existe, se intenta descubrir y crear una
      * ruta. Si no se encuentra la ruta, se descarta el datagrama.
      *
      * @param datagram [in] Datagrama a enrutar.
      * @param destAddress [in] Dirección IPv6 de destino.
+     *
      * @return Resultado del enrutamiento.
      */
     virtual inet::INetfilter::IHook::Result routeDatagram(
@@ -330,17 +420,20 @@ protected:
     /*
      * Opciones TLV.
      */
-    //! Agregar opción TLV a un datagrama.
     /*!
+     * @brief Agregar opción TLV a un datagrama.
+     *
      * @param datagram [in] Datagrama al que se le agregará la opción TLV.
      * @param tlvOption [in] Opción TLV a agregar al datagrama.
      */
     void setTlvOption(inet::Packet *datagram,
             inet::TlvOptionBase *tlvOption) const;
-    //! Obtener opción TLV constante de un datagrama.
     /*!
+     * @brief Obtener opción TLV constante de un datagrama.
+     *
      * @tparam T Tipo de opción TLV a obtener.
      * @param datagram [in] Datagrama del que se obtendrá la opción TLV.
+     *
      * @return Opción TLV.
      */
     template<class T> const T* findTlvOption(inet::Packet *datagram) const {
@@ -367,10 +460,12 @@ protected:
 
         return tlvOption;
     }
-    //! Obtener opción TLV de un datagrama.
     /*!
+     * @brief Obtener opción TLV de un datagrama.
+     *
      * @tparam T Tipo de opción TLV a obtener.
      * @param datagram [in] Datagrama del que se obtendrá la opción TLV.
+     *
      * @return Opción TLV.
      */
     template<class T> T* findTlvOptionForUpdate(inet::Packet *datagram) {
@@ -399,49 +494,65 @@ protected:
 
         return tlvOption;
     }
-    //! Crear opción TLV de ubicación del destino.
     /*!
+     * @brief Crear opción TLV de ubicación del destino.
+     *
      * @param geohashLocationBits [in] Ubicación Geohash del destino.
-     * @return Opción TLV.
+     *
+     * @return Opción TLV de ubicación del destino.
      */
     TlvDestGeohashLocationOption* createTlvDestGeohashLocationOption(
             uint64_t geohashLocationBits) const;
-    //! Calcular la longitud en octetos de una opción TLV de ubicación
-    //! del destino.
     /*!
+     * @brief Calcular la longitud en octetos de una opción TLV de ubicación
+     * del destino.
+     *
      * @param tlvOption [in] Opción TLV cuya longitud se calcula.
+     *
      * @return Longitud de la opción TLV.
      */
     int computeTlvOptionLength(TlvDestGeohashLocationOption *tlvOption) const;
-    //! Crear opción TLV de ubicación vial del destino.
     /*!
+     * @brief Crear opción TLV de ubicación vial del destino.
+     *
      * @param vertexA [in] Primer vértice de la arista de la ubicación vial.
      * @param vertexB [in] Segundo vértice de la arista de la ubicación vial.
      * @param distanceToVertexA [in] Distancia al primer vértice.
-     * @return Opción TLV.
+     *
+     * @return Opción TLV de ubicación vial del destino.
      */
     TlvDestLocationOnRoadNetworkOption* createTlvDestLocationOnRoadNetworkOption(
             Vertex vertexA, Vertex vertexB, double distanceToVertexA) const;
-    //! Agregar opción TLV de ubicación vial del destino a un datagrama.
     /*!
+     * @brief Agregar opción TLV de ubicación vial del destino a un datagrama.
+     *
      * @param datagram [inout] Datagrama al que se le agregará la opción TLV.
      * destGeohashLocation tlvOption [in] Ubicación Geohash del destino.
      */
     void setTlvDestLocationOnRoadNetworkOption(inet::Packet *datagram,
             const GeohashLocation &destGeohashLocation) const;
-    //! Calcular la longitud en octetos de una opción TLV de ubicación vial
-    //! del destino.
     /*!
+     * @brief Calcular la longitud en octetos de una opción TLV de
+     * ubicación vial del destino.
+     *
      * @param tlvOption [in] Opción TLV cuya longitud se calcula.
+     *
      * @return Longitud de la opción TLV.
      */
     int computeTlvOptionLength(
             TlvDestLocationOnRoadNetworkOption *tlvOption) const;
-    //! Crear opción TLV de vértices visitados vacía.
-    TlvVisitedVerticesOption* createTlvVisitedVerticesOption() const;
-    //! Calcular la longitud en octetos de una opción TLV de vértices visitados.
     /*!
+     * @brief Crear opción TLV de vértices visitados vacía.
+     *
+     * @return Opción TLV de vértices visitados.
+     */
+    TlvVisitedVerticesOption* createTlvVisitedVerticesOption() const;
+    /*!
+     * @brief Calcular la longitud en octetos de una opción TLV de
+     * vértices visitados.
+     *
      * @param tlvOption [in] Opción TLV cuya longitud se calcula.
+     *
      * @return Longitud de la opción TLV.
      */
     int computeTlvOptionLength(TlvVisitedVerticesOption *tlvOption) const;
