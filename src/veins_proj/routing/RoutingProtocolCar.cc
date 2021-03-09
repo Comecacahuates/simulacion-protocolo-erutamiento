@@ -679,36 +679,32 @@ inet::Ipv6Address RoutingProtocolCar::findNeighbouringCarClosestToVertex(
     Enter_Method
     ("RoutingProtocolCar::findNeighbouringCarClosestToVertex");
 
+    /*
+     * Se obtiene la distancia al vértice para comparar con los
+     * vehículos vecinos.
+     */
     const Graph &graph = mobility->getRoadNetwork()->getGraph();
     const LocationOnRoadNetwork &locationOnRoadNetwork = mobility->getLocationOnRoadNetwork();
-    const Edge &edge = locationOnRoadNetwork.edge;
-    Vertex vertexA = boost::source(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+    double minDistance = getDistanceToVertex(locationOnRoadNetwork, vertex,
+            graph);
 
-    double minDistanceToTargetVertex = std::numeric_limits<double>::infinity();
-    inet::Ipv6Address address;
-
-    NeighbouringCarsByEdgeIterator neighbouringCarIt = neighbouringCarsByEdge.lower_bound(
-            edge);
-    NeighbouringCarsByEdgeIterator neighbouringCarEndIt = neighbouringCarsByEdge.upper_bound(
-            edge);
-    while (neighbouringCarIt != neighbouringCarEndIt) {
-        const inet::Ipv6Address neighbouringCarAddress = neighbouringCarIt->second;
-        const NeighbouringCar &neighbouringCar = neighbouringCars.getMap()[neighbouringCarAddress];
-        const LocationOnRoadNetwork &locationOnRoadNetwork = neighbouringCar.value.locationOnRoadNetwork;
-        double neighbouringCarDistanceToTargetVertex = getDistanceToVertex(
-                locationOnRoadNetwork, vertex, graph);
-        ASSERT(
-                neighbouringCarDistanceToTargetVertex
-                        != std::numeric_limits<double>::infinity());
-
-        if (neighbouringCarDistanceToTargetVertex < minDistanceToTargetVertex)
-            minDistanceToTargetVertex = neighbouringCarDistanceToTargetVertex;
-        address = neighbouringCarAddress;
+    /*
+     * Se recorre el directorio de vehículos vecinos en busca de uno
+     * que esté a una distancia menor del vértice.
+     */
+    inet::Ipv6Address address = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
+    double distance;
+    NeighbouringCarsConstIterator it = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator endIt = neighbouringCars.getMap().end();
+    while (it != endIt) {
+        distance = getDistanceToVertex(it->second.value.locationOnRoadNetwork,
+                vertex, graph);
+        if (minDistance > distance) {
+            minDistance = distance;
+            address = it->first;
+        }
+        it++;
     }
-
-    return address;
 }
 
 /*!
