@@ -12,6 +12,8 @@ doc/neddoc
 
 /out
 
+sim/**/results
+
 examples/**/results
 examples/**/.tkenvrc
 examples/**/.qtenvrc
