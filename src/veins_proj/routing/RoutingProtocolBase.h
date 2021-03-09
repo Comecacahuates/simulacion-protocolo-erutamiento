@@ -304,12 +304,12 @@ protected:
     virtual void purgeNextHopRoutes(const inet::Ipv6Address &nextHopAddress);
     //! Eliminar rutas viejas.
     /*!
-     * Elimina las rutas de la tabla de enrutamiento coya hora de expiración
+     * Elimina las rutas de la tabla de enrutamiento cuya hora de expiración
      * sea anterior a la hora indicada.
      *
-     * @param time [in] Hora de expiración máxima para eliminar las rutas.
+     * @param expiryTime [in] Hora de expiración máxima para eliminar las rutas.
      */
-    virtual void removeOldRoutes(omnetpp::simtime_t time);
+    virtual void removeOldRoutes(omnetpp::simtime_t expiryTime);
 
     /*
      * Enrutamiento

@@ -405,6 +405,7 @@ void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
     ("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
 
     neighbouringCars.removeOldValues(omnetpp::simTime());
+    removeOldRoutes(omnetpp::simTime());
     schedulePurgeNeighbouringCarsTimer();
 }
 
@@ -538,12 +539,12 @@ void RoutingProtocolBase::purgeNextHopRoutes(
 
 //! Eliminar rutas viejas.
 /*!
- * Elimina las rutas de la tabla de enrutamiento coya hora de expiración
+ * Elimina las rutas de la tabla de enrutamiento cuya hora de expiración
  * sea anterior a la hora indicada.
  *
- * @param time [in] Hora de expiración máxima para eliminar las rutas.
+ * @param expiryTime [in] Hora de expiración máxima para eliminar las rutas.
  */
-void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t time) {
+void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t expiryTime) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
@@ -555,7 +556,7 @@ void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t time) {
         route = routingTable->getRoute(i);
 
         if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
-            if (route->getExpiryTime() <= time)
+            if (route->getExpiryTime() <= expiryTime)
                 routingTable->deleteRoute(route);
     }
 }

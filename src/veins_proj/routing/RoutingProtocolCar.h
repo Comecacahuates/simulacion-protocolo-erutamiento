@@ -269,9 +269,6 @@ protected:
      * la misma arista.
      */
     virtual int getNeighbouringCarsOnEdgeCount() const;
-    //! Procesar el temporizador de limpieza del directorio de
-    //! vehículos vecinos.
-    virtual void processPurgeNeighbouringCarsTimer() override;
 
     /*
      * Directorio de hosts vecinos.

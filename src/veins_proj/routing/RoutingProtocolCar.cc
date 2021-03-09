@@ -845,13 +845,6 @@ int RoutingProtocolCar::getNeighbouringCarsOnEdgeCount() const {
     return n;
 }
 
-//! Procesar el temporizador de limpieza del directorio de
-//! vehículos vecinos.
-void RoutingProtocolCar::processPurgeNeighbouringCarsTimer() {
-    // TODO Implementar para que se eliminen las rutas de los vehículos vecinos que se eliminaron.
-    RoutingProtocolBase::processPurgeNeighbouringCarsTimer();
-}
-
 /*
  * Directorio de _hosts_ vecinos.
  */
@@ -900,6 +893,7 @@ void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
     ("RoutingProtocolCar::processPurgeNeighbouringHostsTimer");
 
     neighbouringHosts.removeOldValues(omnetpp::simTime());
+    removeOldRoutes(omnetpp::simTime());
     schedulePurgeNeighbouringHostsTimer();
 }
 

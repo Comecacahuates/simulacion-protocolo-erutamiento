@@ -1,15 +1,15 @@
 version 3
-run RoutingProtocol-0-20210308-23:53:31-5407
+run RoutingProtocol-0-20210309-03:01:05-15275
 attr configname RoutingProtocol
-attr datetime 20210308-23:53:31
-attr datetimef 20210308-235331
+attr datetime 20210309-03:01:05
+attr datetimef 20210309-030105
 attr experiment RoutingProtocol
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsf ""
 attr measurement ""
 attr network veins_proj.examples.test.Scenario
-attr processid 5407
+attr processid 15275
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -1033,6 +1033,489 @@ vector 246 Scenario.node[15].wlan[0].mac passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed to higher layer, vector(packetBytes)"
+vector 247 Scenario.node[14].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 248 Scenario.node[18].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 249 Scenario.node[18].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 250 Scenario.node[18].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 251 Scenario.node[18].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 252 Scenario.node[18].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 253 Scenario.node[18].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 254 Scenario.node[18].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 255 Scenario.node[18].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 256 Scenario.node[18].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 257 Scenario.node[18].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 258 Scenario.node[18].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 259 Scenario.node[18].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 260 Scenario.node[19].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 261 Scenario.node[19].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 262 Scenario.node[19].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 263 Scenario.node[18].wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, vector(packetBytes)"
+vector 264 Scenario.node[15].wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, vector(packetBytes)"
+vector 265 Scenario.node[19].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 266 Scenario.node[19].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 267 Scenario.node[19].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 268 Scenario.node[19].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 269 Scenario.node[19].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 270 Scenario.node[19].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 271 Scenario.node[19].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 272 Scenario.node[20].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 273 Scenario.node[20].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 274 Scenario.node[20].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 275 Scenario.node[20].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 276 Scenario.node[20].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 277 Scenario.node[20].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 278 Scenario.node[20].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 279 Scenario.node[20].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 280 Scenario.node[20].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 281 Scenario.node[20].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 282 Scenario.node[20].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 283 Scenario.node[20].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 284 Scenario.node[21].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 285 Scenario.node[21].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 286 Scenario.node[21].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 287 Scenario.node[21].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 288 Scenario.node[21].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 289 Scenario.node[19].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 290 Scenario.node[19].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 291 Scenario.node[21].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 292 Scenario.node[21].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 293 Scenario.node[21].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 294 Scenario.node[21].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 295 Scenario.node[21].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 296 Scenario.node[21].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 297 Scenario.node[21].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 298 Scenario.node[22].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 299 Scenario.node[22].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 300 Scenario.node[22].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 301 Scenario.node[22].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 302 Scenario.node[22].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 303 Scenario.node[22].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 304 Scenario.node[22].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 305 Scenario.node[22].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 306 Scenario.node[22].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 307 Scenario.node[22].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 308 Scenario.node[8].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 309 Scenario.node[13].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 310 Scenario.host[1].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 311 Scenario.node[18].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 312 Scenario.node[5].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 313 Scenario.node[23].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 314 Scenario.node[23].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 315 Scenario.node[23].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 316 Scenario.node[23].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 317 Scenario.node[23].wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, vector(packetBytes)"
+vector 318 Scenario.node[21].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 319 Scenario.node[9].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 320 Scenario.node[23].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 321 Scenario.node[23].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 322 Scenario.node[23].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 323 Scenario.node[23].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 324 Scenario.node[23].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 325 Scenario.node[23].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 326 Scenario.node[23].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 327 Scenario.node[23].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 328 Scenario.node[24].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 329 Scenario.node[24].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 330 Scenario.node[24].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 331 Scenario.node[24].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 332 Scenario.node[24].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 333 Scenario.node[24].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 334 Scenario.node[24].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 335 Scenario.node[24].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 336 Scenario.node[24].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 337 Scenario.node[24].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 338 Scenario.node[22].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 339 Scenario.node[22].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 340 Scenario.node[25].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 341 Scenario.node[25].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 342 Scenario.node[25].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 343 Scenario.node[24].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 344 Scenario.node[24].wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, vector(packetBytes)"
+vector 345 Scenario.node[0].wlan[0].mac packetDropIncorrectlyReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, vector(packetBytes)"
+vector 346 Scenario.node[24].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 347 Scenario.node[0].wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, vector(packetBytes)"
+vector 348 Scenario.node[9].wlan[0].mac packetDropNotAddressedToUs:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, vector(packetBytes)"
+vector 349 Scenario.node[25].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 350 Scenario.node[25].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 351 Scenario.node[25].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 352 Scenario.node[25].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 353 Scenario.node[25].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 354 Scenario.node[25].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 355 Scenario.node[25].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 356 Scenario.node[25].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 357 Scenario.node[25].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 358 Scenario.node[26].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 359 Scenario.node[26].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 360 Scenario.node[26].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 361 Scenario.node[26].wlan[0].mac rcvdPkFromLl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromLower
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 362 Scenario.node[26].wlan[0].mac passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 363 Scenario.node[26].ipv6.neighbourDiscovery startDad:vector ETV
+attr title "DAD started, vector"
+vector 364 Scenario.node[26].wlan[0].mac rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 365 Scenario.node[26].wlan[0].mac.queue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 366 Scenario.node[26].wlan[0].mac.queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr source "warmup(count(packetPushed) - count(packetPulled) - count(packetRemoved) - count(packetDropped))"
+attr title "queue length, vector"
+attr type int
+vector 367 Scenario.node[26].wlan[0].mac.queue packetPulled:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pulled, vector(packetBytes)"
+vector 368 Scenario.node[26].wlan[0].mac.queue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPulled)
+attr title "queueing times, vector"
+attr unit s
+vector 369 Scenario.node[26].wlan[0].mac sentDownPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets sent to lower layer, vector(packetBytes)"
 0	0	0	0
 0	0	0	0
 0	0	0	4
@@ -1178,6 +1661,62 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 2	6521	14.003146270364	1
 2	7438	14.921158128425	3
 2	7461	14.921650128425	1
+2	7564	15.00042901841	3
+2	7602	15.00085701841	1
+2	8053	15.360235847607	3
+2	8076	15.360599847607	1
+2	8268	15.555523754526	3
+2	8289	15.555967754526	1
+2	8537	15.793571724644	3
+2	8558	15.793967724644	1
+2	8670	16.000620980266	3
+2	8757	16.001432980266	1
+2	8766	16.001433470399	3
+2	8811	16.001861470399	1
+2	9682	16.671725664483	3
+2	9705	16.672169664483	1
+2	9930	16.817196479503	3
+2	9953	16.817688479503	1
+2	10262	17.00062092896	3
+2	10301	17.00143292896	1
+2	10519	17.199479714544	3
+2	10543	17.199971714544	1
+2	11226	17.69091886511	3
+2	11251	17.69136286511	1
+2	11882	18.00042884234	3
+2	11924	18.00085684234	1
+2	11971	18.000857494647	3
+2	12087	18.001285494647	1
+2	12196	18.059883538497	3
+2	12221	18.060247538497	1
+2	13024	18.497762026478	3
+2	13049	18.498254026478	1
+2	13225	18.533270948019	3
+2	13250	18.533762948019	1
+2	13860	19.000620798872	3
+2	13963	19.001048798872	1
+2	14064	19.037146570847	3
+2	14094	19.037542570847	1
+2	14124	19.122337299594	3
+2	14150	19.122781299594	1
+2	14468	19.360235731334	3
+2	14497	19.360599731334	1
+2	14992	19.6360634237	3
+2	15025	19.6364594237	1
+2	15433	19.967011163433	3
+2	15460	19.967503163433	1
+2	15742	20.000620771537	3
+2	15854	20.001048771537	1
+2	15922	20.001285969975	3
+2	15985	20.001713969975	1
+2	16020	20.001714487353	3
+2	16121	20.002142487353	1
+2	16393	20.102143125071	3
+2	16534	20.102571125071	1
+2	17040	20.37441101245	3
+2	17071	20.37490301245	1
+2	18140	20.779051595297	3
+2	18178	20.779543595297	1
 3	0	0	1
 3	34	0.91476737191	2
 3	37	0.91516337191	1
@@ -1235,6 +1774,30 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 3	6477	14.00062	1
 3	6980	14.473821113351	2
 3	6999	14.474265113351	1
+3	7526	15	2
+3	7546	15.000428	1
+3	7609	15.00085701841	2
+3	7686	15.00147701841	1
+3	8630	16	2
+3	8652	16.00062	1
+3	8940	16.043439517728	2
+3	8962	16.043883517728	1
+3	10222	17	2
+3	10246	17.00062	1
+3	11085	17.631904601118	2
+3	11110	17.632348601118	1
+3	11839	18	2
+3	11864	18.000428	1
+3	11931	18.00085684234	2
+3	12161	18.00147684234	1
+3	13818	19	2
+3	13844	19.00062	1
+3	14395	19.28400787548	2
+3	14421	19.28445187548	1
+3	15697	20	2
+3	15725	20.00062	1
+3	18213	20.853108619804	2
+3	18242	20.853552619804	1
 4	0	0	1
 4	7	0.61531466721	3
 4	10	0.61571066721	1
@@ -1374,6 +1937,76 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 4	6619	14.056713902143	1
 4	6981	14.473821421814	3
 4	7000	14.474265421814	1
+4	7527	15.000000308463	3
+4	7547	15.000428308463	1
+4	7611	15.000857326873	3
+4	7687	15.001477326873	1
+4	7892	15.221162393253	3
+4	7912	15.221654393253	1
+4	8538	15.793571749195	3
+4	8561	15.793967749195	1
+4	8631	16.000000308463	3
+4	8653	16.000620308463	1
+4	8941	16.043439826191	3
+4	8963	16.043883826191	1
+4	10223	17.000000308463	3
+4	10247	17.000620308463	1
+4	10395	17.112716864674	3
+4	10425	17.113208864674	1
+4	10520	17.199479739223	3
+4	10548	17.199971739223	1
+4	10590	17.224751586547	3
+4	10624	17.225147586547	1
+4	11086	17.631904909581	3
+4	11111	17.632348909581	1
+4	11840	18.000000308463	3
+4	11865	18.000428308463	1
+4	11885	18.000428867547	3
+4	11932	18.000856867547	1
+4	11958	18.000857150803	3
+4	12162	18.001477150803	1
+4	12197	18.059883563704	3
+4	12224	18.060247563704	1
+4	12610	18.24819094032	3
+4	12641	18.24868294032	1
+4	12956	18.428769333167	3
+4	12996	18.429261333167	1
+4	13025	18.497762051685	3
+4	13054	18.498254051685	1
+4	13819	19.000000308463	3
+4	13845	19.000620308463	1
+4	13862	19.00062082486	3
+4	13966	19.00104882486	2
+4	14014	19.001285647258	1
+4	14327	19.236608077341	3
+4	14368	19.236972077341	1
+4	14396	19.284008183943	3
+4	14422	19.284452183943	1
+4	15057	19.69611713108	3
+4	15090	19.69660913108	1
+4	15434	19.967011189925	3
+4	15465	19.967503189925	1
+4	15698	20.000000308463	3
+4	15726	20.000620308463	1
+4	15745	20.000620798622	3
+4	15857	20.001048798622	2
+4	15911	20.001285635656	1
+4	15925	20.00128599706	3
+4	15988	20.00171399706	1
+4	16035	20.001714754697	3
+4	16136	20.002142754697	2
+4	16195	20.002334790752	1
+4	16322	20.101714790752	3
+4	16379	20.102142790752	1
+4	16385	20.102142958944	3
+4	16525	20.102570958944	2
+4	16538	20.102571152156	1
+4	16730	20.143010612303	3
+4	16770	20.143502612303	1
+4	17044	20.374411317724	3
+4	17088	20.374903317724	1
+4	18214	20.853108928267	3
+4	18243	20.853552928267	1
 5	0	0	1
 5	20	0.72692990643	2
 5	23	0.72732590643	1
@@ -1429,6 +2062,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 5	5695	13.00186101198	1
 5	6501	14.002701961901	2
 5	6520	14.003145961901	1
+5	8267	15.555523446063	2
+5	8288	15.555967446063	1
+5	9681	16.67172535602	2
+5	9704	16.67216935602	1
+5	11225	17.690918556647	2
+5	11250	17.691362556647	1
+5	14123	19.122336991131	2
+5	14149	19.122780991131	1
 6	2	0.5	0
 6	2	0.5	0
 6	2	0.5	4
@@ -1543,6 +2184,52 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 7	6807	14.302062637671	1
 7	6833	14.4047252131	3
 7	6855	14.4050892131	1
+7	8002	15.306266064124	3
+7	8022	15.306758064124	1
+7	8269	15.555523887566	3
+7	8293	15.555967887566	1
+7	9683	16.671725820885	3
+7	9709	16.672169820885	1
+7	10124	16.986321562758	3
+7	10147	16.986813562758	1
+7	10586	17.224751321003	3
+7	10612	17.225147321003	1
+7	11228	17.690919030801	3
+7	11260	17.691363030801	1
+7	11965	18.000857365843	3
+7	12078	18.001285365843	1
+7	12739	18.276399098698	3
+7	12767	18.276891098698	1
+7	12886	18.404725009216	3
+7	12914	18.405089009216	1
+7	12952	18.428769044109	3
+7	12980	18.429261044109	1
+7	13914	19.000857334995	3
+7	14001	19.001285334995	1
+7	14126	19.122337479426	3
+7	14159	19.122781479426	1
+7	14323	19.236607765078	3
+7	14352	19.236971765078	1
+7	14664	19.375968131343	3
+7	14693	19.376460131343	1
+7	15437	19.967011439857	3
+7	15478	19.967503439857	1
+7	15755	20.000621053118	3
+7	15864	20.001049053118	2
+7	15892	20.001285300707	1
+7	15939	20.001286251556	3
+7	16006	20.001714251556	1
+7	16019	20.001714455803	3
+7	16190	20.002334455803	1
+7	16319	20.101714455803	3
+7	16353	20.102142455803	1
+7	16369	20.102142648169	3
+7	16513	20.102570648169	2
+7	16553	20.102571406652	1
+7	16727	20.143010277354	3
+7	16758	20.143502277354	1
+7	17185	20.409190463429	3
+7	17216	20.409682463429	1
 8	2	0.5	1
 8	6	0.615314512467	2
 8	9	0.615710512467	1
@@ -1626,6 +2313,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 8	5733	13.002481367204	1
 8	6599	14.056221502367	2
 8	6618	14.056713502367	1
+8	7891	15.221161962952	2
+8	7911	15.221653962952	1
+8	10392	17.112716393778	2
+8	10416	17.113208393778	1
+8	12607	18.248190462356	2
+8	12632	18.248682462356	1
+8	15054	19.696116636041	2
+8	15081	19.696608636041	1
+8	16012	20.001714251556	2
+8	16117	20.002142251556	1
+8	16359	20.102142455803	2
+8	16509	20.102570455803	1
 9	3	0.615314512467	1
 10	5	0.615314512467	64
 10	127	1.937587209977	88
@@ -1668,6 +2367,12 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 10	5624	13.000620656756	120
 10	5701	13.001861367204	120
 10	6598	14.056221502367	88
+10	7890	15.221161962952	88
+10	10391	17.112716393778	88
+10	12606	18.248190462356	88
+10	15053	19.696116636041	88
+10	16011	20.001714251556	72
+10	16358	20.102142455803	72
 11	5	0.615314512467	64
 11	127	1.937587209977	88
 11	150	1.983885176433	56
@@ -1709,6 +2414,12 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 11	5624	13.000620656756	120
 11	5701	13.001861367204	120
 11	6598	14.056221502367	88
+11	7890	15.221161962952	88
+11	10391	17.112716393778	88
+11	12606	18.248190462356	88
+11	15053	19.696116636041	88
+11	16011	20.001714251556	72
+11	16358	20.102142455803	72
 12	5	0.615314512467	1
 12	5	0.615314512467	0
 12	127	1.937587209977	1
@@ -1791,6 +2502,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 12	5701	13.001861367204	0
 12	6598	14.056221502367	1
 12	6598	14.056221502367	0
+12	7890	15.221161962952	1
+12	7890	15.221161962952	0
+12	10391	17.112716393778	1
+12	10391	17.112716393778	0
+12	12606	18.248190462356	1
+12	12606	18.248190462356	0
+12	15053	19.696116636041	1
+12	15053	19.696116636041	0
+12	16011	20.001714251556	1
+12	16011	20.001714251556	0
+12	16358	20.102142455803	1
+12	16358	20.102142455803	0
 13	5	0.615314512467	64
 13	127	1.937587209977	88
 13	150	1.983885176433	56
@@ -1832,6 +2555,12 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 13	5624	13.000620656756	120
 13	5701	13.001861367204	120
 13	6598	14.056221502367	88
+13	7890	15.221161962952	88
+13	10391	17.112716393778	88
+13	12606	18.248190462356	88
+13	15053	19.696116636041	88
+13	16011	20.001714251556	72
+13	16358	20.102142455803	72
 14	5	0.615314512467	0
 14	127	1.937587209977	0
 14	150	1.983885176433	0
@@ -1873,6 +2602,12 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 14	5624	13.000620656756	0
 14	5701	13.001861367204	0
 14	6598	14.056221502367	0
+14	7890	15.221161962952	0
+14	10391	17.112716393778	0
+14	12606	18.248190462356	0
+14	15053	19.696116636041	0
+14	16011	20.001714251556	0
+14	16358	20.102142455803	0
 15	5	0.615314512467	87
 15	127	1.937587209977	111
 15	150	1.983885176433	79
@@ -1914,6 +2649,12 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 15	5624	13.000620656756	143
 15	5701	13.001861367204	143
 15	6598	14.056221502367	111
+15	7890	15.221161962952	111
+15	10391	17.112716393778	111
+15	12606	18.248190462356	111
+15	15053	19.696116636041	111
+15	16011	20.001714251556	95
+15	16358	20.102142455803	95
 16	11	0.61571066721	87
 16	43	0.915163680373	87
 16	118	1.84769604572	99
@@ -1983,6 +2724,39 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 16	6479	14.000620308463	143
 16	6620	14.056713902143	111
 16	7001	14.474265421814	99
+16	7548	15.000428308463	95
+16	7688	15.001477326873	143
+16	7913	15.221654393253	111
+16	8562	15.793967749195	87
+16	8654	16.000620308463	143
+16	8964	16.043883826191	99
+16	10248	17.000620308463	143
+16	10426	17.113208864674	111
+16	10549	17.199971739223	111
+16	10625	17.225147586547	87
+16	11112	17.632348909581	99
+16	11866	18.000428308463	95
+16	11933	18.000856867547	95
+16	12163	18.001477150803	143
+16	12225	18.060247563704	79
+16	12642	18.24868294032	111
+16	12997	18.429261333167	111
+16	13055	18.498254051685	111
+16	13846	19.000620308463	143
+16	13967	19.00104882486	95
+16	14369	19.236972077341	79
+16	14423	19.284452183943	99
+16	15091	19.69660913108	111
+16	15466	19.967503189925	111
+16	15727	20.000620308463	143
+16	15858	20.001048798622	95
+16	15989	20.00171399706	95
+16	16137	20.002142754697	95
+16	16380	20.102142790752	95
+16	16526	20.102570958944	95
+16	16771	20.143502612303	111
+16	17089	20.374903317724	111
+16	18244	20.853552928267	99
 17	11	0.61571066721	64
 17	43	0.915163680373	64
 17	118	1.84769604572	76
@@ -2027,6 +2801,29 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 17	5657	13.00124101198	120
 17	6620	14.056713902143	88
 17	7001	14.474265421814	76
+17	7548	15.000428308463	72
+17	7913	15.221654393253	88
+17	8562	15.793967749195	64
+17	8964	16.043883826191	76
+17	10426	17.113208864674	88
+17	10549	17.199971739223	88
+17	10625	17.225147586547	64
+17	11112	17.632348909581	76
+17	11866	18.000428308463	72
+17	11933	18.000856867547	72
+17	12225	18.060247563704	56
+17	12642	18.24868294032	88
+17	12997	18.429261333167	88
+17	13055	18.498254051685	88
+17	14369	19.236972077341	56
+17	14423	19.284452183943	76
+17	15091	19.69660913108	88
+17	15466	19.967503189925	88
+17	15989	20.00171399706	72
+17	16380	20.102142790752	72
+17	16771	20.143502612303	88
+17	17089	20.374903317724	88
+17	18244	20.853552928267	76
 18	14	0.615710705127	87
 18	28	0.727326214893	87
 18	79	1.424099105251	99
@@ -2096,6 +2893,34 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 18	5781	13.028578681188	87
 18	6522	14.003146270364	99
 18	7462	14.921650128425	111
+18	7603	15.00085701841	95
+18	8077	15.360599847607	79
+18	8290	15.555967754526	99
+18	8559	15.793967724644	87
+18	8758	16.001432980266	191
+18	8812	16.001861470399	95
+18	9706	16.672169664483	99
+18	9954	16.817688479503	111
+18	10302	17.00143292896	191
+18	10544	17.199971714544	111
+18	11252	17.69136286511	99
+18	11925	18.00085684234	95
+18	12088	18.001285494647	95
+18	12222	18.060247538497	79
+18	13050	18.498254026478	111
+18	13251	18.533762948019	111
+18	13964	19.001048798872	95
+18	14095	19.037542570847	87
+18	14151	19.122781299594	99
+18	14498	19.360599731334	79
+18	15026	19.6364594237	87
+18	15461	19.967503163433	111
+18	15855	20.001048771537	95
+18	15986	20.001713969975	95
+18	16122	20.002142487353	95
+18	16535	20.102571125071	95
+18	17072	20.37490301245	111
+18	18179	20.779543595297	111
 19	14	0.615710705127	64
 19	28	0.727326214893	64
 19	79	1.424099105251	76
@@ -2141,6 +2966,34 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 19	5781	13.028578681188	64
 19	6522	14.003146270364	76
 19	7462	14.921650128425	88
+19	7603	15.00085701841	72
+19	8077	15.360599847607	56
+19	8290	15.555967754526	76
+19	8559	15.793967724644	64
+19	8758	16.001432980266	168
+19	8812	16.001861470399	72
+19	9706	16.672169664483	76
+19	9954	16.817688479503	88
+19	10302	17.00143292896	168
+19	10544	17.199971714544	88
+19	11252	17.69136286511	76
+19	11925	18.00085684234	72
+19	12088	18.001285494647	72
+19	12222	18.060247538497	56
+19	13050	18.498254026478	88
+19	13251	18.533762948019	88
+19	13964	19.001048798872	72
+19	14095	19.037542570847	64
+19	14151	19.122781299594	76
+19	14498	19.360599731334	56
+19	15026	19.6364594237	64
+19	15461	19.967503163433	88
+19	15855	20.001048771537	72
+19	15986	20.001713969975	72
+19	16122	20.002142487353	72
+19	16535	20.102571125071	72
+19	17072	20.37490301245	88
+19	18179	20.779543595297	88
 20	17	0.72692990643	1
 21	19	0.72692990643	64
 21	67	1.423654796788	76
@@ -2169,6 +3022,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 21	5136	12.588438973529	76
 21	5661	13.00124101198	120
 21	6500	14.002701961901	76
+21	8266	15.555523446063	76
+21	9680	16.67172535602	76
+21	11224	17.690918556647	76
+21	14122	19.122336991131	76
 22	19	0.72692990643	64
 22	67	1.423654796788	76
 22	247	2.001904760371	88
@@ -2196,6 +3053,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 22	5136	12.588438973529	76
 22	5661	13.00124101198	120
 22	6500	14.002701961901	76
+22	8266	15.555523446063	76
+22	9680	16.67172535602	76
+22	11224	17.690918556647	76
+22	14122	19.122336991131	76
 23	19	0.72692990643	1
 23	19	0.72692990643	0
 23	67	1.423654796788	1
@@ -2250,6 +3111,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 23	5661	13.00124101198	0
 23	6500	14.002701961901	1
 23	6500	14.002701961901	0
+23	8266	15.555523446063	1
+23	8266	15.555523446063	0
+23	9680	16.67172535602	1
+23	9680	16.67172535602	0
+23	11224	17.690918556647	1
+23	11224	17.690918556647	0
+23	14122	19.122336991131	1
+23	14122	19.122336991131	0
 24	19	0.72692990643	64
 24	67	1.423654796788	76
 24	247	2.001904760371	88
@@ -2277,6 +3146,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 24	5136	12.588438973529	76
 24	5661	13.00124101198	120
 24	6500	14.002701961901	76
+24	8266	15.555523446063	76
+24	9680	16.67172535602	76
+24	11224	17.690918556647	76
+24	14122	19.122336991131	76
 25	19	0.72692990643	0
 25	67	1.423654796788	0
 25	247	2.001904760371	0
@@ -2304,6 +3177,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 25	5136	12.588438973529	0
 25	5661	13.00124101198	0
 25	6500	14.002701961901	0
+25	8266	15.555523446063	0
+25	9680	16.67172535602	0
+25	11224	17.690918556647	0
+25	14122	19.122336991131	0
 26	19	0.72692990643	87
 26	67	1.423654796788	99
 26	247	2.001904760371	111
@@ -2331,6 +3208,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 26	5136	12.588438973529	99
 26	5661	13.00124101198	143
 26	6500	14.002701961901	99
+26	8266	15.555523446063	99
+26	9680	16.67172535602	99
+26	11224	17.690918556647	99
+26	14122	19.122336991131	99
 27	25	0.727326061173	87
 27	39	0.91516356457	87
 27	74	1.424098949355	99
@@ -2386,6 +3267,28 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 27	6526	14.003146361677	99
 27	6808	14.302062637671	111
 27	6856	14.4050892131	79
+27	8023	15.306758064124	111
+27	8294	15.555967887566	99
+27	9710	16.672169820885	99
+27	10148	16.986813562758	111
+27	10613	17.225147321003	87
+27	11261	17.691363030801	99
+27	12079	18.001285365843	95
+27	12768	18.276891098698	111
+27	12915	18.405089009216	79
+27	12981	18.429261044109	111
+27	14002	19.001285334995	95
+27	14160	19.122781479426	99
+27	14353	19.236971765078	79
+27	14694	19.376460131343	111
+27	15479	19.967503439857	111
+27	15865	20.001049053118	95
+27	16007	20.001714251556	95
+27	16191	20.002334455803	143
+27	16354	20.102142455803	95
+27	16514	20.102570648169	95
+27	16759	20.143502277354	111
+27	17217	20.409682463429	111
 28	25	0.727326061173	64
 28	39	0.91516356457	64
 28	74	1.424098949355	76
@@ -2441,6 +3344,25 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 28	6526	14.003146361677	76
 28	6808	14.302062637671	88
 28	6856	14.4050892131	56
+28	8023	15.306758064124	88
+28	8294	15.555967887566	76
+28	9710	16.672169820885	76
+28	10148	16.986813562758	88
+28	10613	17.225147321003	64
+28	11261	17.691363030801	76
+28	12079	18.001285365843	72
+28	12768	18.276891098698	88
+28	12915	18.405089009216	56
+28	12981	18.429261044109	88
+28	14002	19.001285334995	72
+28	14160	19.122781479426	76
+28	14353	19.236971765078	56
+28	14694	19.376460131343	88
+28	15479	19.967503439857	88
+28	16007	20.001714251556	72
+28	16354	20.102142455803	72
+28	16759	20.143502277354	88
+28	17217	20.409682463429	88
 29	31	0.91476737191	1
 30	33	0.91476737191	64
 30	105	1.847251737257	76
@@ -2470,6 +3392,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 30	5598	13	120
 30	6457	14	120
 30	6979	14.473821113351	76
+30	7525	15	72
+30	7608	15.00085701841	120
+30	8629	16	120
+30	8939	16.043439517728	76
+30	10221	17	120
+30	11084	17.631904601118	76
+30	11838	18	72
+30	11930	18.00085684234	120
+30	13817	19	120
+30	14394	19.28400787548	76
+30	15696	20	120
+30	18212	20.853108619804	76
 31	33	0.91476737191	64
 31	105	1.847251737257	76
 31	177	2	72
@@ -2498,6 +3432,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 31	5598	13	120
 31	6457	14	120
 31	6979	14.473821113351	76
+31	7525	15	72
+31	7608	15.00085701841	120
+31	8629	16	120
+31	8939	16.043439517728	76
+31	10221	17	120
+31	11084	17.631904601118	76
+31	11838	18	72
+31	11930	18.00085684234	120
+31	13817	19	120
+31	14394	19.28400787548	76
+31	15696	20	120
+31	18212	20.853108619804	76
 32	33	0.91476737191	1
 32	33	0.91476737191	0
 32	105	1.847251737257	1
@@ -2554,6 +3500,30 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 32	6457	14	0
 32	6979	14.473821113351	1
 32	6979	14.473821113351	0
+32	7525	15	1
+32	7525	15	0
+32	7608	15.00085701841	1
+32	7608	15.00085701841	0
+32	8629	16	1
+32	8629	16	0
+32	8939	16.043439517728	1
+32	8939	16.043439517728	0
+32	10221	17	1
+32	10221	17	0
+32	11084	17.631904601118	1
+32	11084	17.631904601118	0
+32	11838	18	1
+32	11838	18	0
+32	11930	18.00085684234	1
+32	11930	18.00085684234	0
+32	13817	19	1
+32	13817	19	0
+32	14394	19.28400787548	1
+32	14394	19.28400787548	0
+32	15696	20	1
+32	15696	20	0
+32	18212	20.853108619804	1
+32	18212	20.853108619804	0
 33	33	0.91476737191	64
 33	105	1.847251737257	76
 33	177	2	72
@@ -2582,6 +3552,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 33	5598	13	120
 33	6457	14	120
 33	6979	14.473821113351	76
+33	7525	15	72
+33	7608	15.00085701841	120
+33	8629	16	120
+33	8939	16.043439517728	76
+33	10221	17	120
+33	11084	17.631904601118	76
+33	11838	18	72
+33	11930	18.00085684234	120
+33	13817	19	120
+33	14394	19.28400787548	76
+33	15696	20	120
+33	18212	20.853108619804	76
 34	33	0.91476737191	0
 34	105	1.847251737257	0
 34	177	2	0
@@ -2610,6 +3592,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 34	5598	13	0
 34	6457	14	0
 34	6979	14.473821113351	0
+34	7525	15	0
+34	7608	15.00085701841	0
+34	8629	16	0
+34	8939	16.043439517728	0
+34	10221	17	0
+34	11084	17.631904601118	0
+34	11838	18	0
+34	11930	18.00085684234	0
+34	13817	19	0
+34	14394	19.28400787548	0
+34	15696	20	0
+34	18212	20.853108619804	0
 35	33	0.91476737191	87
 35	105	1.847251737257	99
 35	177	2	95
@@ -2638,6 +3632,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 35	5598	13	143
 35	6457	14	143
 35	6979	14.473821113351	99
+35	7525	15	95
+35	7608	15.00085701841	143
+35	8629	16	143
+35	8939	16.043439517728	99
+35	10221	17	143
+35	11084	17.631904601118	99
+35	11838	18	95
+35	11930	18.00085684234	143
+35	13817	19	143
+35	14394	19.28400787548	99
+35	15696	20	143
+35	18212	20.853108619804	99
 36	47	1	0
 36	166	2	1
 36	438	3	2
@@ -2653,6 +3659,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 36	5567	13	12
 36	6422	14	13
 36	7484	15	14
+36	8588	16	15
+36	10176	17	16
+36	11787	18	17
+36	13768	19	18
+36	15643	20	19
 37	50	1	0
 37	50	1	0
 37	50	1	4
@@ -2663,6 +3674,42 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 38	2252	8.3869816023	1
 38	6124	13.63591696266	3
 38	6154	13.63640896266	1
+38	7834	15.173259642501	3
+38	7866	15.173751642501	1
+38	7946	15.283091070226	3
+38	7975	15.283583070226	1
+38	9226	16.26452118512	3
+38	9248	16.26491718512	1
+38	9278	16.270725040585	3
+38	9309	16.271089040585	1
+38	9343	16.396341248757	3
+38	9377	16.396833248757	1
+38	10652	17.235840017701	3
+38	10685	17.236332017701	1
+38	10854	17.403789464278	3
+38	10890	17.404153464278	1
+38	11677	17.938991383986	3
+38	11702	17.939355383986	1
+38	11734	17.965416840172	3
+38	11759	17.965908840172	1
+38	12270	18.09235402889	3
+38	12316	18.09284602889	1
+38	12811	18.352424840882	3
+38	12851	18.352916840882	1
+38	13428	18.805804892137	3
+38	13462	18.806296892137	1
+38	14733	19.401281794006	3
+38	14759	19.401773794006	1
+38	15130	19.70473647945	3
+38	15172	19.70522847945	1
+38	16237	20.076396192875	3
+38	16286	20.076888192875	1
+38	16956	20.27072494938	3
+38	16996	20.27108894938	1
+38	17765	20.710452608729	3
+38	17812	20.710944608729	1
+38	17925	20.738109790503	3
+38	17966	20.738505790503	1
 39	50	1	1
 39	56	1.115032456396	2
 39	60	1.115428456396	1
@@ -2690,6 +3737,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 39	5546	12.98446337341	1
 39	7030	14.492940334369	2
 39	7049	14.493432334369	1
+39	8484	15.762948303016	2
+39	8505	15.763440303016	1
+39	10454	17.159454041857	2
+39	10478	17.159946041857	1
+39	12671	18.262317401821	2
+39	12696	18.262809401821	1
+39	14532	19.362544288391	2
+39	14558	19.363036288391	1
+39	17507	20.502516871549	2
+39	17536	20.503008871549	1
 40	53	1.115032456396	1
 41	55	1.115032456396	64
 41	373	2.477665111655	88
@@ -2704,6 +3761,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 41	4500	11.776844740892	56
 41	5529	12.98397137341	88
 41	7029	14.492940334369	88
+41	8483	15.762948303016	88
+41	10453	17.159454041857	88
+41	12670	18.262317401821	88
+41	14531	19.362544288391	88
+41	17506	20.502516871549	88
 42	55	1.115032456396	64
 42	373	2.477665111655	88
 42	623	3.776844740892	56
@@ -2717,6 +3779,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 42	4500	11.776844740892	56
 42	5529	12.98397137341	88
 42	7029	14.492940334369	88
+42	8483	15.762948303016	88
+42	10453	17.159454041857	88
+42	12670	18.262317401821	88
+42	14531	19.362544288391	88
+42	17506	20.502516871549	88
 43	55	1.115032456396	1
 43	55	1.115032456396	0
 43	373	2.477665111655	1
@@ -2743,6 +3810,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 43	5529	12.98397137341	0
 43	7029	14.492940334369	1
 43	7029	14.492940334369	0
+43	8483	15.762948303016	1
+43	8483	15.762948303016	0
+43	10453	17.159454041857	1
+43	10453	17.159454041857	0
+43	12670	18.262317401821	1
+43	12670	18.262317401821	0
+43	14531	19.362544288391	1
+43	14531	19.362544288391	0
+43	17506	20.502516871549	1
+43	17506	20.502516871549	0
 44	55	1.115032456396	64
 44	373	2.477665111655	88
 44	623	3.776844740892	56
@@ -2756,6 +3833,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 44	4500	11.776844740892	56
 44	5529	12.98397137341	88
 44	7029	14.492940334369	88
+44	8483	15.762948303016	88
+44	10453	17.159454041857	88
+44	12670	18.262317401821	88
+44	14531	19.362544288391	88
+44	17506	20.502516871549	88
 45	55	1.115032456396	0
 45	373	2.477665111655	0
 45	623	3.776844740892	0
@@ -2769,6 +3851,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 45	4500	11.776844740892	0
 45	5529	12.98397137341	0
 45	7029	14.492940334369	0
+45	8483	15.762948303016	0
+45	10453	17.159454041857	0
+45	12670	18.262317401821	0
+45	14531	19.362544288391	0
+45	17506	20.502516871549	0
 46	55	1.115032456396	87
 46	373	2.477665111655	111
 46	623	3.776844740892	79
@@ -2782,6 +3869,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 46	4500	11.776844740892	79
 46	5529	12.98397137341	111
 46	7029	14.492940334369	111
+46	8483	15.762948303016	111
+46	10453	17.159454041857	111
+46	12670	18.262317401821	111
+46	14531	19.362544288391	111
+46	17506	20.502516871549	111
 47	88	1.5	0
 47	88	1.5	0
 47	88	1.5	4
@@ -2862,6 +3954,90 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 48	7329	14.811424538296	1
 48	7373	14.864762196745	3
 48	7396	14.865126196745	1
+48	7831	15.173259202427	3
+48	7854	15.173751202427	1
+48	7944	15.283090743888	3
+48	7967	15.283582743888	1
+48	8102	15.422147547192	3
+48	8125	15.422639547192	1
+48	8204	15.519336374456	3
+48	8225	15.519700374456	1
+48	8325	15.580704540705	3
+48	8346	15.581196540705	1
+48	9003	16.148542071506	3
+48	9034	16.149034071506	1
+48	9276	16.27072469704	3
+48	9301	16.27108869704	1
+48	9340	16.396340781321	3
+48	9365	16.396832781321	1
+48	9408	16.402974479041	3
+48	9433	16.403466479041	1
+48	9744	16.685643119326	3
+48	9769	16.686039119326	1
+48	9989	16.86927294451	3
+48	10018	16.86976494451	1
+48	10058	16.878141528697	3
+48	10084	16.878633528697	1
+48	10458	17.159454701434	3
+48	10491	17.159946701434	1
+48	10650	17.235839657721	3
+48	10677	17.236331657721	1
+48	10725	17.296555966975	3
+48	10758	17.296919966975	1
+48	10851	17.403788979233	3
+48	10878	17.404152979233	1
+48	11151	17.6335075653	3
+48	11179	17.6339995653	1
+48	11542	17.873796277686	3
+48	11576	17.874288277686	1
+48	12399	18.106393788366	3
+48	12496	18.106885788366	1
+48	12540	18.166132534295	3
+48	12568	18.166624534295	1
+48	12674	18.262318012473	3
+48	12705	18.262810012473	1
+48	12806	18.352424342921	3
+48	12831	18.352916342921	1
+48	13144	18.529446484913	3
+48	13175	18.529938484913	1
+48	13291	18.692797840945	3
+48	13319	18.693161840945	1
+48	13426	18.805804509684	3
+48	13454	18.806296509684	1
+48	13627	18.954504851632	3
+48	13658	18.954996851632	1
+48	13703	18.971056169717	3
+48	13737	18.971548169717	1
+48	14535	19.362544861956	3
+48	14567	19.363036861956	1
+48	14845	19.519336523578	3
+48	14878	19.519700523578	1
+48	15125	19.704735952535	3
+48	15152	19.705227952535	1
+48	15276	19.870021077501	3
+48	15306	19.870513077501	1
+48	15355	19.912587757106	3
+48	15385	19.913079757106	1
+48	16645	20.116997825798	3
+48	16682	20.117489825798	1
+48	16805	20.19808318755	3
+48	16842	20.19844718755	1
+48	16880	20.218997751253	3
+48	16912	20.219393751253	1
+48	16952	20.270724531343	3
+48	16980	20.271088531343	1
+48	17380	20.479371584589	3
+48	17420	20.479863584589	1
+48	17510	20.502517394426	3
+48	17545	20.503009394426	1
+48	17586	20.528293511082	3
+48	17624	20.528785511082	1
+48	17759	20.710452176041	3
+48	17788	20.710944176041	1
+48	17919	20.73810936599	3
+48	17948	20.73850536599	1
+48	18298	20.886649008523	3
+48	18333	20.887141008523	1
 49	88	1.5	1
 49	92	1.670413369127	2
 49	97	1.670809369127	1
@@ -2889,6 +4065,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 49	5246	12.798795929857	1
 49	6324	13.862451430877	2
 49	6342	13.862943430877	1
+49	7767	15.151857521852	2
+49	7787	15.152349521852	1
+49	9858	16.790778602009	2
+49	9881	16.791270602009	1
+49	12262	18.092353418238	2
+49	12287	18.092845418238	1
+49	16229	20.076395653655	2
+49	16257	20.076887653655	1
 50	89	1.670413369127	1
 51	91	1.670413369127	64
 51	420	2.892784793163	88
@@ -2903,6 +4087,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 51	4953	12.376539178007	56
 51	5229	12.798303929857	88
 51	6323	13.862451430877	88
+51	7766	15.151857521852	88
+51	9857	16.790778602009	88
+51	12261	18.092353418238	88
+51	16228	20.076395653655	88
 52	91	1.670413369127	64
 52	420	2.892784793163	88
 52	774	4.376539178007	56
@@ -2916,6 +4104,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 52	4953	12.376539178007	56
 52	5229	12.798303929857	88
 52	6323	13.862451430877	88
+52	7766	15.151857521852	88
+52	9857	16.790778602009	88
+52	12261	18.092353418238	88
+52	16228	20.076395653655	88
 53	91	1.670413369127	1
 53	91	1.670413369127	0
 53	420	2.892784793163	1
@@ -2942,6 +4134,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 53	5229	12.798303929857	0
 53	6323	13.862451430877	1
 53	6323	13.862451430877	0
+53	7766	15.151857521852	1
+53	7766	15.151857521852	0
+53	9857	16.790778602009	1
+53	9857	16.790778602009	0
+53	12261	18.092353418238	1
+53	12261	18.092353418238	0
+53	16228	20.076395653655	1
+53	16228	20.076395653655	0
 54	91	1.670413369127	64
 54	420	2.892784793163	88
 54	774	4.376539178007	56
@@ -2955,6 +4155,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 54	4953	12.376539178007	56
 54	5229	12.798303929857	88
 54	6323	13.862451430877	88
+54	7766	15.151857521852	88
+54	9857	16.790778602009	88
+54	12261	18.092353418238	88
+54	16228	20.076395653655	88
 55	91	1.670413369127	0
 55	420	2.892784793163	0
 55	774	4.376539178007	0
@@ -2968,6 +4172,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 55	4953	12.376539178007	0
 55	5229	12.798303929857	0
 55	6323	13.862451430877	0
+55	7766	15.151857521852	0
+55	9857	16.790778602009	0
+55	12261	18.092353418238	0
+55	16228	20.076395653655	0
 56	91	1.670413369127	87
 56	420	2.892784793163	111
 56	774	4.376539178007	79
@@ -2981,6 +4189,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 56	4953	12.376539178007	79
 56	5229	12.798303929857	111
 56	6323	13.862451430877	111
+56	7766	15.151857521852	111
+56	9857	16.790778602009	111
+56	12261	18.092353418238	111
+56	16228	20.076395653655	111
 57	173	2	0
 57	173	2	0
 57	173	2	4
@@ -3027,6 +4239,60 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 58	6359	13.862943906207	1
 58	7314	14.81093298885	3
 58	7349	14.81142498885	1
+58	7772	15.151858051634	3
+58	7804	15.152350051634	1
+58	7835	15.173259672661	3
+58	7870	15.173751672661	1
+58	8209	15.519336833228	3
+58	8245	15.519700833228	1
+58	9344	16.396341283062	3
+58	9381	16.396833283062	1
+58	9412	16.402974934309	3
+58	9449	16.403466934309	1
+58	9743	16.68564261035	3
+58	9766	16.68603861035	1
+58	9865	16.790779189909	3
+58	9906	16.791271189909	1
+58	10655	17.235840118851	3
+58	10697	17.236332118851	1
+58	10857	17.403789506402	3
+58	10902	17.404153506402	1
+58	12269	18.092354007904	3
+58	12312	18.092846007904	1
+58	12398	18.106393238081	3
+58	12492	18.106885238081	1
+58	12813	18.352424877906	3
+58	12859	18.352916877906	1
+58	13150	18.529446739863	3
+58	13199	18.529938739863	1
+58	13290	18.692797289912	3
+58	13315	18.693161289912	1
+58	13432	18.805804979666	3
+58	13478	18.806296979666	1
+58	14256	19.230142706728	3
+58	14294	19.230634706728	1
+58	14849	19.519336842353	3
+58	14894	19.519700842353	1
+58	15131	19.704736490394	3
+58	15176	19.705228490394	1
+58	15354	19.912587219381	3
+58	15381	19.913079219381	1
+58	16235	20.076396182705	3
+58	16278	20.076888182705	1
+58	16648	20.116998123955	3
+58	16694	20.117490123955	1
+58	16879	20.218997222686	3
+58	16909	20.219393222686	1
+58	16958	20.27072500128	3
+58	17004	20.27108900128	1
+58	17590	20.528293627067	3
+58	17640	20.528785627067	1
+58	17683	20.641539360212	3
+58	17718	20.642031360212	1
+58	17766	20.710452642872	3
+58	17816	20.710944642872	1
+58	17926	20.738109873731	3
+58	17969	20.738505873731	1
 59	173	2	1
 59	356	2.110472461209	2
 59	362	2.110868461209	1
@@ -3050,6 +4316,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 59	5196	12.707912632519	1
 59	6879	14.43426222587	2
 59	6898	14.43475422587	1
+59	8324	15.580703989137	2
+59	8345	15.581195989137	1
+59	10056	16.878140940797	2
+59	10079	16.878632940797	1
+59	12538	18.166131944629	2
+59	12563	18.166623944629	1
+59	15274	19.870020530187	2
+59	15301	19.870512530187	1
+59	18295	20.88664849964	2
+59	18324	20.88714049964	1
 60	232	2.001476719583	143
 60	315	2.004257335135	143
 60	463	3.000620308463	143
@@ -3075,6 +4351,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 60	5618	13.000620308463	143
 60	5735	13.002481722428	143
 60	6479	14.000620308463	143
+60	7688	15.001477326873	143
+60	8654	16.000620308463	143
+60	10248	17.000620308463	143
+60	13846	19.000620308463	143
+60	15727	20.000620308463	143
 61	288	2.003017109622	143
 61	305	2.003637356216	143
 61	481	3.001240443858	143
@@ -3136,6 +4417,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 66	5088	12.553786332719	88
 66	5179	12.707548632519	56
 66	6878	14.43426222587	88
+66	8323	15.580703989137	88
+66	10055	16.878140940797	88
+66	12537	18.166131944629	88
+66	15273	19.870020530187	88
+66	18294	20.88664849964	88
 67	355	2.110472461209	64
 67	641	3.83261984284	88
 67	806	4.707548632519	56
@@ -3147,6 +4433,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 67	5088	12.553786332719	88
 67	5179	12.707548632519	56
 67	6878	14.43426222587	88
+67	8323	15.580703989137	88
+67	10055	16.878140940797	88
+67	12537	18.166131944629	88
+67	15273	19.870020530187	88
+67	18294	20.88664849964	88
 68	355	2.110472461209	1
 68	355	2.110472461209	0
 68	641	3.83261984284	1
@@ -3169,6 +4460,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 68	5179	12.707548632519	0
 68	6878	14.43426222587	1
 68	6878	14.43426222587	0
+68	8323	15.580703989137	1
+68	8323	15.580703989137	0
+68	10055	16.878140940797	1
+68	10055	16.878140940797	0
+68	12537	18.166131944629	1
+68	12537	18.166131944629	0
+68	15273	19.870020530187	1
+68	15273	19.870020530187	0
+68	18294	20.88664849964	1
+68	18294	20.88664849964	0
 69	355	2.110472461209	64
 69	641	3.83261984284	88
 69	806	4.707548632519	56
@@ -3180,6 +4481,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 69	5088	12.553786332719	88
 69	5179	12.707548632519	56
 69	6878	14.43426222587	88
+69	8323	15.580703989137	88
+69	10055	16.878140940797	88
+69	12537	18.166131944629	88
+69	15273	19.870020530187	88
+69	18294	20.88664849964	88
 70	355	2.110472461209	0
 70	641	3.83261984284	0
 70	806	4.707548632519	0
@@ -3191,6 +4497,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 70	5088	12.553786332719	0
 70	5179	12.707548632519	0
 70	6878	14.43426222587	0
+70	8323	15.580703989137	0
+70	10055	16.878140940797	0
+70	12537	18.166131944629	0
+70	15273	19.870020530187	0
+70	18294	20.88664849964	0
 71	355	2.110472461209	87
 71	641	3.83261984284	111
 71	806	4.707548632519	79
@@ -3202,6 +4513,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 71	5088	12.553786332719	111
 71	5179	12.707548632519	79
 71	6878	14.43426222587	111
+71	8323	15.580703989137	111
+71	10055	16.878140940797	111
+71	12537	18.166131944629	111
+71	15273	19.870020530187	111
+71	18294	20.88664849964	111
 72	364	2.110869074767	87
 72	651	3.833112441439	111
 72	816	4.707913218382	79
@@ -3240,6 +4556,48 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 72	6900	14.434754716666	111
 72	7330	14.811424538296	111
 72	7397	14.865126196745	79
+72	7855	15.173751202427	111
+72	7968	15.283582743888	111
+72	8126	15.422639547192	111
+72	8226	15.519700374456	79
+72	8347	15.581196540705	111
+72	9035	16.149034071506	111
+72	9302	16.27108869704	79
+72	9366	16.396832781321	111
+72	9434	16.403466479041	111
+72	9770	16.686039119326	87
+72	10019	16.86976494451	111
+72	10085	16.878633528697	111
+72	10492	17.159946701434	111
+72	10678	17.236331657721	111
+72	10759	17.296919966975	79
+72	10879	17.404152979233	79
+72	11180	17.6339995653	111
+72	11577	17.874288277686	111
+72	12497	18.106885788366	111
+72	12569	18.166624534295	111
+72	12706	18.262810012473	111
+72	12832	18.352916342921	111
+72	13176	18.529938484913	111
+72	13320	18.693161840945	79
+72	13455	18.806296509684	111
+72	13659	18.954996851632	111
+72	13738	18.971548169717	111
+72	14568	19.363036861956	111
+72	14879	19.519700523578	79
+72	15153	19.705227952535	111
+72	15307	19.870513077501	111
+72	15386	19.913079757106	111
+72	16683	20.117489825798	111
+72	16843	20.19844718755	79
+72	16913	20.219393751253	87
+72	16981	20.271088531343	79
+72	17421	20.479863584589	111
+72	17546	20.503009394426	111
+72	17625	20.528785511082	111
+72	17789	20.710944176041	111
+72	17949	20.73850536599	87
+72	18334	20.887141008523	111
 73	364	2.110869074767	64
 73	651	3.833112441439	88
 73	816	4.707913218382	56
@@ -3278,6 +4636,48 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 73	6900	14.434754716666	88
 73	7330	14.811424538296	88
 73	7397	14.865126196745	56
+73	7855	15.173751202427	88
+73	7968	15.283582743888	88
+73	8126	15.422639547192	88
+73	8226	15.519700374456	56
+73	8347	15.581196540705	88
+73	9035	16.149034071506	88
+73	9302	16.27108869704	56
+73	9366	16.396832781321	88
+73	9434	16.403466479041	88
+73	9770	16.686039119326	64
+73	10019	16.86976494451	88
+73	10085	16.878633528697	88
+73	10492	17.159946701434	88
+73	10678	17.236331657721	88
+73	10759	17.296919966975	56
+73	10879	17.404152979233	56
+73	11180	17.6339995653	88
+73	11577	17.874288277686	88
+73	12497	18.106885788366	88
+73	12569	18.166624534295	88
+73	12706	18.262810012473	88
+73	12832	18.352916342921	88
+73	13176	18.529938484913	88
+73	13320	18.693161840945	56
+73	13455	18.806296509684	88
+73	13659	18.954996851632	88
+73	13738	18.971548169717	88
+73	14568	19.363036861956	88
+73	14879	19.519700523578	56
+73	15153	19.705227952535	88
+73	15307	19.870513077501	88
+73	15386	19.913079757106	88
+73	16683	20.117489825798	88
+73	16843	20.19844718755	56
+73	16913	20.219393751253	64
+73	16981	20.271088531343	56
+73	17421	20.479863584589	88
+73	17546	20.503009394426	88
+73	17625	20.528785511082	88
+73	17789	20.710944176041	88
+73	17949	20.73850536599	64
+73	18334	20.887141008523	88
 74	429	2.893277401137	111
 74	784	4.376903770954	79
 74	863	4.763289524283	111
@@ -3299,6 +4699,33 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 74	6218	13.706312630079	111
 74	6360	13.862943906207	111
 74	7350	14.81142498885	111
+74	7805	15.152350051634	111
+74	7871	15.173751672661	111
+74	8246	15.519700833228	79
+74	9382	16.396833283062	111
+74	9450	16.403466934309	111
+74	9767	16.68603861035	87
+74	9907	16.791271189909	111
+74	10698	17.236332118851	111
+74	10903	17.404153506402	79
+74	12313	18.092846007904	111
+74	12493	18.106885238081	111
+74	12860	18.352916877906	111
+74	13200	18.529938739863	111
+74	13316	18.693161289912	79
+74	13479	18.806296979666	111
+74	14295	19.230634706728	111
+74	14895	19.519700842353	79
+74	15177	19.705228490394	111
+74	15382	19.913079219381	111
+74	16279	20.076888182705	111
+74	16695	20.117490123955	111
+74	16910	20.219393222686	87
+74	17005	20.27108900128	79
+74	17641	20.528785627067	111
+74	17719	20.642031360212	111
+74	17817	20.710944642872	111
+74	17970	20.738505873731	87
 75	429	2.893277401137	88
 75	784	4.376903770954	56
 75	863	4.763289524283	88
@@ -3320,6 +4747,33 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 75	6218	13.706312630079	88
 75	6360	13.862943906207	88
 75	7350	14.81142498885	88
+75	7805	15.152350051634	88
+75	7871	15.173751672661	88
+75	8246	15.519700833228	56
+75	9382	16.396833283062	88
+75	9450	16.403466934309	88
+75	9767	16.68603861035	64
+75	9907	16.791271189909	88
+75	10698	17.236332118851	88
+75	10903	17.404153506402	56
+75	12313	18.092846007904	88
+75	12493	18.106885238081	88
+75	12860	18.352916877906	88
+75	13200	18.529938739863	88
+75	13316	18.693161289912	56
+75	13479	18.806296979666	88
+75	14295	19.230634706728	88
+75	14895	19.519700842353	56
+75	15177	19.705228490394	88
+75	15382	19.913079219381	88
+75	16279	20.076888182705	88
+75	16695	20.117490123955	88
+75	16910	20.219393222686	64
+75	17005	20.27108900128	56
+75	17641	20.528785627067	88
+75	17719	20.642031360212	88
+75	17817	20.710944642872	88
+75	17970	20.738505873731	64
 76	576	3.5	0
 76	576	3.5	0
 76	576	3.5	4
@@ -3334,6 +4788,28 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 77	6758	14.242341248622	1
 77	7164	14.586543278769	3
 77	7186	14.586939278769	1
+77	8434	15.611657365794	3
+77	8458	15.612149365794	1
+77	9529	16.462188944638	3
+77	9554	16.462680944638	1
+77	9804	16.716399684054	3
+77	9830	16.716763684054	1
+77	10336	17.023477514092	3
+77	10363	17.023969514092	1
+77	11027	17.546063473729	3
+77	11055	17.546427473729	1
+77	12371	18.106179187043	3
+77	12465	18.106671187043	1
+77	13505	18.901929702005	3
+77	13533	18.902421702005	1
+77	14601	19.366520128628	3
+77	14630	19.367012128628	1
+77	17851	20.716399730827	3
+77	17883	20.716763730827	1
+77	18004	20.77005574854	3
+77	18036	20.77054774854	1
+77	18071	20.773703428187	3
+77	18103	20.774195428187	1
 78	576	3.5	1
 78	581	3.63844380884	2
 78	588	3.63883980884	1
@@ -3359,6 +4835,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 78	6667	14.091921029007	1
 78	7113	14.583343063249	2
 78	7133	14.583835063249	1
+78	8886	16.016631127103	2
+78	8908	16.017123127103	1
+78	11294	17.709162718617	2
+78	11347	17.709654718617	1
+78	13564	18.930425401312	2
+78	13589	18.930917401312	1
+78	15509	19.967984785792	2
+78	15536	19.968476785792	1
 79	578	3.63844380884	1
 80	580	3.63844380884	64
 80	1000	5.020477480488	88
@@ -3372,6 +4856,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 80	5322	12.890870943899	88
 80	6647	14.091557029007	56
 80	7112	14.583343063249	88
+80	8885	16.016631127103	88
+80	11293	17.709162718617	88
+80	13563	18.930425401312	88
+80	15508	19.967984785792	88
 81	580	3.63844380884	64
 81	1000	5.020477480488	88
 81	1306	6.091557029007	56
@@ -3384,6 +4872,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 81	5322	12.890870943899	88
 81	6647	14.091557029007	56
 81	7112	14.583343063249	88
+81	8885	16.016631127103	88
+81	11293	17.709162718617	88
+81	13563	18.930425401312	88
+81	15508	19.967984785792	88
 82	580	3.63844380884	1
 82	580	3.63844380884	0
 82	1000	5.020477480488	1
@@ -3408,6 +4900,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 82	6647	14.091557029007	0
 82	7112	14.583343063249	1
 82	7112	14.583343063249	0
+82	8885	16.016631127103	1
+82	8885	16.016631127103	0
+82	11293	17.709162718617	1
+82	11293	17.709162718617	0
+82	13563	18.930425401312	1
+82	13563	18.930425401312	0
+82	15508	19.967984785792	1
+82	15508	19.967984785792	0
 83	580	3.63844380884	64
 83	1000	5.020477480488	88
 83	1306	6.091557029007	56
@@ -3420,6 +4920,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 83	5322	12.890870943899	88
 83	6647	14.091557029007	56
 83	7112	14.583343063249	88
+83	8885	16.016631127103	88
+83	11293	17.709162718617	88
+83	13563	18.930425401312	88
+83	15508	19.967984785792	88
 84	580	3.63844380884	0
 84	1000	5.020477480488	0
 84	1306	6.091557029007	0
@@ -3432,6 +4936,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 84	5322	12.890870943899	0
 84	6647	14.091557029007	0
 84	7112	14.583343063249	0
+84	8885	16.016631127103	0
+84	11293	17.709162718617	0
+84	13563	18.930425401312	0
+84	15508	19.967984785792	0
 85	580	3.63844380884	87
 85	1000	5.020477480488	111
 85	1306	6.091557029007	79
@@ -3444,6 +4952,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 85	5322	12.890870943899	111
 85	6647	14.091557029007	79
 85	7112	14.583343063249	111
+85	8885	16.016631127103	111
+85	11293	17.709162718617	111
+85	13563	18.930425401312	111
+85	15508	19.967984785792	111
 86	908	5	0
 86	908	5	0
 86	908	5	4
@@ -3522,6 +5034,107 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 87	6954	14.471217424003	1
 87	7310	14.810932551753	3
 87	7333	14.811424551753	1
+87	7717	15.058891967556	3
+87	7740	15.059383967556	1
+87	7771	15.151857885131	3
+87	7800	15.152349885131	1
+87	7833	15.173259524738	3
+87	7862	15.173751524738	1
+87	7947	15.283091075236	3
+87	7979	15.283583075236	1
+87	8205	15.51933637634	3
+87	8229	15.51970037634	1
+87	8380	15.586513584382	3
+87	8404	15.587005584382	1
+87	9001	16.148541872449	3
+87	9026	16.149033872449	1
+87	9064	16.198083175165	3
+87	9089	16.198447175165	1
+87	9279	16.270725063589	3
+87	9313	16.271089063589	1
+87	9342	16.396341143557	3
+87	9373	16.396833143557	1
+87	9407	16.402974458889	3
+87	9429	16.403466458889	1
+87	9625	16.631143863664	3
+87	9654	16.631635863664	1
+87	9862	16.790778984076	3
+87	9894	16.791270984076	1
+87	10653	17.235840039111	3
+87	10689	17.236332039111	1
+87	10724	17.296555799007	3
+87	10754	17.296919799007	1
+87	10791	17.353537284593	3
+87	10821	17.354029284593	1
+87	10853	17.403789359408	3
+87	10886	17.404153359408	1
+87	11150	17.633507426869	3
+87	11175	17.633999426869	1
+87	11541	17.873796123522	3
+87	11572	17.874288123522	1
+87	11614	17.891964816411	3
+87	11648	17.892328816411	1
+87	11975	18.000857578158	3
+87	12092	18.001285578158	1
+87	12266	18.092353800745	3
+87	12300	18.092845800745	1
+87	12344	18.106011404911	3
+87	12431	18.106503404911	2
+87	12508	18.106885872103	1
+87	12543	18.166132608409	3
+87	12580	18.166624608409	1
+87	12809	18.352424725428	3
+87	12843	18.352916725428	1
+87	13294	18.692797910165	3
+87	13331	18.693161910165	1
+87	13364	18.707583954687	3
+87	13395	18.708075954687	1
+87	13429	18.805804893038	3
+87	13466	18.806296893038	1
+87	13625	18.954504651387	3
+87	13650	18.954996651387	1
+87	13702	18.971056039457	3
+87	13733	18.971548039457	1
+87	13918	19.000857589475	3
+87	14007	19.001285589475	1
+87	14253	19.23014265225	3
+87	14282	19.23063465225	1
+87	14843	19.519336310536	3
+87	14870	19.519700310536	1
+87	15128	19.704736345283	3
+87	15164	19.705228345283	1
+87	15210	19.857032263553	3
+87	15243	19.857524263553	1
+87	15279	19.870021114001	3
+87	15318	19.870513114001	1
+87	15358	19.912587800227	3
+87	15397	19.913079800227	1
+87	15578	19.997934779016	3
+87	15614	19.998426779016	1
+87	15806	20.000857597982	3
+87	15908	20.001285597982	1
+87	16233	20.076396052968	3
+87	16270	20.076888052968	1
+87	16397	20.102143176688	3
+87	16539	20.102571176688	1
+87	16642	20.11699762021	3
+87	16670	20.11748962021	1
+87	16806	20.198083189621	3
+87	16846	20.198447189621	1
+87	16883	20.218997767673	3
+87	16921	20.219393767673	1
+87	16955	20.270724928975	3
+87	16992	20.271088928975	1
+87	17378	20.479371485794	3
+87	17412	20.479863485794	1
+87	17682	20.64153928338	3
+87	17714	20.64203128338	1
+87	17763	20.710452581917	3
+87	17804	20.710944581917	1
+87	17924	20.738109751158	3
+87	17963	20.738505751158	1
+87	18301	20.886649023028	3
+87	18345	20.887141023028	1
 88	908	5	1
 88	1021	5.031772281928	2
 88	1029	5.032168281928	1
@@ -3543,6 +5156,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 88	6192	13.706311986063	1
 88	7371	14.86476184167	2
 88	7391	14.86512584167	1
+88	8100	15.422147183913	2
+88	8120	15.422639183913	1
+88	9986	16.869272562443	2
+88	10009	16.869764562443	1
+88	13141	18.529446100817	2
+88	13166	18.529938100817	1
+88	17582	20.528293103679	2
+88	17611	20.528785103679	1
 89	1018	5.031772281928	1
 90	1020	5.031772281928	64
 90	1380	6.414661941119	88
@@ -3554,6 +5175,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 90	5005	12.387836812763	88
 90	6173	13.705819986063	88
 90	7370	14.86476184167	56
+90	8099	15.422147183913	88
+90	9985	16.869272562443	88
+90	13140	18.529446100817	88
+90	17581	20.528293103679	88
 91	1020	5.031772281928	64
 91	1380	6.414661941119	88
 91	1488	6.86476184167	56
@@ -3564,6 +5189,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 91	5005	12.387836812763	88
 91	6173	13.705819986063	88
 91	7370	14.86476184167	56
+91	8099	15.422147183913	88
+91	9985	16.869272562443	88
+91	13140	18.529446100817	88
+91	17581	20.528293103679	88
 92	1020	5.031772281928	1
 92	1020	5.031772281928	0
 92	1380	6.414661941119	1
@@ -3584,6 +5213,14 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 92	6173	13.705819986063	0
 92	7370	14.86476184167	1
 92	7370	14.86476184167	0
+92	8099	15.422147183913	1
+92	8099	15.422147183913	0
+92	9985	16.869272562443	1
+92	9985	16.869272562443	0
+92	13140	18.529446100817	1
+92	13140	18.529446100817	0
+92	17581	20.528293103679	1
+92	17581	20.528293103679	0
 93	1020	5.031772281928	64
 93	1380	6.414661941119	88
 93	1488	6.86476184167	56
@@ -3594,6 +5231,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 93	5005	12.387836812763	88
 93	6173	13.705819986063	88
 93	7370	14.86476184167	56
+93	8099	15.422147183913	88
+93	9985	16.869272562443	88
+93	13140	18.529446100817	88
+93	17581	20.528293103679	88
 94	1020	5.031772281928	0
 94	1380	6.414661941119	0
 94	1488	6.86476184167	0
@@ -3604,6 +5245,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 94	5005	12.387836812763	0
 94	6173	13.705819986063	0
 94	7370	14.86476184167	0
+94	8099	15.422147183913	0
+94	9985	16.869272562443	0
+94	13140	18.529446100817	0
+94	17581	20.528293103679	0
 95	1020	5.031772281928	87
 95	1380	6.414661941119	111
 95	1488	6.86476184167	79
@@ -3614,6 +5259,10 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 95	5005	12.387836812763	111
 95	6173	13.705819986063	111
 95	7370	14.86476184167	79
+95	8099	15.422147183913	111
+95	9985	16.869272562443	111
+95	13140	18.529446100817	111
+95	17581	20.528293103679	111
 96	1338	6.300662689199	111
 96	1874	7.435880816926	111
 96	1918	7.709685768062	87
@@ -3651,6 +5300,56 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 96	6908	14.434754884546	111
 96	6955	14.471217424003	111
 96	7334	14.811424551753	111
+96	7741	15.059383967556	111
+96	7801	15.152349885131	111
+96	7863	15.173751524738	111
+96	7980	15.283583075236	111
+96	8230	15.51970037634	79
+96	8405	15.587005584382	111
+96	9027	16.149033872449	111
+96	9090	16.198447175165	79
+96	9314	16.271089063589	79
+96	9374	16.396833143557	111
+96	9430	16.403466458889	111
+96	9655	16.631635863664	111
+96	9895	16.791270984076	111
+96	10690	17.236332039111	111
+96	10755	17.296919799007	79
+96	10822	17.354029284593	111
+96	10887	17.404153359408	79
+96	11176	17.633999426869	111
+96	11573	17.874288123522	111
+96	11649	17.892328816411	79
+96	12093	18.001285578158	95
+96	12301	18.092845800745	111
+96	12432	18.106503404911	111
+96	12581	18.166624608409	111
+96	12844	18.352916725428	111
+96	13332	18.693161910165	79
+96	13396	18.708075954687	111
+96	13467	18.806296893038	111
+96	13651	18.954996651387	111
+96	13734	18.971548039457	111
+96	14008	19.001285589475	95
+96	14283	19.23063465225	111
+96	14871	19.519700310536	79
+96	15165	19.705228345283	111
+96	15244	19.857524263553	111
+96	15319	19.870513114001	111
+96	15398	19.913079800227	111
+96	15615	19.998426779016	111
+96	15909	20.001285597982	95
+96	16271	20.076888052968	111
+96	16540	20.102571176688	95
+96	16671	20.11748962021	111
+96	16847	20.198447189621	79
+96	16922	20.219393767673	87
+96	16993	20.271088928975	79
+96	17413	20.479863485794	111
+96	17715	20.64203128338	111
+96	17805	20.710944581917	111
+96	17964	20.738505751158	87
+96	18346	20.887141023028	111
 97	1338	6.300662689199	88
 97	1874	7.435880816926	88
 97	1918	7.709685768062	64
@@ -3688,6 +5387,55 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 97	6908	14.434754884546	88
 97	6955	14.471217424003	88
 97	7334	14.811424551753	88
+97	7741	15.059383967556	88
+97	7801	15.152349885131	88
+97	7863	15.173751524738	88
+97	7980	15.283583075236	88
+97	8230	15.51970037634	56
+97	8405	15.587005584382	88
+97	9027	16.149033872449	88
+97	9090	16.198447175165	56
+97	9314	16.271089063589	56
+97	9374	16.396833143557	88
+97	9430	16.403466458889	88
+97	9655	16.631635863664	88
+97	9895	16.791270984076	88
+97	10690	17.236332039111	88
+97	10755	17.296919799007	56
+97	10822	17.354029284593	88
+97	10887	17.404153359408	56
+97	11176	17.633999426869	88
+97	11573	17.874288123522	88
+97	11649	17.892328816411	56
+97	12093	18.001285578158	72
+97	12301	18.092845800745	88
+97	12581	18.166624608409	88
+97	12844	18.352916725428	88
+97	13332	18.693161910165	56
+97	13396	18.708075954687	88
+97	13467	18.806296893038	88
+97	13651	18.954996651387	88
+97	13734	18.971548039457	88
+97	14008	19.001285589475	72
+97	14283	19.23063465225	88
+97	14871	19.519700310536	56
+97	15165	19.705228345283	88
+97	15244	19.857524263553	88
+97	15319	19.870513114001	88
+97	15398	19.913079800227	88
+97	15615	19.998426779016	88
+97	15909	20.001285597982	72
+97	16271	20.076888052968	88
+97	16540	20.102571176688	72
+97	16671	20.11748962021	88
+97	16847	20.198447189621	56
+97	16922	20.219393767673	64
+97	16993	20.271088928975	56
+97	17413	20.479863485794	88
+97	17715	20.64203128338	88
+97	17805	20.710944581917	88
+97	17964	20.738505751158	64
+97	18346	20.887141023028	88
 98	1522	7	0
 98	1522	7	0
 98	1522	7	4
@@ -3718,6 +5466,62 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 99	7345	14.811424863589	1
 99	7374	14.86476230006	3
 99	7400	14.86512630006	1
+99	7773	15.1518581815	3
+99	7808	15.1523501815	1
+99	8103	15.422147618948	3
+99	8129	15.422639618948	1
+99	8208	15.519336640741	3
+99	8241	15.519700640741	1
+99	8379	15.586513172517	3
+99	8400	15.587005172517	1
+99	9063	16.198082783448	3
+99	9085	16.198446783448	1
+99	9345	16.396341289314	3
+99	9385	16.396833289314	1
+99	9411	16.40297470445	3
+99	9445	16.40346670445	1
+99	9864	16.790779164254	3
+99	9902	16.791271164254	1
+99	9988	16.869272941215	3
+99	10014	16.869764941215	1
+99	10789	17.353536915212	3
+99	10813	17.354028915212	1
+99	10856	17.403789476777	3
+99	10898	17.404153476777	1
+99	11152	17.63350763763	3
+99	11183	17.63399963763	1
+99	12267	18.092353914904	3
+99	12304	18.092845914904	1
+99	12810	18.352424821869	3
+99	12847	18.352916821869	1
+99	13143	18.529446451705	3
+99	13171	18.529938451705	1
+99	13362	18.707583603878	3
+99	13387	18.708075603878	1
+99	13431	18.805804967827	3
+99	13474	18.806296967827	1
+99	13626	18.954504824975	3
+99	13654	18.954996824975	1
+99	14844	19.51933641509	3
+99	14874	19.51970041509	1
+99	15129	19.704736403237	3
+99	15168	19.705228403237	1
+99	15208	19.857031916847	3
+99	15235	19.857523916847	1
+99	16234	20.076396099396	3
+99	16274	20.076888099396	1
+99	16643	20.116997682828	3
+99	16674	20.117489682828	1
+99	16802	20.198082842761	3
+99	16830	20.198446842761	1
+99	16957	20.270724966546	3
+99	17000	20.271088966546	1
+99	17584	20.528293452267	3
+99	17616	20.528785452267	1
+99	17764	20.710452604003	3
+99	17808	20.710944604003	1
+99	17923	20.738109735274	3
+99	17960	20.738505735274	1
 100	1522	7	1
 100	1760	7.185080199596	2
 100	1769	7.185476199596	1
@@ -3735,6 +5539,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 100	5911	13.296919429558	1
 100	6930	14.470724941231	2
 100	6949	14.471216941231	1
+100	8999	16.148541480535	2
+100	9021	16.149033480535	1
+100	10721	17.296555429558	2
+100	10745	17.296919429558	1
+100	11538	17.873795761959	2
+100	11563	17.874287761959	1
+100	13699	18.971055688569	2
+100	13724	18.971547688569	1
+100	17375	20.479371138848	2
+100	17403	20.479863138848	1
 101	1757	7.185080199596	1
 102	1759	7.185080199596	64
 102	2238	8.386488978053	88
@@ -3744,6 +5558,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 102	5361	12.905536075588	88
 102	5893	13.296555429558	56
 102	6929	14.470724941231	88
+102	8998	16.148541480535	88
+102	10720	17.296555429558	56
+102	11537	17.873795761959	88
+102	13698	18.971055688569	88
+102	17374	20.479371138848	88
 103	1759	7.185080199596	64
 103	2238	8.386488978053	88
 103	2751	9.296555429558	56
@@ -3752,6 +5571,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 103	5361	12.905536075588	88
 103	5893	13.296555429558	56
 103	6929	14.470724941231	88
+103	8998	16.148541480535	88
+103	10720	17.296555429558	56
+103	11537	17.873795761959	88
+103	13698	18.971055688569	88
+103	17374	20.479371138848	88
 104	1759	7.185080199596	1
 104	1759	7.185080199596	0
 104	2238	8.386488978053	1
@@ -3768,6 +5592,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 104	5893	13.296555429558	0
 104	6929	14.470724941231	1
 104	6929	14.470724941231	0
+104	8998	16.148541480535	1
+104	8998	16.148541480535	0
+104	10720	17.296555429558	1
+104	10720	17.296555429558	0
+104	11537	17.873795761959	1
+104	11537	17.873795761959	0
+104	13698	18.971055688569	1
+104	13698	18.971055688569	0
+104	17374	20.479371138848	1
+104	17374	20.479371138848	0
 105	1759	7.185080199596	64
 105	2238	8.386488978053	88
 105	2751	9.296555429558	56
@@ -3776,6 +5610,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 105	5361	12.905536075588	88
 105	5893	13.296555429558	56
 105	6929	14.470724941231	88
+105	8998	16.148541480535	88
+105	10720	17.296555429558	56
+105	11537	17.873795761959	88
+105	13698	18.971055688569	88
+105	17374	20.479371138848	88
 106	1759	7.185080199596	0
 106	2238	8.386488978053	0
 106	2751	9.296555429558	0
@@ -3784,6 +5623,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 106	5361	12.905536075588	0
 106	5893	13.296555429558	0
 106	6929	14.470724941231	0
+106	8998	16.148541480535	0
+106	10720	17.296555429558	0
+106	11537	17.873795761959	0
+106	13698	18.971055688569	0
+106	17374	20.479371138848	0
 107	1759	7.185080199596	87
 107	2238	8.386488978053	111
 107	2751	9.296555429558	79
@@ -3792,12 +5636,53 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 107	5361	12.905536075588	111
 107	5893	13.296555429558	79
 107	6929	14.470724941231	111
+107	8998	16.148541480535	111
+107	10720	17.296555429558	79
+107	11537	17.873795761959	111
+107	13698	18.971055688569	111
+107	17374	20.479371138848	111
 108	1771	7.185476778653	87
 108	2253	8.3869816023	111
 108	6155	13.63640896266	111
+108	7867	15.173751642501	111
+108	7976	15.283583070226	111
+108	9249	16.26491718512	87
+108	9310	16.271089040585	79
+108	9378	16.396833248757	111
+108	10686	17.236332017701	111
+108	10891	17.404153464278	79
+108	11703	17.939355383986	79
+108	11760	17.965908840172	111
+108	12317	18.09284602889	111
+108	12852	18.352916840882	111
+108	13463	18.806296892137	111
+108	14760	19.401773794006	111
+108	15173	19.70522847945	111
+108	16287	20.076888192875	111
+108	16997	20.27108894938	79
+108	17813	20.710944608729	111
+108	17967	20.738505790503	87
 109	1771	7.185476778653	64
 109	2253	8.3869816023	88
 109	6155	13.63640896266	88
+109	7867	15.173751642501	88
+109	7976	15.283583070226	88
+109	9249	16.26491718512	64
+109	9310	16.271089040585	56
+109	9378	16.396833248757	88
+109	10686	17.236332017701	88
+109	10891	17.404153464278	56
+109	11703	17.939355383986	56
+109	11760	17.965908840172	88
+109	12317	18.09284602889	88
+109	12852	18.352916840882	88
+109	13463	18.806296892137	88
+109	14760	19.401773794006	88
+109	15173	19.70522847945	88
+109	16287	20.076888192875	88
+109	16997	20.27108894938	56
+109	17813	20.710944608729	88
+109	17967	20.738505790503	64
 110	1819	7.294484574799	111
 110	1976	7.777209341298	79
 110	2395	8.744434633992	111
@@ -3811,6 +5696,34 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 110	6715	14.119742412719	87
 110	7346	14.811424863589	111
 110	7401	14.86512630006	79
+110	7809	15.1523501815	111
+110	8130	15.422639618948	111
+110	8242	15.519700640741	79
+110	8401	15.587005172517	111
+110	9086	16.198446783448	79
+110	9386	16.396833289314	111
+110	9446	16.40346670445	111
+110	9903	16.791271164254	111
+110	10015	16.869764941215	111
+110	10814	17.354028915212	111
+110	10899	17.404153476777	79
+110	11184	17.63399963763	111
+110	12305	18.092845914904	111
+110	12848	18.352916821869	111
+110	13172	18.529938451705	111
+110	13388	18.708075603878	111
+110	13475	18.806296967827	111
+110	13655	18.954996824975	111
+110	14875	19.51970041509	79
+110	15169	19.705228403237	111
+110	15236	19.857523916847	111
+110	16275	20.076888099396	111
+110	16675	20.117489682828	111
+110	16831	20.198446842761	79
+110	17001	20.271088966546	79
+110	17617	20.528785452267	111
+110	17809	20.710944604003	111
+110	17961	20.738505735274	87
 111	1819	7.294484574799	88
 111	1976	7.777209341298	56
 111	2395	8.744434633992	88
@@ -3824,6 +5737,34 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 111	6715	14.119742412719	64
 111	7346	14.811424863589	88
 111	7401	14.86512630006	56
+111	7809	15.1523501815	88
+111	8130	15.422639618948	88
+111	8242	15.519700640741	56
+111	8401	15.587005172517	88
+111	9086	16.198446783448	56
+111	9386	16.396833289314	88
+111	9446	16.40346670445	88
+111	9903	16.791271164254	88
+111	10015	16.869764941215	88
+111	10814	17.354028915212	88
+111	10899	17.404153476777	56
+111	11184	17.63399963763	88
+111	12305	18.092845914904	88
+111	12848	18.352916821869	88
+111	13172	18.529938451705	88
+111	13388	18.708075603878	88
+111	13475	18.806296967827	88
+111	13655	18.954996824975	88
+111	14875	19.51970041509	56
+111	15169	19.705228403237	88
+111	15236	19.857523916847	88
+111	16275	20.076888099396	88
+111	16675	20.117489682828	88
+111	16831	20.198446842761	56
+111	17001	20.271088966546	56
+111	17617	20.528785452267	88
+111	17809	20.710944604003	88
+111	17961	20.738505735274	64
 112	1902	7.5	0
 112	1902	7.5	0
 112	1902	7.5	4
@@ -3878,6 +5819,90 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 113	7337	14.811424669116	1
 113	7375	14.864762361387	3
 113	7404	14.865126361387	1
+113	7769	15.151857717933	3
+113	7792	15.152349717933	1
+113	7943	15.283090556843	3
+113	7963	15.283582556843	1
+113	8104	15.422147702305	3
+113	8133	15.422639702305	1
+113	8206	15.519336505118	3
+113	8233	15.519700505118	1
+113	8327	15.580704643961	3
+113	8354	15.581196643961	1
+113	8486	15.762948927195	3
+113	8510	15.763440927195	1
+113	9004	16.148542132848	3
+113	9038	16.149034132848	1
+113	9275	16.270724557033	3
+113	9297	16.271088557033	1
+113	9409	16.402974601885	3
+113	9437	16.403466601885	1
+113	9745	16.685643166916	3
+113	9772	16.686039166916	1
+113	9859	16.790778723689	3
+113	9882	16.791270723689	1
+113	9990	16.869273059545	3
+113	10022	16.869765059545	1
+113	10059	16.878141579412	3
+113	10088	16.878633579412	1
+113	10456	17.159454627855	3
+113	10483	17.159946627855	1
+113	10649	17.235839558072	3
+113	10673	17.236331558072	1
+113	10726	17.296556028055	3
+113	10762	17.296920028055	1
+113	11153	17.633507645596	3
+113	11187	17.633999645596	1
+113	11543	17.873796333692	3
+113	11580	17.874288333692	1
+113	12263	18.0923534844	3
+113	12288	18.0928454844	1
+113	12400	18.106393798745	3
+113	12500	18.106885798745	1
+113	12541	18.166132545776	3
+113	12572	18.166624545776	1
+113	12673	18.262317965944	3
+113	12701	18.262809965944	1
+113	13145	18.529446534528	3
+113	13179	18.529938534528	1
+113	13292	18.69279784775	3
+113	13323	18.69316184775	1
+113	13425	18.805804460206	3
+113	13450	18.806296460206	1
+113	13628	18.954504900708	3
+113	13662	18.954996900708	1
+113	13704	18.971056207108	3
+113	13741	18.971548207108	1
+113	14534	19.362544836327	3
+113	14563	19.363036836327	1
+113	14846	19.519336537506	3
+113	14882	19.519700537506	1
+113	15277	19.870021083286	3
+113	15310	19.870513083286	1
+113	15356	19.912587762618	3
+113	15389	19.913079762618	1
+113	16230	20.07639566026	3
+113	16258	20.07688766026	1
+113	16644	20.116997822138	3
+113	16678	20.117489822138	1
+113	16804	20.198083180963	3
+113	16838	20.198447180963	1
+113	16881	20.218997756951	3
+113	16915	20.219393756951	1
+113	16953	20.270724534558	3
+113	16984	20.271088534558	1
+113	17379	20.479371578816	3
+113	17416	20.479863578816	1
+113	17511	20.502517406838	3
+113	17549	20.503009406838	1
+113	17585	20.52829349384	3
+113	17620	20.52878549384	1
+113	17761	20.710452196708	3
+113	17796	20.710944196708	1
+113	17920	20.738109369074	3
+113	17951	20.738505369074	1
+113	18299	20.886649014644	3
+113	18337	20.887141014644	1
 114	1902	7.5	1
 114	1906	7.709289358626	2
 114	1916	7.709685358626	1
@@ -3893,6 +5918,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 114	5860	13.244454808511	1
 114	5939	13.40378887828	2
 114	5956	13.40415287828	1
+114	7829	15.173259006346	2
+114	7849	15.173751006346	1
+114	9338	16.396340637001	2
+114	9360	16.396832637001	1
+114	10849	17.40378887828	2
+114	10873	17.40415287828	1
+114	12805	18.352424276759	2
+114	12830	18.352916276759	1
+114	15124	19.704735937295	2
+114	15151	19.705227937295	1
 115	1903	7.709289358626	1
 116	1905	7.709289358626	64
 116	2287	8.59928035154	88
@@ -3901,6 +5936,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 116	4576	11.947822609217	88
 116	5842	13.243962808511	88
 116	5938	13.40378887828	56
+116	7828	15.173259006346	88
+116	9337	16.396340637001	88
+116	10848	17.40378887828	56
+116	12804	18.352424276759	88
+116	15123	19.704735937295	88
 117	1905	7.709289358626	64
 117	2287	8.59928035154	88
 117	2779	9.40378887828	56
@@ -3908,6 +5948,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 117	4576	11.947822609217	88
 117	5842	13.243962808511	88
 117	5938	13.40378887828	56
+117	7828	15.173259006346	88
+117	9337	16.396340637001	88
+117	10848	17.40378887828	56
+117	12804	18.352424276759	88
+117	15123	19.704735937295	88
 118	1905	7.709289358626	1
 118	1905	7.709289358626	0
 118	2287	8.59928035154	1
@@ -3922,6 +5967,16 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 118	5842	13.243962808511	0
 118	5938	13.40378887828	1
 118	5938	13.40378887828	0
+118	7828	15.173259006346	1
+118	7828	15.173259006346	0
+118	9337	16.396340637001	1
+118	9337	16.396340637001	0
+118	10848	17.40378887828	1
+118	10848	17.40378887828	0
+118	12804	18.352424276759	1
+118	12804	18.352424276759	0
+118	15123	19.704735937295	1
+118	15123	19.704735937295	0
 119	1905	7.709289358626	64
 119	2287	8.59928035154	88
 119	2779	9.40378887828	56
@@ -3929,6 +5984,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 119	4576	11.947822609217	88
 119	5842	13.243962808511	88
 119	5938	13.40378887828	56
+119	7828	15.173259006346	88
+119	9337	16.396340637001	88
+119	10848	17.40378887828	56
+119	12804	18.352424276759	88
+119	15123	19.704735937295	88
 120	1905	7.709289358626	0
 120	2287	8.59928035154	0
 120	2779	9.40378887828	0
@@ -3936,6 +5996,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 120	4576	11.947822609217	0
 120	5842	13.243962808511	0
 120	5938	13.40378887828	0
+120	7828	15.173259006346	0
+120	9337	16.396340637001	0
+120	10848	17.40378887828	0
+120	12804	18.352424276759	0
+120	15123	19.704735937295	0
 121	1905	7.709289358626	87
 121	2287	8.59928035154	111
 121	2779	9.40378887828	79
@@ -3943,6 +6008,11 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 121	4576	11.947822609217	111
 121	5842	13.243962808511	111
 121	5938	13.40378887828	79
+121	7828	15.173259006346	111
+121	9337	16.396340637001	111
+121	10848	17.40378887828	79
+121	12804	18.352424276759	111
+121	15123	19.704735937295	111
 122	1946	7.739295354678	111
 122	2226	8.376903743237	79
 122	2644	9.048944324703	111
@@ -3968,6 +6038,48 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 122	7055	14.493432992339	111
 122	7338	14.811424669116	111
 122	7405	14.865126361387	79
+122	7793	15.152349717933	111
+122	7964	15.283582556843	111
+122	8134	15.422639702305	111
+122	8234	15.519700505118	79
+122	8355	15.581196643961	111
+122	8511	15.763440927195	111
+122	9039	16.149034132848	111
+122	9298	16.271088557033	79
+122	9438	16.403466601885	111
+122	9773	16.686039166916	87
+122	9883	16.791270723689	111
+122	10023	16.869765059545	111
+122	10089	16.878633579412	111
+122	10484	17.159946627855	111
+122	10674	17.236331558072	111
+122	10763	17.296920028055	79
+122	11188	17.633999645596	111
+122	11581	17.874288333692	111
+122	12289	18.0928454844	111
+122	12501	18.106885798745	111
+122	12573	18.166624545776	111
+122	12702	18.262809965944	111
+122	13180	18.529938534528	111
+122	13324	18.69316184775	79
+122	13451	18.806296460206	111
+122	13663	18.954996900708	111
+122	13742	18.971548207108	111
+122	14564	19.363036836327	111
+122	14883	19.519700537506	79
+122	15311	19.870513083286	111
+122	15390	19.913079762618	111
+122	16259	20.07688766026	111
+122	16679	20.117489822138	111
+122	16839	20.198447180963	79
+122	16916	20.219393756951	87
+122	16985	20.271088534558	79
+122	17417	20.479863578816	111
+122	17550	20.503009406838	111
+122	17621	20.52878549384	111
+122	17797	20.710944196708	111
+122	17952	20.738505369074	87
+122	18338	20.887141014644	111
 123	1946	7.739295354678	88
 123	2226	8.376903743237	56
 123	2644	9.048944324703	88
@@ -3993,6 +6105,48 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 123	7055	14.493432992339	88
 123	7338	14.811424669116	88
 123	7405	14.865126361387	56
+123	7793	15.152349717933	88
+123	7964	15.283582556843	88
+123	8134	15.422639702305	88
+123	8234	15.519700505118	56
+123	8355	15.581196643961	88
+123	8511	15.763440927195	88
+123	9039	16.149034132848	88
+123	9298	16.271088557033	56
+123	9438	16.403466601885	88
+123	9773	16.686039166916	64
+123	9883	16.791270723689	88
+123	10023	16.869765059545	88
+123	10089	16.878633579412	88
+123	10484	17.159946627855	88
+123	10674	17.236331558072	88
+123	10763	17.296920028055	56
+123	11188	17.633999645596	88
+123	11581	17.874288333692	88
+123	12289	18.0928454844	88
+123	12501	18.106885798745	88
+123	12573	18.166624545776	88
+123	12702	18.262809965944	88
+123	13180	18.529938534528	88
+123	13324	18.69316184775	56
+123	13451	18.806296460206	88
+123	13663	18.954996900708	88
+123	13742	18.971548207108	88
+123	14564	19.363036836327	88
+123	14883	19.519700537506	56
+123	15311	19.870513083286	88
+123	15390	19.913079762618	88
+123	16259	20.07688766026	88
+123	16679	20.117489822138	88
+123	16839	20.198447180963	56
+123	16916	20.219393756951	64
+123	16985	20.271088534558	56
+123	17417	20.479863578816	88
+123	17550	20.503009406838	88
+123	17621	20.52878549384	88
+123	17797	20.710944196708	88
+123	17952	20.738505369074	64
+123	18338	20.887141014644	88
 124	2036	8	0
 124	2036	8	0
 124	2036	8	4
@@ -4007,6 +6161,50 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 125	6624	14.056714103822	1
 125	7261	14.806814074195	3
 125	7284	14.807306074195	1
+125	7893	15.221162508774	3
+125	7917	15.221654508774	1
+125	9120	16.202912349078	3
+125	9145	16.203404349078	1
+125	10394	17.112716840133	3
+125	10421	17.113208840133	1
+125	10585	17.224751240648	3
+125	10609	17.225147240648	1
+125	11412	17.71279936838	3
+125	11443	17.71316336838	1
+125	11478	17.862580777193	3
+125	11509	17.863072777193	1
+125	11961	18.000857265148	3
+125	12074	18.001285265148	2
+125	12100	18.001285628896	1
+125	12346	18.106011455649	3
+125	12437	18.106503455649	1
+125	12609	18.248190859927	3
+125	12637	18.248682859927	1
+125	12951	18.428768943414	3
+125	12976	18.429260943414	1
+125	13912	19.000857228515	3
+125	13997	19.001285228515	2
+125	14006	19.001285549504	1
+125	14255	19.230142688651	3
+125	14290	19.230634688651	1
+125	14322	19.236607658598	3
+125	14348	19.236971658598	1
+125	15056	19.696116954245	3
+125	15086	19.696608954245	1
+125	15577	19.997934698711	3
+125	15610	19.998426698711	1
+125	15799	20.000857201973	3
+125	15890	20.001285201973	2
+125	15900	20.001285483053	1
+125	16016	20.001714357069	3
+125	16188	20.002334357069	1
+125	16318	20.101714357069	3
+125	16346	20.102142357069	1
+125	16371	20.102142746903	3
+125	16516	20.102570746903	2
+125	16529	20.102571061759	1
+125	16726	20.14301017862	3
+125	16754	20.14350217862	1
 126	2036	8	1
 126	2153	8.051272875839	2
 126	2164	8.051668875839	1
@@ -4024,6 +6222,20 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 126	6802	14.302062036216	1
 126	6831	14.404724611645	2
 126	6850	14.405088611645	1
+126	8001	15.306265518302	2
+126	8021	15.306757518302	1
+126	10123	16.986321091186	2
+126	10146	16.986813091186	1
+126	12737	18.276398701127	2
+126	12762	18.276890701127	1
+126	12884	18.404724611645	2
+126	12909	18.405088611645	1
+126	14662	19.375967785948	2
+126	14688	19.376459785948	1
+126	16352	20.102142357069	2
+126	16508	20.102570357069	1
+126	17183	20.409190172329	2
+126	17211	20.409682172329	1
 127	2150	8.051272875839	1
 128	2152	8.051272875839	64
 128	2695	9.210382561665	88
@@ -4033,6 +6245,13 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 128	5801	13.218457549578	88
 128	6782	14.301570036216	88
 128	6830	14.404724611645	56
+128	8000	15.306265518302	88
+128	10122	16.986321091186	88
+128	12736	18.276398701127	88
+128	12883	18.404724611645	56
+128	14661	19.375967785948	88
+128	16351	20.102142357069	72
+128	17182	20.409190172329	88
 129	2152	8.051272875839	64
 129	2695	9.210382561665	88
 129	3498	10.404724611645	56
@@ -4041,6 +6260,13 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 129	5801	13.218457549578	88
 129	6782	14.301570036216	88
 129	6830	14.404724611645	56
+129	8000	15.306265518302	88
+129	10122	16.986321091186	88
+129	12736	18.276398701127	88
+129	12883	18.404724611645	56
+129	14661	19.375967785948	88
+129	16351	20.102142357069	72
+129	17182	20.409190172329	88
 130	2152	8.051272875839	1
 130	2152	8.051272875839	0
 130	2695	9.210382561665	1
@@ -4057,6 +6283,20 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 130	6782	14.301570036216	0
 130	6830	14.404724611645	1
 130	6830	14.404724611645	0
+130	8000	15.306265518302	1
+130	8000	15.306265518302	0
+130	10122	16.986321091186	1
+130	10122	16.986321091186	0
+130	12736	18.276398701127	1
+130	12736	18.276398701127	0
+130	12883	18.404724611645	1
+130	12883	18.404724611645	0
+130	14661	19.375967785948	1
+130	14661	19.375967785948	0
+130	16351	20.102142357069	1
+130	16351	20.102142357069	0
+130	17182	20.409190172329	1
+130	17182	20.409190172329	0
 131	2152	8.051272875839	64
 131	2695	9.210382561665	88
 131	3498	10.404724611645	56
@@ -4065,6 +6305,13 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 131	5801	13.218457549578	88
 131	6782	14.301570036216	88
 131	6830	14.404724611645	56
+131	8000	15.306265518302	88
+131	10122	16.986321091186	88
+131	12736	18.276398701127	88
+131	12883	18.404724611645	56
+131	14661	19.375967785948	88
+131	16351	20.102142357069	72
+131	17182	20.409190172329	88
 132	2152	8.051272875839	0
 132	2695	9.210382561665	0
 132	3498	10.404724611645	0
@@ -4073,6 +6320,13 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 132	5801	13.218457549578	0
 132	6782	14.301570036216	0
 132	6830	14.404724611645	0
+132	8000	15.306265518302	0
+132	10122	16.986321091186	0
+132	12736	18.276398701127	0
+132	12883	18.404724611645	0
+132	14661	19.375967785948	0
+132	16351	20.102142357069	0
+132	17182	20.409190172329	0
 133	2152	8.051272875839	87
 133	2695	9.210382561665	111
 133	3498	10.404724611645	79
@@ -4081,6 +6335,13 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 133	5801	13.218457549578	111
 133	6782	14.301570036216	111
 133	6830	14.404724611645	79
+133	8000	15.306265518302	111
+133	10122	16.986321091186	111
+133	12736	18.276398701127	111
+133	12883	18.404724611645	79
+133	14661	19.375967785948	111
+133	16351	20.102142357069	95
+133	17182	20.409190172329	111
 134	2284	8.5	0
 134	2284	8.5	0
 134	2284	8.5	4
@@ -4097,6 +6358,65 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 135	7280	14.807305966219	1
 135	7376	14.864762413971	3
 135	7408	14.865126413971	1
+135	8105	15.422147747048	3
+135	8137	15.422639747048	1
+135	8539	15.793571760725	3
+135	8564	15.793967760725	1
+135	9119	16.202912174997	3
+135	9141	16.203404174997	1
+135	9991	16.86927312019	3
+135	10026	16.86976512019	1
+135	10521	17.199479809572	3
+135	10553	17.199971809572	1
+135	10587	17.224751450023	3
+135	10615	17.225147450023	1
+135	11410	17.712799121032	3
+135	11435	17.713163121032	1
+135	11476	17.862580529845	3
+135	11501	17.863072529845	1
+135	11888	18.000429000716	3
+135	11935	18.000857000716	1
+135	11970	18.000857482716	3
+135	12084	18.001285482716	1
+135	12198	18.059883696873	3
+135	12227	18.060247696873	1
+135	12741	18.276399329307	3
+135	12775	18.276891329307	1
+135	12888	18.404725239825	3
+135	12922	18.405089239825	1
+135	12953	18.428769160982	3
+135	12984	18.429261160982	1
+135	13026	18.497762184854	3
+135	13059	18.498254184854	1
+135	13147	18.529446684276	3
+135	13187	18.529938684276	1
+135	13870	19.00062103356	3
+135	13973	19.00104903356	2
+135	14005	19.001285449549	1
+135	14252	19.230142368773	3
+135	14278	19.230634368773	1
+135	14324	19.236607879632	3
+135	14356	19.236971879632	1
+135	14665	19.375968334736	3
+135	14697	19.376460334736	1
+135	15438	19.967011440644	3
+135	15482	19.967503440644	1
+135	15803	20.000857424326	3
+135	15897	20.001285424326	1
+135	16025	20.001714579422	3
+135	16192	20.002334579422	1
+135	16320	20.101714579422	3
+135	16361	20.102142579422	1
+135	16382	20.102142839406	3
+135	16519	20.102570839406	1
+135	16728	20.143010400973	3
+135	16762	20.143502400973	1
+135	17186	20.409190654666	3
+135	17220	20.409682654666	1
+135	17593	20.528293704082	3
+135	17652	20.528785704082	1
+135	17681	20.641539108755	3
+135	17710	20.642031108755	1
 136	2284	8.5	1
 136	2321	8.609113232023	2
 136	2333	8.609509232023	1
@@ -4112,6 +6432,24 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 136	6397	13.892328245611	1
 136	6551	14.038783853874	2
 136	6570	14.039275853874	1
+136	7715	15.058891404421	2
+136	7735	15.059383404421	1
+136	9622	16.631143305917	2
+136	9645	16.631635305917	1
+136	11610	17.891964245611	2
+136	11635	17.892328245611	1
+136	11942	18.000857000716	2
+136	12071	18.001285000716	1
+136	12341	18.106010827469	2
+136	12422	18.106502827469	1
+136	13907	19.000857000716	2
+136	13995	19.001285000716	1
+136	15574	19.997934185667	2
+136	15601	19.998426185667	1
+136	15794	20.000857000716	2
+136	15888	20.001285000716	1
+136	16368	20.102142579422	2
+136	16512	20.102570579422	1
 137	2318	8.609113232023	1
 138	2320	8.609113232023	64
 138	2948	9.825047227554	88
@@ -4120,6 +6458,15 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 138	5280	12.821961720707	88
 138	6378	13.891964245611	56
 138	6550	14.038783853874	88
+138	7714	15.058891404421	88
+138	9621	16.631143305917	88
+138	11609	17.891964245611	56
+138	11941	18.000857000716	72
+138	12340	18.106010827469	88
+138	13906	19.000857000716	72
+138	15573	19.997934185667	88
+138	15793	20.000857000716	72
+138	16367	20.102142579422	72
 139	2320	8.609113232023	64
 139	2948	9.825047227554	88
 139	2978	9.891964245611	56
@@ -4127,6 +6474,15 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 139	5280	12.821961720707	88
 139	6378	13.891964245611	56
 139	6550	14.038783853874	88
+139	7714	15.058891404421	88
+139	9621	16.631143305917	88
+139	11609	17.891964245611	56
+139	11941	18.000857000716	72
+139	12340	18.106010827469	88
+139	13906	19.000857000716	72
+139	15573	19.997934185667	88
+139	15793	20.000857000716	72
+139	16367	20.102142579422	72
 140	2320	8.609113232023	1
 140	2320	8.609113232023	0
 140	2948	9.825047227554	1
@@ -4141,6 +6497,24 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 140	6378	13.891964245611	0
 140	6550	14.038783853874	1
 140	6550	14.038783853874	0
+140	7714	15.058891404421	1
+140	7714	15.058891404421	0
+140	9621	16.631143305917	1
+140	9621	16.631143305917	0
+140	11609	17.891964245611	1
+140	11609	17.891964245611	0
+140	11941	18.000857000716	1
+140	11941	18.000857000716	0
+140	12340	18.106010827469	1
+140	12340	18.106010827469	0
+140	13906	19.000857000716	1
+140	13906	19.000857000716	0
+140	15573	19.997934185667	1
+140	15573	19.997934185667	0
+140	15793	20.000857000716	1
+140	15793	20.000857000716	0
+140	16367	20.102142579422	1
+140	16367	20.102142579422	0
 141	2320	8.609113232023	64
 141	2948	9.825047227554	88
 141	2978	9.891964245611	56
@@ -4148,6 +6522,15 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 141	5280	12.821961720707	88
 141	6378	13.891964245611	56
 141	6550	14.038783853874	88
+141	7714	15.058891404421	88
+141	9621	16.631143305917	88
+141	11609	17.891964245611	56
+141	11941	18.000857000716	72
+141	12340	18.106010827469	88
+141	13906	19.000857000716	72
+141	15573	19.997934185667	88
+141	15793	20.000857000716	72
+141	16367	20.102142579422	72
 142	2320	8.609113232023	0
 142	2948	9.825047227554	0
 142	2978	9.891964245611	0
@@ -4155,6 +6538,15 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 142	5280	12.821961720707	0
 142	6378	13.891964245611	0
 142	6550	14.038783853874	0
+142	7714	15.058891404421	0
+142	9621	16.631143305917	0
+142	11609	17.891964245611	0
+142	11941	18.000857000716	0
+142	12340	18.106010827469	0
+142	13906	19.000857000716	0
+142	15573	19.997934185667	0
+142	15793	20.000857000716	0
+142	16367	20.102142579422	0
 143	2320	8.609113232023	87
 143	2948	9.825047227554	111
 143	2978	9.891964245611	79
@@ -4162,6 +6554,15 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 143	5280	12.821961720707	111
 143	6378	13.891964245611	79
 143	6550	14.038783853874	111
+143	7714	15.058891404421	111
+143	9621	16.631143305917	111
+143	11609	17.891964245611	79
+143	11941	18.000857000716	95
+143	12340	18.106010827469	111
+143	13906	19.000857000716	95
+143	15573	19.997934185667	111
+143	15793	20.000857000716	95
+143	16367	20.102142579422	95
 144	2832	9.5	0
 144	2832	9.5	0
 144	2832	9.5	4
@@ -4216,6 +6617,82 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 145	6958	14.471217481527	1
 145	7372	14.864762043078	3
 145	7392	14.865126043078	1
+145	7768	15.151857707961	3
+145	7788	15.152349707961	1
+145	7832	15.173259325547	3
+145	7858	15.173751325547	1
+145	7945	15.283090876003	3
+145	7971	15.283582876003	1
+145	8101	15.422147383569	3
+145	8121	15.422639383569	1
+145	8326	15.58070463853	3
+145	8350	15.58119663853	1
+145	9002	16.148541908182	3
+145	9030	16.149033908182	1
+145	9065	16.198083192035	3
+145	9093	16.198447192035	1
+145	9277	16.270724882077	3
+145	9305	16.271088882077	1
+145	9341	16.396340962083	3
+145	9369	16.396832962083	1
+145	9747	16.685643206251	3
+145	9778	16.686039206251	1
+145	9861	16.790778821819	3
+145	9890	16.791270821819	1
+145	9987	16.869272730473	3
+145	10010	16.869764730473	1
+145	10061	16.878141606897	3
+145	10096	16.878633606897	1
+145	10651	17.235839895502	3
+145	10681	17.236331895502	1
+145	10723	17.296555797337	3
+145	10750	17.296919797337	1
+145	10790	17.353537268278	3
+145	10817	17.354029268278	1
+145	10852	17.403789215744	3
+145	10882	17.404153215744	1
+145	11540	17.873796099654	3
+145	11568	17.874288099654	1
+145	12265	18.092353706097	3
+145	12296	18.092845706097	1
+145	12403	18.10639387764	3
+145	12509	18.10688587764	1
+145	12808	18.352424629879	3
+145	12839	18.352916629879	1
+145	13142	18.529446208522	3
+145	13167	18.529938208522	1
+145	13295	18.692797938854	3
+145	13335	18.693161938854	1
+145	13363	18.707583878892	3
+145	13391	18.708075878892	1
+145	13427	18.805804817204	3
+145	13458	18.806296817204	1
+145	13700	18.971055969862	3
+145	13725	18.971547969862	1
+145	15127	19.704736290966	3
+145	15160	19.705228290966	1
+145	15209	19.857032145013	3
+145	15239	19.857524145013	1
+145	15281	19.870021188705	3
+145	15326	19.870513188705	1
+145	15360	19.91258787361	3
+145	15405	19.91307987361	1
+145	16232	20.076396004416	3
+145	16266	20.076888004416	1
+145	16803	20.198083048385	3
+145	16834	20.198447048385	1
+145	16954	20.270724881631	3
+145	16988	20.271088881631	1
+145	17376	20.479371346639	3
+145	17404	20.479863346639	1
+145	17583	20.528293270195	3
+145	17612	20.528785270195	1
+145	17762	20.710452538684	3
+145	17800	20.710944538684	1
+145	17922	20.738109687062	3
+145	17957	20.738505687062	1
+145	18304	20.886649138772	3
+145	18357	20.887141138772	1
 146	2832	9.5	1
 146	2873	9.575987480395	2
 146	2886	9.576383480395	1
@@ -4229,6 +6706,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 146	6006	13.492855395402	1
 146	7308	14.810932350345	2
 146	7328	14.811424350345	1
+146	8203	15.519336183835	2
+146	8224	15.519700183835	1
+146	9406	16.402974276803	2
+146	9428	16.403466276803	1
+146	11149	17.633507299935	2
+146	11174	17.633999299935	1
+146	13624	18.954504543682	2
+146	13649	18.954996543682	1
+146	14842	19.519336183835	2
+146	14869	19.519700183835	1
+146	16641	20.116997475037	2
+146	16669	20.117489475037	1
 147	2870	9.575987480395	1
 148	2872	9.575987480395	64
 148	3755	10.914368588012	88
@@ -4236,12 +6725,24 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 148	4805	12.011469859164	88
 148	5988	13.492363395402	88
 148	7307	14.810932350345	88
+148	8202	15.519336183835	56
+148	9405	16.402974276803	88
+148	11148	17.633507299935	88
+148	13623	18.954504543682	88
+148	14841	19.519336183835	56
+148	16640	20.116997475037	88
 149	2872	9.575987480395	64
 149	3755	10.914368588012	88
 149	4361	11.519336183835	56
 149	4805	12.011469859164	88
 149	5988	13.492363395402	88
 149	7307	14.810932350345	88
+149	8202	15.519336183835	56
+149	9405	16.402974276803	88
+149	11148	17.633507299935	88
+149	13623	18.954504543682	88
+149	14841	19.519336183835	56
+149	16640	20.116997475037	88
 150	2872	9.575987480395	1
 150	2872	9.575987480395	0
 150	3755	10.914368588012	1
@@ -4254,24 +6755,54 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 150	5988	13.492363395402	0
 150	7307	14.810932350345	1
 150	7307	14.810932350345	0
+150	8202	15.519336183835	1
+150	8202	15.519336183835	0
+150	9405	16.402974276803	1
+150	9405	16.402974276803	0
+150	11148	17.633507299935	1
+150	11148	17.633507299935	0
+150	13623	18.954504543682	1
+150	13623	18.954504543682	0
+150	14841	19.519336183835	1
+150	14841	19.519336183835	0
+150	16640	20.116997475037	1
+150	16640	20.116997475037	0
 151	2872	9.575987480395	64
 151	3755	10.914368588012	88
 151	4361	11.519336183835	56
 151	4805	12.011469859164	88
 151	5988	13.492363395402	88
 151	7307	14.810932350345	88
+151	8202	15.519336183835	56
+151	9405	16.402974276803	88
+151	11148	17.633507299935	88
+151	13623	18.954504543682	88
+151	14841	19.519336183835	56
+151	16640	20.116997475037	88
 152	2872	9.575987480395	0
 152	3755	10.914368588012	0
 152	4361	11.519336183835	0
 152	4805	12.011469859164	0
 152	5988	13.492363395402	0
 152	7307	14.810932350345	0
+152	8202	15.519336183835	0
+152	9405	16.402974276803	0
+152	11148	17.633507299935	0
+152	13623	18.954504543682	0
+152	14841	19.519336183835	0
+152	16640	20.116997475037	0
 153	2872	9.575987480395	87
 153	3755	10.914368588012	111
 153	4361	11.519336183835	79
 153	4805	12.011469859164	111
 153	5988	13.492363395402	111
 153	7307	14.810932350345	111
+153	8202	15.519336183835	79
+153	9405	16.402974276803	111
+153	11148	17.633507299935	111
+153	13623	18.954504543682	111
+153	14841	19.519336183835	79
+153	16640	20.116997475037	111
 154	2925	9.709104089121	111
 154	3321	10.150988958272	111
 154	3372	10.169969491284	111
@@ -4297,6 +6828,44 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 154	6904	14.434754862441	111
 154	6959	14.471217481527	111
 154	7393	14.865126043078	79
+154	7789	15.152349707961	111
+154	7859	15.173751325547	111
+154	7972	15.283582876003	111
+154	8122	15.422639383569	111
+154	8351	15.58119663853	111
+154	9031	16.149033908182	111
+154	9094	16.198447192035	79
+154	9306	16.271088882077	79
+154	9370	16.396832962083	111
+154	9779	16.686039206251	87
+154	9891	16.791270821819	111
+154	10011	16.869764730473	111
+154	10097	16.878633606897	111
+154	10682	17.236331895502	111
+154	10751	17.296919797337	79
+154	10818	17.354029268278	111
+154	10883	17.404153215744	79
+154	11569	17.874288099654	111
+154	12297	18.092845706097	111
+154	12510	18.10688587764	111
+154	12840	18.352916629879	111
+154	13168	18.529938208522	111
+154	13336	18.693161938854	79
+154	13392	18.708075878892	111
+154	13459	18.806296817204	111
+154	13726	18.971547969862	111
+154	15161	19.705228290966	111
+154	15240	19.857524145013	111
+154	15327	19.870513188705	111
+154	15406	19.91307987361	111
+154	16267	20.076888004416	111
+154	16835	20.198447048385	79
+154	16989	20.271088881631	79
+154	17405	20.479863346639	111
+154	17613	20.528785270195	111
+154	17801	20.710944538684	111
+154	17958	20.738505687062	87
+154	18358	20.887141138772	111
 155	2925	9.709104089121	88
 155	3321	10.150988958272	88
 155	3372	10.169969491284	88
@@ -4322,6 +6891,44 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 155	6904	14.434754862441	88
 155	6959	14.471217481527	88
 155	7393	14.865126043078	56
+155	7789	15.152349707961	88
+155	7859	15.173751325547	88
+155	7972	15.283582876003	88
+155	8122	15.422639383569	88
+155	8351	15.58119663853	88
+155	9031	16.149033908182	88
+155	9094	16.198447192035	56
+155	9306	16.271088882077	56
+155	9370	16.396832962083	88
+155	9779	16.686039206251	64
+155	9891	16.791270821819	88
+155	10011	16.869764730473	88
+155	10097	16.878633606897	88
+155	10682	17.236331895502	88
+155	10751	17.296919797337	56
+155	10818	17.354029268278	88
+155	10883	17.404153215744	56
+155	11569	17.874288099654	88
+155	12297	18.092845706097	88
+155	12510	18.10688587764	88
+155	12840	18.352916629879	88
+155	13168	18.529938208522	88
+155	13336	18.693161938854	56
+155	13392	18.708075878892	88
+155	13459	18.806296817204	88
+155	13726	18.971547969862	88
+155	15161	19.705228290966	88
+155	15240	19.857524145013	88
+155	15327	19.870513188705	88
+155	15406	19.91307987361	88
+155	16267	20.076888004416	88
+155	16835	20.198447048385	56
+155	16989	20.271088881631	56
+155	17405	20.479863346639	88
+155	17613	20.528785270195	88
+155	17801	20.710944538684	88
+155	17958	20.738505687062	64
+155	18358	20.887141138772	88
 156	3063	10	0
 156	3063	10	0
 156	3063	10	4
@@ -4368,6 +6975,80 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 157	7341	14.811424763056	1
 157	7377	14.864762455367	3
 157	7412	14.865126455367	1
+157	7770	15.151857804695	3
+157	7796	15.152349804695	1
+157	7830	15.173259102144	3
+157	7850	15.173751102144	1
+157	8106	15.422147798104	3
+157	8141	15.422639798104	1
+157	8207	15.519336601122	3
+157	8237	15.519700601122	1
+157	8485	15.762948896809	3
+157	8506	15.763440896809	1
+157	9339	16.396340731665	3
+157	9361	16.396832731665	1
+157	9410	16.402974696511	3
+157	9441	16.403466696511	1
+157	9746	16.685643190439	3
+157	9775	16.686039190439	1
+157	9860	16.790778812906	3
+157	9886	16.791270812906	1
+157	9992	16.869273151277	3
+157	10030	16.869765151277	1
+157	10060	16.878141604357	3
+157	10092	16.878633604357	1
+157	10455	17.159454589269	3
+157	10479	17.159946589269	1
+157	10850	17.403788966063	3
+157	10874	17.404152966063	1
+157	11154	17.633507729717	3
+157	11191	17.633999729717	1
+157	11544	17.87379640479	3
+157	11584	17.87428840479	1
+157	12264	18.092353565158	3
+157	12292	18.092845565158	1
+157	12401	18.106393811913	3
+157	12504	18.106885811913	1
+157	12542	18.166132559949	3
+157	12576	18.166624559949	1
+157	12672	18.262317923054	3
+157	12697	18.262809923054	1
+157	12807	18.352424357775	3
+157	12835	18.352916357775	1
+157	13146	18.52944661201	3
+157	13183	18.52993861201	1
+157	13293	18.692797858126	3
+157	13327	18.693161858126	1
+157	13629	18.954504979041	3
+157	13666	18.954996979041	1
+157	13705	18.971056274551	3
+157	13745	18.971548274551	1
+157	14533	19.362544789286	3
+157	14559	19.363036789286	1
+157	14847	19.519336611432	3
+157	14886	19.519700611432	1
+157	15126	19.704736011248	3
+157	15156	19.705228011248	1
+157	15278	19.870021089909	3
+157	15314	19.870513089909	1
+157	15357	19.912587767822	3
+157	15393	19.913079767822	1
+157	16231	20.076395722629	3
+157	16262	20.076887722629	1
+157	16646	20.116997894299	3
+157	16686	20.117489894299	1
+157	16882	20.218997759834	3
+157	16918	20.219393759834	1
+157	17381	20.479371643025	3
+157	17424	20.479863643025	1
+157	17509	20.502517354172	3
+157	17541	20.503009354172	1
+157	17588	20.52829355949	3
+157	17632	20.52878555949	1
+157	17921	20.738109372272	3
+157	17954	20.738505372272	1
+157	18300	20.886649016406	3
+157	18341	20.887141016406	1
 158	3063	10	1
 158	3428	10.202425696678	2
 158	3442	10.202821696678	1
@@ -4377,6 +7058,18 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 158	4879	12.271088462369	1
 158	6119	13.635916322469	2
 158	6137	13.636408322469	1
+158	7942	15.283090461045	2
+158	7962	15.283582461045	1
+158	9274	16.270724462369	2
+158	9296	16.271088462369	1
+158	10648	17.235839470289	2
+158	10672	17.236331470289	1
+158	13424	18.805804381845	2
+158	13449	18.806296381845	1
+158	16951	20.270724462369	2
+158	16979	20.271088462369	1
+158	17758	20.710452126106	2
+158	17787	20.710944126106	1
 159	3337	10.150989103282	111
 159	3368	10.169969151735	111
 159	3733	10.865126338663	79
@@ -4398,6 +7091,43 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 159	7051	14.493432972349	111
 159	7342	14.811424763056	111
 159	7413	14.865126455367	79
+159	7797	15.152349804695	111
+159	7851	15.173751102144	111
+159	8142	15.422639798104	111
+159	8238	15.519700601122	79
+159	8507	15.763440896809	111
+159	9362	16.396832731665	111
+159	9442	16.403466696511	111
+159	9776	16.686039190439	87
+159	9887	16.791270812906	111
+159	10031	16.869765151277	111
+159	10093	16.878633604357	111
+159	10480	17.159946589269	111
+159	10875	17.404152966063	79
+159	11192	17.633999729717	111
+159	11585	17.87428840479	111
+159	12293	18.092845565158	111
+159	12505	18.106885811913	111
+159	12577	18.166624559949	111
+159	12698	18.262809923054	111
+159	12836	18.352916357775	111
+159	13184	18.52993861201	111
+159	13328	18.693161858126	79
+159	13667	18.954996979041	111
+159	13746	18.971548274551	111
+159	14560	19.363036789286	111
+159	14887	19.519700611432	79
+159	15157	19.705228011248	111
+159	15315	19.870513089909	111
+159	15394	19.913079767822	111
+159	16263	20.076887722629	111
+159	16687	20.117489894299	111
+159	16919	20.219393759834	87
+159	17425	20.479863643025	111
+159	17542	20.503009354172	111
+159	17633	20.52878555949	111
+159	17955	20.738505372272	87
+159	18342	20.887141016406	111
 160	3337	10.150989103282	88
 160	3368	10.169969151735	88
 160	3733	10.865126338663	56
@@ -4419,15 +7149,64 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 160	7051	14.493432972349	88
 160	7342	14.811424763056	88
 160	7413	14.865126455367	56
+160	7797	15.152349804695	88
+160	7851	15.173751102144	88
+160	8142	15.422639798104	88
+160	8238	15.519700601122	56
+160	8507	15.763440896809	88
+160	9362	16.396832731665	88
+160	9442	16.403466696511	88
+160	9776	16.686039190439	64
+160	9887	16.791270812906	88
+160	10031	16.869765151277	88
+160	10093	16.878633604357	88
+160	10480	17.159946589269	88
+160	10875	17.404152966063	56
+160	11192	17.633999729717	88
+160	11585	17.87428840479	88
+160	12293	18.092845565158	88
+160	12505	18.106885811913	88
+160	12577	18.166624559949	88
+160	12698	18.262809923054	88
+160	12836	18.352916357775	88
+160	13184	18.52993861201	88
+160	13328	18.693161858126	56
+160	13667	18.954996979041	88
+160	13746	18.971548274551	88
+160	14560	19.363036789286	88
+160	14887	19.519700611432	56
+160	15157	19.705228011248	88
+160	15315	19.870513089909	88
+160	15394	19.913079767822	88
+160	16263	20.076887722629	88
+160	16687	20.117489894299	88
+160	16919	20.219393759834	64
+160	17425	20.479863643025	88
+160	17542	20.503009354172	88
+160	17633	20.52878555949	88
+160	17955	20.738505372272	64
+160	18342	20.887141016406	88
 161	3425	10.202425696678	1
 162	3427	10.202425696678	64
 162	4413	11.656329591991	88
 162	4862	12.270724462369	56
 162	6118	13.635916322469	88
+162	7941	15.283090461045	88
+162	9273	16.270724462369	56
+162	10647	17.235839470289	88
+162	13423	18.805804381845	88
+162	16950	20.270724462369	56
+162	17757	20.710452126106	88
 163	3427	10.202425696678	64
 163	4413	11.656329591991	88
 163	4862	12.270724462369	56
 163	6118	13.635916322469	88
+163	7941	15.283090461045	88
+163	9273	16.270724462369	56
+163	10647	17.235839470289	88
+163	13423	18.805804381845	88
+163	16950	20.270724462369	56
+163	17757	20.710452126106	88
 164	3427	10.202425696678	1
 164	3427	10.202425696678	0
 164	4413	11.656329591991	1
@@ -4436,18 +7215,48 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 164	4862	12.270724462369	0
 164	6118	13.635916322469	1
 164	6118	13.635916322469	0
+164	7941	15.283090461045	1
+164	7941	15.283090461045	0
+164	9273	16.270724462369	1
+164	9273	16.270724462369	0
+164	10647	17.235839470289	1
+164	10647	17.235839470289	0
+164	13423	18.805804381845	1
+164	13423	18.805804381845	0
+164	16950	20.270724462369	1
+164	16950	20.270724462369	0
+164	17757	20.710452126106	1
+164	17757	20.710452126106	0
 165	3427	10.202425696678	64
 165	4413	11.656329591991	88
 165	4862	12.270724462369	56
 165	6118	13.635916322469	88
+165	7941	15.283090461045	88
+165	9273	16.270724462369	56
+165	10647	17.235839470289	88
+165	13423	18.805804381845	88
+165	16950	20.270724462369	56
+165	17757	20.710452126106	88
 166	3427	10.202425696678	0
 166	4413	11.656329591991	0
 166	4862	12.270724462369	0
 166	6118	13.635916322469	0
+166	7941	15.283090461045	0
+166	9273	16.270724462369	0
+166	10647	17.235839470289	0
+166	13423	18.805804381845	0
+166	16950	20.270724462369	0
+166	17757	20.710452126106	0
 167	3427	10.202425696678	87
 167	4413	11.656329591991	111
 167	4862	12.270724462369	79
 167	6118	13.635916322469	111
+167	7941	15.283090461045	111
+167	9273	16.270724462369	79
+167	10647	17.235839470289	111
+167	13423	18.805804381845	111
+167	16950	20.270724462369	79
+167	17757	20.710452126106	111
 168	3893	11	0
 168	3893	11	0
 168	3893	11	4
@@ -4462,6 +7271,26 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 169	7134	14.583835364293	1
 169	7163	14.58654297776	3
 169	7183	14.58693897776	1
+169	8887	16.016631444674	3
+169	8909	16.017123444674	1
+169	9528	16.462188627067	3
+169	9550	16.462680627067	1
+169	9803	16.716399365053	3
+169	9826	16.716763365053	1
+169	11295	17.709163037829	3
+169	11348	17.709655037829	1
+169	12370	18.106178869566	3
+169	12461	18.106670869566	1
+169	13565	18.93042571829	3
+169	13590	18.93091771829	1
+169	14600	19.366519813345	3
+169	14626	19.367011813345	1
+169	15510	19.967985100221	3
+169	15537	19.968477100221	1
+169	17850	20.716399428417	3
+169	17879	20.716763428417	1
+169	18070	20.773703125777	3
+169	18099	20.774195125777	1
 170	3893	11	1
 170	4134	11.291583499685	2
 170	4149	11.291979499685	1
@@ -4471,15 +7300,35 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 170	6094	13.546427154517	1
 170	6738	14.241848956327	2
 170	6757	14.242340956327	1
+170	8432	15.611657052067	2
+170	8453	15.612149052067	1
+170	10334	17.023477193898	2
+170	10358	17.023969193898	1
+170	11025	17.546063154517	2
+170	11050	17.546427154517	1
+170	13503	18.901929385027	2
+170	13528	18.902421385027	1
+170	18002	20.770055445608	2
+170	18031	20.770547445608	1
 171	4131	11.291583499685	1
 172	4133	11.291583499685	64
 172	5491	12.976459465222	88
 172	6075	13.546063154517	56
 172	6737	14.241848956327	88
+172	8431	15.611657052067	88
+172	10333	17.023477193898	88
+172	11024	17.546063154517	56
+172	13502	18.901929385027	88
+172	18001	20.770055445608	88
 173	4133	11.291583499685	64
 173	5491	12.976459465222	88
 173	6075	13.546063154517	56
 173	6737	14.241848956327	88
+173	8431	15.611657052067	88
+173	10333	17.023477193898	88
+173	11024	17.546063154517	56
+173	13502	18.901929385027	88
+173	18001	20.770055445608	88
 174	4133	11.291583499685	1
 174	4133	11.291583499685	0
 174	5491	12.976459465222	1
@@ -4488,28 +7337,75 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 174	6075	13.546063154517	0
 174	6737	14.241848956327	1
 174	6737	14.241848956327	0
+174	8431	15.611657052067	1
+174	8431	15.611657052067	0
+174	10333	17.023477193898	1
+174	10333	17.023477193898	0
+174	11024	17.546063154517	1
+174	11024	17.546063154517	0
+174	13502	18.901929385027	1
+174	13502	18.901929385027	0
+174	18001	20.770055445608	1
+174	18001	20.770055445608	0
 175	4133	11.291583499685	64
 175	5491	12.976459465222	88
 175	6075	13.546063154517	56
 175	6737	14.241848956327	88
+175	8431	15.611657052067	88
+175	10333	17.023477193898	88
+175	11024	17.546063154517	56
+175	13502	18.901929385027	88
+175	18001	20.770055445608	88
 176	4133	11.291583499685	0
 176	5491	12.976459465222	0
 176	6075	13.546063154517	0
 176	6737	14.241848956327	0
+176	8431	15.611657052067	0
+176	10333	17.023477193898	0
+176	11024	17.546063154517	0
+176	13502	18.901929385027	0
+176	18001	20.770055445608	0
 177	4133	11.291583499685	87
 177	5491	12.976459465222	111
 177	6075	13.546063154517	79
 177	6737	14.241848956327	111
+177	8431	15.611657052067	111
+177	10333	17.023477193898	111
+177	11024	17.546063154517	79
+177	13502	18.901929385027	111
+177	18001	20.770055445608	111
 178	4151	11.291979706226	87
 178	5510	12.976951721027	111
 178	6096	13.546427436243	79
 178	6759	14.242341248622	111
 178	7187	14.586939278769	87
+178	8459	15.612149365794	111
+178	9555	16.462680944638	111
+178	9831	16.716763684054	79
+178	10364	17.023969514092	111
+178	11056	17.546427473729	79
+178	12466	18.106671187043	111
+178	13534	18.902421702005	111
+178	14631	19.367012128628	111
+178	17884	20.716763730827	79
+178	18037	20.77054774854	111
+178	18104	20.774195428187	111
 179	4151	11.291979706226	64
 179	5510	12.976951721027	88
 179	6096	13.546427436243	56
 179	6759	14.242341248622	88
 179	7187	14.586939278769	64
+179	8459	15.612149365794	88
+179	9555	16.462680944638	88
+179	9831	16.716763684054	56
+179	10364	17.023969514092	88
+179	11056	17.546427473729	56
+179	12466	18.106671187043	88
+179	13534	18.902421702005	88
+179	14631	19.367012128628	88
+179	17884	20.716763730827	56
+179	18037	20.77054774854	88
+179	18104	20.774195428187	88
 180	4317	11.5	0
 180	4317	11.5	0
 180	4317	11.5	4
@@ -4532,6 +7428,54 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 181	6803	14.302062631136	1
 181	6832	14.404725206565	3
 181	6851	14.405089206565	1
+181	7716	15.058891866125	3
+181	7736	15.059383866125	1
+181	8003	15.306266101998	3
+181	8026	15.306758101998	1
+181	9623	16.631143696674	3
+181	9646	16.631635696674	1
+181	10125	16.986321678359	3
+181	10151	16.986813678359	1
+181	10588	17.224751486722	3
+181	10618	17.225147486722	1
+181	11611	17.891964597616	3
+181	11636	17.892328597616	1
+181	11964	18.000857337426	3
+181	12076	18.001285337426	2
+181	12096	18.001285594553	1
+181	12342	18.106011164179	3
+181	12423	18.106503164179	1
+181	12740	18.276399310931	3
+181	12771	18.276891310931	1
+181	12887	18.404725221449	3
+181	12918	18.405089221449	1
+181	12954	18.428769272819	3
+181	12988	18.429261272819	1
+181	13148	18.529446731365	3
+181	13191	18.529938731365	1
+181	13913	19.000857319997	3
+181	13999	19.001285319997	2
+181	14013	19.00128564072	1
+181	14326	19.236608070803	3
+181	14364	19.236972070803	1
+181	14666	19.375968425107	3
+181	14701	19.376460425107	1
+181	15280	19.870021164321	3
+181	15322	19.870513164321	1
+181	15359	19.912587853289	3
+181	15401	19.913079853289	1
+181	15575	19.997934504202	3
+181	15602	19.998426504202	1
+181	15801	20.000857324429	3
+181	15893	20.001285324429	1
+181	16384	20.102142903135	3
+181	16522	20.102570903135	1
+181	16884	20.218997780906	3
+181	16924	20.219393780906	1
+181	17589	20.528293613162	3
+181	17636	20.528785613162	1
+181	18303	20.886649085955	3
+181	18353	20.887141085955	1
 182	4317	11.5	1
 182	4321	11.511756336689	2
 182	4337	11.512152336689	1
@@ -4541,15 +7485,35 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 182	6253	13.713162769027	1
 182	7259	14.806813485455	2
 182	7279	14.807305485455	1
+182	9118	16.202911763685	2
+182	9140	16.203403763685	1
+182	11409	17.712798769027	2
+182	11434	17.713162769027	1
+182	11475	17.86258017784	2
+182	11500	17.86307217784	1
+182	14251	19.230142049492	2
+182	14277	19.230634049492	1
+182	17680	20.641538773897	2
+182	17709	20.642030773897	1
 183	4318	11.511756336689	1
 184	4320	11.511756336689	64
 184	5446	12.94171092147	88
 184	6234	13.712798769027	56
 184	7258	14.806813485455	88
+184	9117	16.202911763685	88
+184	11408	17.712798769027	56
+184	11474	17.86258017784	88
+184	14250	19.230142049492	88
+184	17679	20.641538773897	88
 185	4320	11.511756336689	64
 185	5446	12.94171092147	88
 185	6234	13.712798769027	56
 185	7258	14.806813485455	88
+185	9117	16.202911763685	88
+185	11408	17.712798769027	56
+185	11474	17.86258017784	88
+185	14250	19.230142049492	88
+185	17679	20.641538773897	88
 186	4320	11.511756336689	1
 186	4320	11.511756336689	0
 186	5446	12.94171092147	1
@@ -4558,50 +7522,186 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 186	6234	13.712798769027	0
 186	7258	14.806813485455	1
 186	7258	14.806813485455	0
+186	9117	16.202911763685	1
+186	9117	16.202911763685	0
+186	11408	17.712798769027	1
+186	11408	17.712798769027	0
+186	11474	17.86258017784	1
+186	11474	17.86258017784	0
+186	14250	19.230142049492	1
+186	14250	19.230142049492	0
+186	17679	20.641538773897	1
+186	17679	20.641538773897	0
 187	4320	11.511756336689	64
 187	5446	12.94171092147	88
 187	6234	13.712798769027	56
 187	7258	14.806813485455	88
+187	9117	16.202911763685	88
+187	11408	17.712798769027	56
+187	11474	17.86258017784	88
+187	14250	19.230142049492	88
+187	17679	20.641538773897	88
 188	4320	11.511756336689	0
 188	5446	12.94171092147	0
 188	6234	13.712798769027	0
 188	7258	14.806813485455	0
+188	9117	16.202911763685	0
+188	11408	17.712798769027	0
+188	11474	17.86258017784	0
+188	14250	19.230142049492	0
+188	17679	20.641538773897	0
 189	4320	11.511756336689	87
 189	5446	12.94171092147	111
 189	6234	13.712798769027	79
 189	7258	14.806813485455	111
+189	9117	16.202911763685	111
+189	11408	17.712798769027	79
+189	11474	17.86258017784	111
+189	14250	19.230142049492	111
+189	17679	20.641538773897	111
 190	4342	11.512152937687	87
 190	5465	12.942203488375	111
 190	6214	13.706312591699	111
 190	6255	13.713163284807	79
 190	7281	14.807305966219	111
 190	7409	14.865126413971	79
+190	8138	15.422639747048	111
+190	8565	15.793967760725	87
+190	9142	16.203404174997	111
+190	10027	16.86976512019	111
+190	10554	17.199971809572	111
+190	10616	17.225147450023	87
+190	11436	17.713163121032	79
+190	11502	17.863072529845	111
+190	11936	18.000857000716	95
+190	12085	18.001285482716	95
+190	12228	18.060247696873	79
+190	12776	18.276891329307	111
+190	12923	18.405089239825	79
+190	12985	18.429261160982	111
+190	13060	18.498254184854	111
+190	13188	18.529938684276	111
+190	13974	19.00104903356	95
+190	14279	19.230634368773	111
+190	14357	19.236971879632	79
+190	14698	19.376460334736	111
+190	15483	19.967503440644	111
+190	15898	20.001285424326	95
+190	16193	20.002334579422	143
+190	16362	20.102142579422	95
+190	16520	20.102570839406	95
+190	16763	20.143502400973	111
+190	17221	20.409682654666	111
+190	17653	20.528785704082	111
+190	17711	20.642031108755	111
 191	4342	11.512152937687	64
 191	5465	12.942203488375	88
 191	6214	13.706312591699	88
 191	6255	13.713163284807	56
 191	7281	14.807305966219	88
 191	7409	14.865126413971	56
+191	8138	15.422639747048	88
+191	8565	15.793967760725	64
+191	9142	16.203404174997	88
+191	10027	16.86976512019	88
+191	10554	17.199971809572	88
+191	10616	17.225147450023	64
+191	11436	17.713163121032	56
+191	11502	17.863072529845	88
+191	11936	18.000857000716	72
+191	12085	18.001285482716	72
+191	12228	18.060247696873	56
+191	12776	18.276891329307	88
+191	12923	18.405089239825	56
+191	12985	18.429261160982	88
+191	13060	18.498254184854	88
+191	13188	18.529938684276	88
+191	14279	19.230634368773	88
+191	14357	19.236971879632	56
+191	14698	19.376460334736	88
+191	15483	19.967503440644	88
+191	15898	20.001285424326	72
+191	16362	20.102142579422	72
+191	16520	20.102570839406	72
+191	16763	20.143502400973	88
+191	17221	20.409682654666	88
+191	17653	20.528785704082	88
+191	17711	20.642031108755	88
 192	4345	11.512152948869	87
 192	5469	12.942203523879	111
 192	6259	13.713163370812	79
 192	6625	14.056714103822	111
 192	7285	14.807306074195	111
+192	7918	15.221654508774	111
+192	9146	16.203404349078	111
+192	10422	17.113208840133	111
+192	10610	17.225147240648	87
+192	11444	17.71316336838	79
+192	11510	17.863072777193	111
+192	12075	18.001285265148	95
+192	12438	18.106503455649	111
+192	12638	18.248682859927	111
+192	12977	18.429260943414	111
+192	13998	19.001285228515	95
+192	14291	19.230634688651	111
+192	14349	19.236971658598	79
+192	15087	19.696608954245	111
+192	15611	19.998426698711	111
+192	15891	20.001285201973	95
+192	16189	20.002334357069	143
+192	16347	20.102142357069	95
+192	16517	20.102570746903	95
+192	16755	20.14350217862	111
 193	4345	11.512152948869	64
 193	5469	12.942203523879	88
 193	6259	13.713163370812	56
 193	6625	14.056714103822	88
 193	7285	14.807306074195	88
+193	7918	15.221654508774	88
+193	9146	16.203404349078	88
+193	10422	17.113208840133	88
+193	10610	17.225147240648	64
+193	11444	17.71316336838	56
+193	11510	17.863072777193	88
+193	12438	18.106503455649	88
+193	12638	18.248682859927	88
+193	12977	18.429260943414	88
+193	14291	19.230634688651	88
+193	14349	19.236971658598	56
+193	15087	19.696608954245	88
+193	15611	19.998426698711	88
+193	16347	20.102142357069	72
+193	16755	20.14350217862	88
 194	4481	11.771166602859	111
 194	5341	12.891363199704	111
 194	6669	14.091921321302	79
 194	7135	14.583835364293	111
 194	7184	14.58693897776	87
+194	8910	16.017123444674	111
+194	9551	16.462680627067	111
+194	9827	16.716763365053	79
+194	11349	17.709655037829	111
+194	12462	18.106670869566	111
+194	13591	18.93091771829	111
+194	14627	19.367011813345	111
+194	15538	19.968477100221	111
+194	17880	20.716763428417	79
+194	18100	20.774195125777	111
 195	4481	11.771166602859	88
 195	5341	12.891363199704	88
 195	6669	14.091921321302	56
 195	7135	14.583835364293	88
 195	7184	14.58693897776	64
+195	8910	16.017123444674	88
+195	9551	16.462680627067	88
+195	9827	16.716763365053	56
+195	11349	17.709655037829	88
+195	12462	18.106670869566	88
+195	13591	18.93091771829	88
+195	14627	19.367011813345	88
+195	15538	19.968477100221	88
+195	17880	20.716763428417	56
+195	18100	20.774195125777	88
 196	4556	11.859505692777	111
 196	5115	12.554278969127	111
 196	5206	12.707913268927	79
@@ -4611,6 +7711,29 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 196	6572	14.039276352751	111
 196	6804	14.302062631136	111
 196	6852	14.405089206565	79
+196	7737	15.059383866125	111
+196	8027	15.306758101998	111
+196	9647	16.631635696674	111
+196	10152	16.986813678359	111
+196	10619	17.225147486722	87
+196	11637	17.892328597616	79
+196	12077	18.001285337426	95
+196	12424	18.106503164179	111
+196	12772	18.276891310931	111
+196	12919	18.405089221449	79
+196	12989	18.429261272819	111
+196	13192	18.529938731365	111
+196	14000	19.001285319997	95
+196	14365	19.236972070803	79
+196	14702	19.376460425107	111
+196	15323	19.870513164321	111
+196	15402	19.913079853289	111
+196	15603	19.998426504202	111
+196	15894	20.001285324429	95
+196	16523	20.102570903135	95
+196	16925	20.219393780906	87
+196	17637	20.528785613162	111
+196	18354	20.887141085955	111
 197	4556	11.859505692777	88
 197	5115	12.554278969127	88
 197	5206	12.707913268927	56
@@ -4620,6 +7743,27 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 197	6572	14.039276352751	88
 197	6804	14.302062631136	88
 197	6852	14.405089206565	56
+197	7737	15.059383866125	88
+197	8027	15.306758101998	88
+197	9647	16.631635696674	88
+197	10152	16.986813678359	88
+197	10619	17.225147486722	64
+197	11637	17.892328597616	56
+197	12424	18.106503164179	88
+197	12772	18.276891310931	88
+197	12919	18.405089221449	56
+197	12989	18.429261272819	88
+197	13192	18.529938731365	88
+197	14365	19.236972070803	56
+197	14702	19.376460425107	88
+197	15323	19.870513164321	88
+197	15402	19.913079853289	88
+197	15603	19.998426504202	88
+197	15894	20.001285324429	72
+197	16523	20.102570903135	72
+197	16925	20.219393780906	64
+197	17637	20.528785613162	88
+197	18354	20.887141085955	88
 198	5596	13	0
 198	5596	13	0
 198	5596	13	4
@@ -4634,62 +7778,379 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 199	7004	14.474265635491	1
 199	7213	14.631798308958	3
 199	7233	14.632290308958	1
+199	7528	15.000000509205	3
+199	7550	15.000428509205	1
+199	7612	15.000857416115	3
+199	7666	15.001285416115	2
+199	7689	15.001477527615	1
+199	8633	16.000000490133	3
+199	8657	16.000620490133	1
+199	8706	16.0008574346	3
+199	8728	16.0012854346	1
+199	8816	16.001861924146	3
+199	8855	16.002481924146	1
+199	8943	16.043440007861	3
+199	8972	16.043884007861	1
+199	9173	16.207955669836	3
+199	9195	16.208447669836	1
+199	9476	16.407887037509	3
+199	9498	16.408251037509	1
+199	10225	17.00000046448	3
+199	10251	17.00062046448	1
+199	11088	17.631905050211	3
+199	11120	17.632349050211	1
+199	11323	17.709280095467	3
+199	11379	17.709772095467	1
+199	11842	18.000000431872	3
+199	11875	18.000428431872	1
+199	11890	18.000429062775	3
+199	11951	18.000857062775	1
+199	11962	18.000857274212	3
+199	12166	18.001477274212	1
+199	12200	18.059883758932	3
+199	12235	18.060247758932	1
+199	13028	18.497762246913	3
+199	13067	18.498254246913	1
+199	13820	19.000000392932	3
+199	13847	19.000620392932	1
+199	13867	19.000620995422	3
+199	13970	19.001048995422	1
+199	14062	19.037146178131	3
+199	14088	19.037542178131	1
+199	14397	19.284008268412	3
+199	14426	19.284452268412	1
+199	14926	19.605826782429	3
+199	14956	19.606318782429	1
+199	14989	19.636063209108	3
+199	15016	19.636459209108	1
+199	15435	19.967011346779	3
+199	15470	19.967503346779	1
+199	15699	20.000000347787	3
+199	15728	20.000620347787	1
+199	15750	20.000620941128	3
+199	15859	20.001048941128	1
+199	15932	20.001286139566	3
+199	15991	20.001714139566	1
+199	16404	20.102143294662	3
+199	16546	20.102571294662	1
+199	17120	20.407887197019	3
+199	17151	20.408251197019	1
+199	18137	20.779051270848	3
+199	18166	20.779543270848	1
+199	18215	20.853108944253	3
+199	18247	20.853552944253	1
 200	5596	13	1
 200	5762	13.028182151797	2
 200	5779	13.028578151797	1
 200	7436	14.921157612	2
 200	7456	14.921649612	1
+200	7556	15.000428509205	2
+200	7593	15.000856509205	1
+200	8051	15.360235338402	2
+200	8071	15.360599338402	1
+200	8662	16.000620490133	2
+200	8754	16.001432490133	1
+200	8759	16.001432980266	2
+200	8803	16.001860980266	1
+200	9929	16.817196001299	2
+200	9952	16.817688001299	1
+200	10256	17.00062046448	2
+200	10300	17.00143246448	1
+200	11955	18.000857062775	2
+200	12073	18.001285062775	1
+200	13224	18.533270534827	2
+200	13249	18.533762534827	1
+200	14466	19.360235338402	2
+200	14492	19.360599338402	1
+200	15998	20.001714139566	2
+200	16116	20.002142139566	1
+200	17038	20.374410664663	2
+200	17066	20.374902664663	1
 201	5620	13.000620529391	143
 201	6302	13.753099060861	87
 201	6481	14.00062052214	143
 201	7005	14.474265635491	99
 201	7234	14.632290308958	111
+201	7551	15.000428509205	95
+201	7667	15.001285416115	95
+201	8658	16.000620490133	143
+201	8729	16.0012854346	95
+201	8856	16.002481924146	143
+201	8973	16.043884007861	99
+201	9196	16.208447669836	111
+201	9499	16.408251037509	79
+201	10252	17.00062046448	143
+201	11121	17.632349050211	99
+201	11380	17.709772095467	111
+201	11876	18.000428431872	95
+201	11952	18.000857062775	95
+201	12167	18.001477274212	143
+201	12236	18.060247758932	79
+201	13068	18.498254246913	111
+201	13848	19.000620392932	143
+201	13971	19.001048995422	95
+201	14089	19.037542178131	87
+201	14427	19.284452268412	99
+201	14957	19.606318782429	111
+201	15017	19.636459209108	87
+201	15471	19.967503346779	111
+201	15729	20.000620347787	143
+201	15860	20.001048941128	95
+201	15992	20.001714139566	95
+201	16547	20.102571294662	95
+201	17152	20.408251197019	79
+201	18167	20.779543270848	111
+201	18248	20.853552944253	99
 202	5620	13.000620529391	143
 202	6481	14.00062052214	143
+202	12167	18.001477274212	143
+202	13848	19.000620392932	143
+202	15729	20.000620347787	143
 203	5759	13.028182151797	1
 204	5761	13.028182151797	64
 204	7435	14.921157612	88
+204	7555	15.000428509205	72
+204	8050	15.360235338402	56
+204	8661	16.000620490133	168
+204	8733	16.0012854346	72
+204	9928	16.817196001299	88
+204	10255	17.00062046448	168
+204	11954	18.000857062775	72
+204	13223	18.533270534827	88
+204	14465	19.360235338402	56
+204	15997	20.001714139566	72
+204	17037	20.374410664663	88
 205	5761	13.028182151797	64
 205	7435	14.921157612	88
+205	7555	15.000428509205	72
+205	8050	15.360235338402	56
+205	8661	16.000620490133	168
+205	8733	16.0012854346	72
+205	9928	16.817196001299	88
+205	10255	17.00062046448	168
+205	11954	18.000857062775	72
+205	13223	18.533270534827	88
+205	14465	19.360235338402	56
+205	15997	20.001714139566	72
+205	17037	20.374410664663	88
 206	5761	13.028182151797	1
 206	5761	13.028182151797	0
 206	7435	14.921157612	1
 206	7435	14.921157612	0
+206	7555	15.000428509205	1
+206	7555	15.000428509205	0
+206	8050	15.360235338402	1
+206	8050	15.360235338402	0
+206	8661	16.000620490133	1
+206	8661	16.000620490133	0
+206	8733	16.0012854346	1
+206	8758	16.001432980266	0
+206	9928	16.817196001299	1
+206	9928	16.817196001299	0
+206	10255	17.00062046448	1
+206	10255	17.00062046448	0
+206	11954	18.000857062775	1
+206	11954	18.000857062775	0
+206	13223	18.533270534827	1
+206	13223	18.533270534827	0
+206	14465	19.360235338402	1
+206	14465	19.360235338402	0
+206	15997	20.001714139566	1
+206	15997	20.001714139566	0
+206	17037	20.374410664663	1
+206	17037	20.374410664663	0
 207	5761	13.028182151797	64
 207	7435	14.921157612	88
+207	7555	15.000428509205	72
+207	8050	15.360235338402	56
+207	8661	16.000620490133	168
+207	8758	16.001432980266	72
+207	9928	16.817196001299	88
+207	10255	17.00062046448	168
+207	11954	18.000857062775	72
+207	13223	18.533270534827	88
+207	14465	19.360235338402	56
+207	15997	20.001714139566	72
+207	17037	20.374410664663	88
 208	5761	13.028182151797	0
 208	7435	14.921157612	0
+208	7555	15.000428509205	0
+208	8050	15.360235338402	0
+208	8661	16.000620490133	0
+208	8758	16.001432980266	0.000147545666
+208	9928	16.817196001299	0
+208	10255	17.00062046448	0
+208	11954	18.000857062775	0
+208	13223	18.533270534827	0
+208	14465	19.360235338402	0
+208	15997	20.001714139566	0
+208	17037	20.374410664663	0
 209	5761	13.028182151797	87
 209	7435	14.921157612	111
+209	7555	15.000428509205	95
+209	8050	15.360235338402	79
+209	8661	16.000620490133	191
+209	8758	16.001432980266	95
+209	9928	16.817196001299	111
+209	10255	17.00062046448	191
+209	11954	18.000857062775	95
+209	13223	18.533270534827	111
+209	14465	19.360235338402	79
+209	15997	20.001714139566	95
+209	17037	20.374410664663	111
 210	6071	13.5	0
 210	6071	13.5	0
 210	6071	13.5	4
 211	6071	13.5	1
 211	7437	14.921158058952	3
 211	7457	14.921650058952	1
+211	7563	15.00042896266	3
+211	7594	15.00085696266	1
+211	8052	15.360235791857	3
+211	8072	15.360599791857	1
+211	8669	16.000620962073	3
+211	8755	16.001432962073	1
+211	8765	16.001433452206	3
+211	8804	16.001861452206	1
+211	9931	16.817196485439	3
+211	9958	16.817688485439	1
+211	10265	17.000620962701	3
+211	10306	17.001432962701	1
+211	11978	18.000857595877	3
+211	12097	18.001285595877	1
+211	13226	18.533271088836	3
+211	13255	18.533763088836	1
+211	14063	19.037146495671	3
+211	14091	19.037542495671	1
+211	14469	19.360235915736	3
+211	14500	19.360599915736	1
+211	16036	20.001714771016	3
+211	16138	20.002142771016	1
+211	17043	20.374411296113	3
+211	17084	20.374903296113	1
+211	18139	20.779051570094	3
+211	18174	20.779543570094	1
 212	6071	13.5	1
 212	6282	13.752702623745	2
 212	6300	13.753098623745	1
 212	7212	14.631797862006	2
 212	7232	14.632289862006	1
+212	7601	15.00085696266	2
+212	7665	15.00128496266	1
+212	8705	16.00085696266	2
+212	8727	16.00128496266	1
+212	8810	16.001861452206	2
+212	8854	16.002481452206	1
+212	9172	16.207955197896	2
+212	9194	16.208447197896	1
+212	9475	16.407886565569	2
+212	9497	16.408250565569	1
+212	11322	17.709279580972	2
+212	11378	17.709771580972	1
+212	14924	19.605826179263	2
+212	14951	19.606318179263	1
+212	17118	20.407886565569	2
+212	17146	20.408250565569	1
 213	6279	13.752702623745	1
 214	6281	13.752702623745	64
 214	7211	14.631797862006	88
+214	7600	15.00085696266	72
+214	8704	16.00085696266	72
+214	8809	16.001861452206	120
+214	9171	16.207955197896	88
+214	9474	16.407886565569	56
+214	11321	17.709279580972	88
+214	14923	19.605826179263	88
+214	17117	20.407886565569	56
 215	6281	13.752702623745	64
 215	7211	14.631797862006	88
+215	7600	15.00085696266	72
+215	8704	16.00085696266	72
+215	8809	16.001861452206	120
+215	9171	16.207955197896	88
+215	9474	16.407886565569	56
+215	11321	17.709279580972	88
+215	14923	19.605826179263	88
+215	17117	20.407886565569	56
 216	6281	13.752702623745	1
 216	6281	13.752702623745	0
 216	7211	14.631797862006	1
 216	7211	14.631797862006	0
+216	7600	15.00085696266	1
+216	7600	15.00085696266	0
+216	8704	16.00085696266	1
+216	8704	16.00085696266	0
+216	8809	16.001861452206	1
+216	8809	16.001861452206	0
+216	9171	16.207955197896	1
+216	9171	16.207955197896	0
+216	9474	16.407886565569	1
+216	9474	16.407886565569	0
+216	11321	17.709279580972	1
+216	11321	17.709279580972	0
+216	14923	19.605826179263	1
+216	14923	19.605826179263	0
+216	17117	20.407886565569	1
+216	17117	20.407886565569	0
 217	6281	13.752702623745	64
 217	7211	14.631797862006	88
+217	7600	15.00085696266	72
+217	8704	16.00085696266	72
+217	8809	16.001861452206	120
+217	9171	16.207955197896	88
+217	9474	16.407886565569	56
+217	11321	17.709279580972	88
+217	14923	19.605826179263	88
+217	17117	20.407886565569	56
 218	6281	13.752702623745	0
 218	7211	14.631797862006	0
+218	7600	15.00085696266	0
+218	8704	16.00085696266	0
+218	8809	16.001861452206	0
+218	9171	16.207955197896	0
+218	9474	16.407886565569	0
+218	11321	17.709279580972	0
+218	14923	19.605826179263	0
+218	17117	20.407886565569	0
 219	6281	13.752702623745	87
 219	7211	14.631797862006	111
+219	7600	15.00085696266	95
+219	8704	16.00085696266	95
+219	8809	16.001861452206	143
+219	9171	16.207955197896	111
+219	9474	16.407886565569	79
+219	11321	17.709279580972	111
+219	14923	19.605826179263	111
+219	17117	20.407886565569	79
 220	6302	13.753099060861	64
 220	7005	14.474265635491	76
 220	7234	14.632290308958	88
+220	7551	15.000428509205	72
+220	8658	16.000620490133	120
+220	8729	16.0012854346	72
+220	8856	16.002481924146	120
+220	8973	16.043884007861	76
+220	9196	16.208447669836	88
+220	9499	16.408251037509	56
+220	10252	17.00062046448	120
+220	11121	17.632349050211	76
+220	11380	17.709772095467	88
+220	11876	18.000428431872	72
+220	11952	18.000857062775	72
+220	12236	18.060247758932	56
+220	13068	18.498254246913	88
+220	13971	19.001048995422	72
+220	14089	19.037542178131	64
+220	14427	19.284452268412	76
+220	14957	19.606318782429	88
+220	15017	19.636459209108	64
+220	15471	19.967503346779	88
+220	15860	20.001048941128	72
+220	15992	20.001714139566	72
+220	16547	20.102571294662	72
+220	17152	20.408251197019	56
+220	18167	20.779543270848	88
+220	18248	20.853552944253	76
 221	6455	14	0
 221	6455	14	0
 221	6455	14	4
@@ -4698,39 +8159,1135 @@ attr title "packets passed to higher layer, vector(packetBytes)"
 222	6950	14.471217128455	1
 222	7378	14.864762503307	3
 222	7416	14.865126503307	1
+222	8107	15.422147841009	3
+222	8145	15.422639841009	1
+222	9000	16.148541735114	3
+222	9022	16.149033735114	1
+222	9413	16.402974939969	3
+222	9453	16.403466939969	1
+222	9993	16.869273209137	3
+222	10034	16.869765209137	1
+222	10722	17.296555709132	3
+222	10746	17.296919709132	1
+222	11155	17.633507915295	3
+222	11195	17.633999915295	1
+222	11539	17.873796051352	3
+222	11564	17.874288051352	1
+222	13151	18.529446755432	3
+222	13203	18.529938755432	1
+222	13630	18.954505122502	3
+222	13670	18.954997122502	1
+222	13701	18.971055992375	3
+222	13729	18.971547992375	1
+222	14848	19.519336724106	3
+222	14890	19.519700724106	1
+222	16239	20.076396312336	3
+222	16294	20.076888312336	1
+222	16647	20.116997994553	3
+222	16690	20.117489994553	1
+222	17377	20.47937145274	3
+222	17408	20.47986345274	1
+222	17594	20.528293766151	3
+222	17656	20.528785766151	1
+222	17928	20.738109917252	3
+222	17975	20.738505917252	1
 223	6455	14	1
 223	6694	14.119346225495	2
 223	6713	14.119742225495	1
+223	8378	15.58651293302	2
+223	8399	15.58700493302	1
+223	9062	16.198082528869	2
+223	9084	16.198446528869	1
+223	10788	17.353536635638	2
+223	10812	17.354028635638	1
+223	13361	18.707583300072	2
+223	13386	18.708075300072	1
+223	15207	19.857031604742	2
+223	15234	19.857523604742	1
+223	16801	20.198082528869	2
+223	16829	20.198446528869	1
 224	6691	14.119346225495	1
 225	6693	14.119346225495	64
+225	8377	15.58651293302	88
+225	9061	16.198082528869	56
+225	10787	17.353536635638	88
+225	13360	18.707583300072	88
+225	15206	19.857031604742	88
+225	16800	20.198082528869	56
 226	6693	14.119346225495	64
+226	8377	15.58651293302	88
+226	9061	16.198082528869	56
+226	10787	17.353536635638	88
+226	13360	18.707583300072	88
+226	15206	19.857031604742	88
+226	16800	20.198082528869	56
 227	6693	14.119346225495	1
 227	6693	14.119346225495	0
+227	8377	15.58651293302	1
+227	8377	15.58651293302	0
+227	9061	16.198082528869	1
+227	9061	16.198082528869	0
+227	10787	17.353536635638	1
+227	10787	17.353536635638	0
+227	13360	18.707583300072	1
+227	13360	18.707583300072	0
+227	15206	19.857031604742	1
+227	15206	19.857031604742	0
+227	16800	20.198082528869	1
+227	16800	20.198082528869	0
 228	6693	14.119346225495	64
+228	8377	15.58651293302	88
+228	9061	16.198082528869	56
+228	10787	17.353536635638	88
+228	13360	18.707583300072	88
+228	15206	19.857031604742	88
+228	16800	20.198082528869	56
 229	6693	14.119346225495	0
+229	8377	15.58651293302	0
+229	9061	16.198082528869	0
+229	10787	17.353536635638	0
+229	13360	18.707583300072	0
+229	15206	19.857031604742	0
+229	16800	20.198082528869	0
 230	6693	14.119346225495	87
+230	8377	15.58651293302	111
+230	9061	16.198082528869	79
+230	10787	17.353536635638	111
+230	13360	18.707583300072	111
+230	15206	19.857031604742	111
+230	16800	20.198082528869	79
 231	6951	14.471217128455	111
 231	7417	14.865126503307	79
+231	8146	15.422639841009	111
+231	9023	16.149033735114	111
+231	9454	16.403466939969	111
+231	10035	16.869765209137	111
+231	10747	17.296919709132	79
+231	11196	17.633999915295	111
+231	11565	17.874288051352	111
+231	13204	18.529938755432	111
+231	13671	18.954997122502	111
+231	13730	18.971547992375	111
+231	14891	19.519700724106	79
+231	16295	20.076888312336	111
+231	16691	20.117489994553	111
+231	17409	20.47986345274	111
+231	17657	20.528785766151	111
+231	17976	20.738505917252	87
 232	6951	14.471217128455	88
 232	7417	14.865126503307	56
+232	8146	15.422639841009	88
+232	9023	16.149033735114	88
+232	9454	16.403466939969	88
+232	10035	16.869765209137	88
+232	10747	17.296919709132	56
+232	11196	17.633999915295	88
+232	11565	17.874288051352	88
+232	13204	18.529938755432	88
+232	13671	18.954997122502	88
+232	13730	18.971547992375	88
+232	14891	19.519700724106	56
+232	16295	20.076888312336	88
+232	16691	20.117489994553	88
+232	17409	20.47986345274	88
+232	17657	20.528785766151	88
+232	17976	20.738505917252	64
 233	7108	14.5	0
 233	7108	14.5	0
 233	7108	14.5	4
 234	7108	14.5	1
 234	7115	14.583343412286	3
 234	7138	14.583835412286	1
+234	8433	15.611657122201	3
+234	8454	15.612149122201	1
+234	8888	16.016631526825	3
+234	8913	16.017123526825	1
+234	10335	17.023477300388	3
+234	10359	17.023969300388	1
+234	11026	17.546063272618	3
+234	11051	17.546427272618	1
+234	11296	17.709163155268	3
+234	11352	17.709655155268	1
+234	13504	18.901929521627	3
+234	13529	18.902421521627	1
+234	13566	18.930425854291	3
+234	13594	18.930917854291	1
+234	15511	19.967985248116	3
+234	15541	19.968477248116	1
+234	18003	20.770055603706	3
+234	18032	20.770547603706	1
 235	7108	14.5	1
 235	7162	14.586542929732	2
 235	7182	14.586938929732	1
+235	9527	16.462188544916	2
+235	9549	16.462680544916	1
+235	9802	16.716399270319	2
+235	9825	16.716763270319	1
+235	12369	18.106178741436	2
+235	12460	18.106670741436	1
+235	14599	19.366519670002	2
+235	14625	19.367011670002	1
+235	17849	20.716399270319	2
+235	17878	20.716763270319	1
+235	18069	20.773702967679	2
+235	18098	20.774194967679	1
 236	7139	14.583835412286	111
+236	8455	15.612149122201	111
+236	8914	16.017123526825	111
+236	10360	17.023969300388	111
+236	11052	17.546427272618	79
+236	11353	17.709655155268	111
+236	13530	18.902421521627	111
+236	13595	18.930917854291	111
+236	15542	19.968477248116	111
+236	18033	20.770547603706	111
 237	7139	14.583835412286	88
+237	8455	15.612149122201	88
+237	8914	16.017123526825	88
+237	10360	17.023969300388	88
+237	11052	17.546427272618	56
+237	11353	17.709655155268	88
+237	13530	18.902421521627	88
+237	13595	18.930917854291	88
+237	15542	19.968477248116	88
+237	18033	20.770547603706	88
 238	7159	14.586542929732	1
 239	7161	14.586542929732	64
+239	9526	16.462188544916	88
+239	9801	16.716399270319	56
+239	12368	18.106178741436	88
+239	14598	19.366519670002	88
+239	17848	20.716399270319	56
+239	18068	20.773702967679	88
 240	7161	14.586542929732	64
+240	9526	16.462188544916	88
+240	9801	16.716399270319	56
+240	12368	18.106178741436	88
+240	14598	19.366519670002	88
+240	17848	20.716399270319	56
+240	18068	20.773702967679	88
 241	7161	14.586542929732	1
 241	7161	14.586542929732	0
+241	9526	16.462188544916	1
+241	9526	16.462188544916	0
+241	9801	16.716399270319	1
+241	9801	16.716399270319	0
+241	12368	18.106178741436	1
+241	12368	18.106178741436	0
+241	14598	19.366519670002	1
+241	14598	19.366519670002	0
+241	17848	20.716399270319	1
+241	17848	20.716399270319	0
+241	18068	20.773702967679	1
+241	18068	20.773702967679	0
 242	7161	14.586542929732	64
+242	9526	16.462188544916	88
+242	9801	16.716399270319	56
+242	12368	18.106178741436	88
+242	14598	19.366519670002	88
+242	17848	20.716399270319	56
+242	18068	20.773702967679	88
 243	7161	14.586542929732	0
+243	9526	16.462188544916	0
+243	9801	16.716399270319	0
+243	12368	18.106178741436	0
+243	14598	19.366519670002	0
+243	17848	20.716399270319	0
+243	18068	20.773702967679	0
 244	7161	14.586542929732	87
+244	9526	16.462188544916	111
+244	9801	16.716399270319	79
+244	12368	18.106178741436	111
+244	14598	19.366519670002	111
+244	17848	20.716399270319	79
+244	18068	20.773702967679	111
 245	7458	14.921650058952	111
+245	7595	15.00085696266	95
+245	8073	15.360599791857	79
+245	8756	16.001432962073	191
+245	8805	16.001861452206	95
+245	9959	16.817688485439	111
+245	10307	17.001432962701	191
+245	12098	18.001285595877	95
+245	13256	18.533763088836	111
+245	14092	19.037542495671	87
+245	14501	19.360599915736	79
+245	16139	20.002142771016	95
+245	17085	20.374903296113	111
+245	18175	20.779543570094	111
 246	7458	14.921650058952	88
+246	7595	15.00085696266	72
+246	8073	15.360599791857	56
+246	8805	16.001861452206	72
+246	9959	16.817688485439	88
+246	13256	18.533763088836	88
+246	14092	19.037542495671	64
+246	14501	19.360599915736	56
+246	16139	20.002142771016	72
+246	17085	20.374903296113	88
+246	18175	20.779543570094	88
+247	7667	15.001285416115	95
+248	8199	15.5	0
+248	8199	15.5	0
+248	8199	15.5	4
+249	8199	15.5	1
+249	8270	15.555523918086	3
+249	8298	15.555967918086	1
+249	8632	16.000000446789	3
+249	8655	16.000620446789	1
+249	8942	16.043439964517	3
+249	8967	16.043883964517	1
+249	9624	16.631143818112	3
+249	9650	16.631635818112	1
+249	9684	16.671725823204	3
+249	9714	16.672169823204	1
+249	10224	17.000000437065	3
+249	10249	17.000620437065	1
+249	10589	17.224751551753	3
+249	10621	17.225147551753	1
+249	11087	17.631905030994	3
+249	11115	17.632349030994	1
+249	11227	17.690919011436	3
+249	11255	17.691363011436	1
+249	11613	17.89196480041	3
+249	11644	17.89232880041	1
+249	11841	18.00000042117	3
+249	11868	18.00042842117	1
+249	11959	18.00085726351	3
+249	12164	18.00147726351	1
+249	12345	18.106011407015	3
+249	12433	18.106503407015	1
+249	12955	18.428769297748	3
+249	12992	18.429261297748	1
+249	13227	18.533271154762	3
+249	13259	18.533763154762	1
+249	13821	19.000000399436	3
+249	13849	19.000620399436	1
+249	13919	19.00085761076	3
+249	14010	19.00128561076	2
+249	14012	19.00128563484	1
+249	14125	19.122337416555	3
+249	14154	19.122781416555	1
+249	14325	19.236608040843	3
+249	14360	19.236972040843	1
+249	14398	19.284008274916	3
+249	14431	19.284452274916	1
+249	14470	19.360235934388	3
+249	14504	19.360599934388	1
+249	15058	19.696117298919	3
+249	15095	19.696609298919	1
+249	15579	19.997934849332	3
+249	15618	19.998426849332	1
+249	15700	20.000000372101	3
+249	15730	20.000620372101	1
+249	15805	20.000857597874	3
+249	15901	20.001285597874	1
+249	16031	20.001714681258	3
+249	16134	20.002142681258	2
+249	16194	20.00233475297	1
+249	16321	20.10171475297	3
+249	16372	20.10214275297	1
+249	16391	20.102143109485	3
+249	16531	20.102571109485	1
+249	16729	20.143010574521	3
+249	16766	20.143502574521	1
+249	17042	20.374411206355	3
+249	17080	20.374903206355	1
+249	18216	20.853108976017	3
+249	18252	20.853552976017	1
+250	8199	15.5	1
+250	8536	15.793571277172	2
+250	8557	15.793967277172	1
+250	10518	17.199479277479	2
+250	10542	17.199971277479	1
+250	11874	18.00042842117	2
+250	11923	18.00085642117	1
+250	12195	18.059883117327	2
+250	12220	18.060247117327	1
+250	13023	18.497761605308	2
+250	13048	18.498253605308	1
+250	13855	19.000620399436	2
+250	13962	19.001048399436	1
+250	15432	19.967010776979	2
+250	15459	19.967502776979	1
+250	15737	20.000620399436	2
+250	15853	20.001048399436	1
+250	15907	20.001285597874	2
+250	15984	20.001713597874	1
+250	16378	20.10214275297	2
+250	16518	20.10257075297	1
+251	8299	15.555967918086	99
+251	8656	16.000620446789	143
+251	8968	16.043883964517	99
+251	9651	16.631635818112	111
+251	9715	16.672169823204	99
+251	10250	17.000620437065	143
+251	10622	17.225147551753	87
+251	11116	17.632349030994	99
+251	11256	17.691363011436	99
+251	11645	17.89232880041	79
+251	11869	18.00042842117	95
+251	12165	18.00147726351	143
+251	12434	18.106503407015	111
+251	12993	18.429261297748	111
+251	13260	18.533763154762	111
+251	13850	19.000620399436	143
+251	14011	19.00128561076	95
+251	14155	19.122781416555	99
+251	14361	19.236972040843	79
+251	14432	19.284452274916	99
+251	14505	19.360599934388	79
+251	15096	19.696609298919	111
+251	15619	19.998426849332	111
+251	15731	20.000620372101	143
+251	15902	20.001285597874	95
+251	16135	20.002142681258	95
+251	16373	20.10214275297	95
+251	16532	20.102571109485	95
+251	16767	20.143502574521	111
+251	17081	20.374903206355	111
+251	18253	20.853552976017	99
+252	8299	15.555967918086	76
+252	8968	16.043883964517	76
+252	9651	16.631635818112	88
+252	9715	16.672169823204	76
+252	10622	17.225147551753	64
+252	11116	17.632349030994	76
+252	11256	17.691363011436	76
+252	11645	17.89232880041	56
+252	11869	18.00042842117	72
+252	12434	18.106503407015	88
+252	12993	18.429261297748	88
+252	13260	18.533763154762	88
+252	13850	19.000620399436	120
+252	14155	19.122781416555	76
+252	14361	19.236972040843	56
+252	14432	19.284452274916	76
+252	14505	19.360599934388	56
+252	15096	19.696609298919	88
+252	15619	19.998426849332	88
+252	15731	20.000620372101	120
+252	15902	20.001285597874	72
+252	16373	20.10214275297	72
+252	16767	20.143502574521	88
+252	17081	20.374903206355	88
+252	18253	20.853552976017	76
+253	8533	15.793571277172	1
+254	8535	15.793571277172	64
+254	10517	17.199479277479	88
+254	11873	18.00042842117	72
+254	12194	18.059883117327	56
+254	13022	18.497761605308	88
+254	13854	19.000620399436	72
+254	15431	19.967010776979	88
+254	15736	20.000620399436	72
+254	15906	20.001285597874	72
+254	16377	20.10214275297	72
+255	8535	15.793571277172	64
+255	10517	17.199479277479	88
+255	11873	18.00042842117	72
+255	12194	18.059883117327	56
+255	13022	18.497761605308	88
+255	13854	19.000620399436	72
+255	15431	19.967010776979	88
+255	15736	20.000620399436	72
+255	15906	20.001285597874	72
+255	16377	20.10214275297	72
+256	8535	15.793571277172	1
+256	8535	15.793571277172	0
+256	10517	17.199479277479	1
+256	10517	17.199479277479	0
+256	11873	18.00042842117	1
+256	11873	18.00042842117	0
+256	12194	18.059883117327	1
+256	12194	18.059883117327	0
+256	13022	18.497761605308	1
+256	13022	18.497761605308	0
+256	13854	19.000620399436	1
+256	13854	19.000620399436	0
+256	15431	19.967010776979	1
+256	15431	19.967010776979	0
+256	15736	20.000620399436	1
+256	15736	20.000620399436	0
+256	15906	20.001285597874	1
+256	15906	20.001285597874	0
+256	16377	20.10214275297	1
+256	16377	20.10214275297	0
+257	8535	15.793571277172	64
+257	10517	17.199479277479	88
+257	11873	18.00042842117	72
+257	12194	18.059883117327	56
+257	13022	18.497761605308	88
+257	13854	19.000620399436	72
+257	15431	19.967010776979	88
+257	15736	20.000620399436	72
+257	15906	20.001285597874	72
+257	16377	20.10214275297	72
+258	8535	15.793571277172	0
+258	10517	17.199479277479	0
+258	11873	18.00042842117	0
+258	12194	18.059883117327	0
+258	13022	18.497761605308	0
+258	13854	19.000620399436	0
+258	15431	19.967010776979	0
+258	15736	20.000620399436	0
+258	15906	20.001285597874	0
+258	16377	20.10214275297	0
+259	8535	15.793571277172	87
+259	10517	17.199479277479	111
+259	11873	18.00042842117	95
+259	12194	18.059883117327	79
+259	13022	18.497761605308	111
+259	13854	19.000620399436	95
+259	15431	19.967010776979	111
+259	15736	20.000620399436	95
+259	15906	20.001285597874	95
+259	16377	20.10214275297	95
+260	8627	16	0
+260	8627	16	0
+260	8627	16	4
+261	8627	16	1
+261	10457	17.159454649627	3
+261	10487	17.159946649627	1
+261	12675	18.262318036076	3
+261	12709	18.262810036076	1
+261	14536	19.362544944446	3
+261	14571	19.363036944446	1
+262	8627	16	1
+262	9225	16.264520607865	2
+262	9247	16.264916607865	1
+262	11676	17.938990762434	2
+262	11701	17.939354762434	1
+262	11733	17.96541621862	2
+262	11758	17.96590821862	1
+262	14732	19.401281137951	2
+262	14758	19.401773137951	1
+262	17315	20.470448128181	2
+262	17343	20.470940128181	1
+263	8656	16.000620446789	143
+263	10250	17.000620437065	143
+263	16532	20.102571109485	95
+264	8756	16.001432962073	191
+264	10307	17.001432962701	191
+264	12098	18.001285595877	95
+265	9222	16.264520607865	1
+266	9224	16.264520607865	64
+266	11675	17.938990762434	56
+266	11732	17.96541621862	88
+266	14731	19.401281137951	88
+266	17314	20.470448128181	88
+267	9224	16.264520607865	64
+267	11675	17.938990762434	56
+267	11732	17.96541621862	88
+267	14731	19.401281137951	88
+267	17314	20.470448128181	88
+268	9224	16.264520607865	1
+268	9224	16.264520607865	0
+268	11675	17.938990762434	1
+268	11675	17.938990762434	0
+268	11732	17.96541621862	1
+268	11732	17.96541621862	0
+268	14731	19.401281137951	1
+268	14731	19.401281137951	0
+268	17314	20.470448128181	1
+268	17314	20.470448128181	0
+269	9224	16.264520607865	64
+269	11675	17.938990762434	56
+269	11732	17.96541621862	88
+269	14731	19.401281137951	88
+269	17314	20.470448128181	88
+270	9224	16.264520607865	0
+270	11675	17.938990762434	0
+270	11732	17.96541621862	0
+270	14731	19.401281137951	0
+270	17314	20.470448128181	0
+271	9224	16.264520607865	87
+271	11675	17.938990762434	79
+271	11732	17.96541621862	111
+271	14731	19.401281137951	111
+271	17314	20.470448128181	111
+272	9618	16.5	0
+272	9618	16.5	0
+272	9618	16.5	4
+273	9618	16.5	1
+273	9863	16.790779153034	3
+273	9898	16.791271153034	1
+273	10057	16.878140982846	3
+273	10080	16.878632982846	1
+273	10654	17.235840084697	3
+273	10693	17.236332084697	1
+273	10855	17.403789473199	3
+273	10894	17.404153473199	1
+273	11156	17.633507954458	3
+273	11199	17.633999954458	1
+273	12268	18.092353989728	3
+273	12308	18.092845989728	1
+273	12539	18.166131965834	3
+273	12564	18.166623965834	1
+273	12812	18.352424858628	3
+273	12855	18.352916858628	1
+273	13149	18.529446736979	3
+273	13195	18.529938736979	1
+273	13430	18.805804965968	3
+273	13470	18.806296965968	1
+273	13631	18.954505208533	3
+273	13674	18.954997208533	1
+273	14850	19.519336848772	3
+273	14898	19.519700848772	1
+273	15132	19.70473649124	3
+273	15180	19.70522849124	1
+273	15275	19.870020540895	3
+273	15302	19.870512540895	1
+273	16236	20.076396190767	3
+273	16282	20.076888190767	1
+273	16649	20.116998136395	3
+273	16698	20.117490136395	1
+273	16878	20.218997214296	3
+273	16906	20.219393214296	1
+273	16959	20.270725007941	3
+273	17008	20.271089007941	1
+273	17591	20.528293646574	3
+273	17644	20.528785646574	1
+273	17685	20.641539367642	3
+273	17726	20.642031367642	1
+273	17767	20.710452659121	3
+273	17820	20.710944659121	1
+273	17927	20.738109890812	3
+273	17972	20.738505890812	1
+273	18296	20.886648519808	3
+273	18325	20.887140519808	1
+274	9618	16.5	1
+274	9742	16.685642568301	2
+274	9765	16.686038568301	1
+274	12397	18.106393216876	2
+274	12491	18.106885216876	1
+274	13289	18.692797274003	2
+274	13314	18.693161274003	1
+274	15353	19.912587208673	2
+274	15380	19.913079208673	1
+275	9739	16.685642568301	1
+276	9741	16.685642568301	64
+276	12396	18.106393216876	88
+276	13288	18.692797274003	56
+276	15352	19.912587208673	88
+277	9741	16.685642568301	64
+277	12396	18.106393216876	88
+277	13288	18.692797274003	56
+277	15352	19.912587208673	88
+278	9741	16.685642568301	1
+278	9741	16.685642568301	0
+278	12396	18.106393216876	1
+278	12396	18.106393216876	0
+278	13288	18.692797274003	1
+278	13288	18.692797274003	0
+278	15352	19.912587208673	1
+278	15352	19.912587208673	0
+279	9741	16.685642568301	64
+279	12396	18.106393216876	88
+279	13288	18.692797274003	56
+279	15352	19.912587208673	88
+280	9741	16.685642568301	0
+280	12396	18.106393216876	0
+280	13288	18.692797274003	0
+280	15352	19.912587208673	0
+281	9741	16.685642568301	87
+281	12396	18.106393216876	111
+281	13288	18.692797274003	79
+281	15352	19.912587208673	111
+282	9899	16.791271153034	111
+282	10081	16.878632982846	111
+282	10694	17.236332084697	111
+282	10895	17.404153473199	79
+282	11200	17.633999954458	111
+282	12309	18.092845989728	111
+282	12565	18.166623965834	111
+282	12856	18.352916858628	111
+282	13196	18.529938736979	111
+282	13471	18.806296965968	111
+282	13675	18.954997208533	111
+282	14899	19.519700848772	79
+282	15181	19.70522849124	111
+282	15303	19.870512540895	111
+282	16283	20.076888190767	111
+282	16699	20.117490136395	111
+282	16907	20.219393214296	87
+282	17009	20.271089007941	79
+282	17645	20.528785646574	111
+282	17727	20.642031367642	111
+282	17821	20.710944659121	111
+282	17973	20.738505890812	87
+282	18326	20.887140519808	111
+283	9899	16.791271153034	88
+283	10081	16.878632982846	88
+283	10694	17.236332084697	88
+283	10895	17.404153473199	56
+283	11200	17.633999954458	88
+283	12309	18.092845989728	88
+283	12565	18.166623965834	88
+283	12856	18.352916858628	88
+283	13196	18.529938736979	88
+283	13471	18.806296965968	88
+283	13675	18.954997208533	88
+283	14899	19.519700848772	56
+283	15181	19.70522849124	88
+283	15303	19.870512540895	88
+283	16283	20.076888190767	88
+283	16699	20.117490136395	88
+283	16907	20.219393214296	64
+283	17009	20.271089007941	56
+283	17645	20.528785646574	88
+283	17727	20.642031367642	88
+283	17821	20.710944659121	88
+283	17973	20.738505890812	64
+283	18326	20.887140519808	88
+284	10219	17	0
+284	10219	17	0
+284	10219	17	4
+285	10219	17	1
+285	10393	17.112716763965	3
+285	10417	17.113208763965	1
+285	10522	17.199479878416	3
+285	10557	17.199971878416	1
+285	11229	17.690919193409	3
+285	11265	17.691363193409	1
+285	11411	17.712799322485	3
+285	11439	17.713163322485	1
+285	11477	17.862580731298	3
+285	11505	17.863072731298	1
+285	11612	17.891964726086	3
+285	11640	17.892328726086	1
+285	11889	18.000429020326	3
+285	11943	18.000857020326	1
+285	11968	18.000857463106	3
+285	12081	18.001285463106	1
+285	12199	18.059883716483	3
+285	12231	18.060247716483	1
+285	12343	18.106011289859	3
+285	12427	18.106503289859	1
+285	12608	18.248190807873	3
+285	12633	18.248682807873	1
+285	12738	18.276398945949	3
+285	12763	18.276890945949	1
+285	12885	18.404724856467	3
+285	12910	18.405088856467	1
+285	13027	18.497762204464	3
+285	13063	18.498254204464	1
+285	13866	19.00062098987	3
+285	13968	19.00104898987	2
+285	14004	19.001285429939	1
+285	14127	19.122337618063	3
+285	14164	19.122781618063	1
+285	14254	19.230142669886	3
+285	14286	19.230634669886	1
+285	14663	19.375967994137	3
+285	14689	19.376459994137	1
+285	15055	19.696116933991	3
+285	15082	19.696608933991	1
+285	15436	19.967011361397	3
+285	15474	19.967503361397	1
+285	15576	19.997934600964	3
+285	15606	19.998426600964	1
+285	15751	20.000620976984	3
+285	15862	20.001048976984	2
+285	15896	20.001285404716	1
+285	15933	20.001286175422	3
+285	15999	20.001714175422	1
+285	16022	20.001714531937	3
+285	16124	20.002142531937	1
+285	16360	20.102142538716	3
+285	16510	20.102570538716	2
+285	16549	20.102571330518	1
+285	17184	20.409190353976	3
+285	17212	20.409682353976	1
+286	10219	17	1
+286	10584	17.224750950816	2
+286	10608	17.225146950816	1
+286	11950	18.000857020326	2
+286	12072	18.001285020326	1
+286	12950	18.428768698592	2
+286	12975	18.429260698592	1
+286	13911	19.000857020326	2
+286	13996	19.001285020326	1
+286	14321	19.236607450409	2
+286	14347	19.236971450409	1
+286	15798	20.000857020326	2
+286	15889	20.001285020326	1
+286	16005	20.001714175422	2
+286	16187	20.002334175422	1
+286	16317	20.101714175422	2
+286	16345	20.102142175422	1
+286	16725	20.143009996973	2
+286	16753	20.143501996973	1
+287	10418	17.113208763965	111
+287	10558	17.199971878416	111
+287	11266	17.691363193409	99
+287	11440	17.713163322485	79
+287	11506	17.863072731298	111
+287	11641	17.892328726086	79
+287	11944	18.000857020326	95
+287	12082	18.001285463106	95
+287	12232	18.060247716483	79
+287	12428	18.106503289859	111
+287	12634	18.248682807873	111
+287	12764	18.276890945949	111
+287	12911	18.405088856467	79
+287	13064	18.498254204464	111
+287	13969	19.00104898987	95
+287	14165	19.122781618063	99
+287	14287	19.230634669886	111
+287	14690	19.376459994137	111
+287	15083	19.696608933991	111
+287	15475	19.967503361397	111
+287	15607	19.998426600964	111
+287	15863	20.001048976984	95
+287	16000	20.001714175422	95
+287	16125	20.002142531937	95
+287	16511	20.102570538716	95
+287	17213	20.409682353976	111
+288	10418	17.113208763965	88
+288	10558	17.199971878416	88
+288	11266	17.691363193409	76
+288	11440	17.713163322485	56
+288	11506	17.863072731298	88
+288	11641	17.892328726086	56
+288	11944	18.000857020326	72
+288	12082	18.001285463106	72
+288	12232	18.060247716483	56
+288	12428	18.106503289859	88
+288	12634	18.248682807873	88
+288	12764	18.276890945949	88
+288	12911	18.405088856467	56
+288	13064	18.498254204464	88
+288	14165	19.122781618063	76
+288	14287	19.230634669886	88
+288	14690	19.376459994137	88
+288	15083	19.696608933991	88
+288	15475	19.967503361397	88
+288	15607	19.998426600964	88
+288	16000	20.001714175422	72
+288	16125	20.002142531937	72
+288	17213	20.409682353976	88
+289	10488	17.159946649627	111
+289	12710	18.262810036076	111
+289	14572	19.363036944446	111
+290	10488	17.159946649627	88
+290	12710	18.262810036076	88
+290	14572	19.363036944446	88
+291	10581	17.224750950816	1
+292	10583	17.224750950816	64
+292	11949	18.000857020326	72
+292	12949	18.428768698592	88
+292	13910	19.000857020326	72
+292	14320	19.236607450409	56
+292	15797	20.000857020326	72
+292	16004	20.001714175422	120
+292	16129	20.002142531937	72
+292	16724	20.143009996973	88
+293	10583	17.224750950816	64
+293	11949	18.000857020326	72
+293	12949	18.428768698592	88
+293	13910	19.000857020326	72
+293	14320	19.236607450409	56
+293	15797	20.000857020326	72
+293	16004	20.001714175422	120
+293	16129	20.002142531937	72
+293	16724	20.143009996973	88
+294	10583	17.224750950816	1
+294	10583	17.224750950816	0
+294	11949	18.000857020326	1
+294	11949	18.000857020326	0
+294	12949	18.428768698592	1
+294	12949	18.428768698592	0
+294	13910	19.000857020326	1
+294	13910	19.000857020326	0
+294	14320	19.236607450409	1
+294	14320	19.236607450409	0
+294	15797	20.000857020326	1
+294	15797	20.000857020326	0
+294	16004	20.001714175422	1
+294	16004	20.001714175422	0
+294	16129	20.002142531937	1
+294	16316	20.101714175422	0
+294	16724	20.143009996973	1
+294	16724	20.143009996973	0
+295	10583	17.224750950816	64
+295	11949	18.000857020326	72
+295	12949	18.428768698592	88
+295	13910	19.000857020326	72
+295	14320	19.236607450409	56
+295	15797	20.000857020326	72
+295	16004	20.001714175422	120
+295	16316	20.101714175422	72
+295	16724	20.143009996973	88
+296	10583	17.224750950816	0
+296	11949	18.000857020326	0
+296	12949	18.428768698592	0
+296	13910	19.000857020326	0
+296	14320	19.236607450409	0
+296	15797	20.000857020326	0
+296	16004	20.001714175422	0
+296	16316	20.101714175422	0.099571643485
+296	16724	20.143009996973	0
+297	10583	17.224750950816	87
+297	11949	18.000857020326	95
+297	12949	18.428768698592	111
+297	13910	19.000857020326	95
+297	14320	19.236607450409	79
+297	15797	20.000857020326	95
+297	16004	20.001714175422	143
+297	16316	20.101714175422	95
+297	16724	20.143009996973	111
+298	10967	17.5	0
+298	10967	17.5	0
+298	10967	17.5	4
+299	10967	17.5	1
+299	14991	19.636063245816	3
+299	15022	19.636459245816	1
+300	10967	17.5	1
+300	10971	17.510087528126	2
+300	10996	17.510483528126	1
+300	14195	19.153200815432	2
+300	14221	19.153692815432	1
+300	17253	20.46162425084	2
+300	17281	20.46198825084	1
+301	10968	17.510087528126	1
+302	10970	17.510087528126	64
+302	14194	19.153200815432	88
+302	17252	20.46162425084	56
+303	10970	17.510087528126	64
+303	14194	19.153200815432	88
+303	17252	20.46162425084	56
+304	10970	17.510087528126	1
+304	10970	17.510087528126	0
+304	14194	19.153200815432	1
+304	14194	19.153200815432	0
+304	17252	20.46162425084	1
+304	17252	20.46162425084	0
+305	10970	17.510087528126	64
+305	14194	19.153200815432	88
+305	17252	20.46162425084	56
+306	10970	17.510087528126	0
+306	14194	19.153200815432	0
+306	17252	20.46162425084	0
+307	10970	17.510087528126	87
+307	14194	19.153200815432	111
+307	17252	20.46162425084	79
+308	12075	18.001285265148	95
+308	13998	19.001285228515	95
+308	15891	20.001285201973	95
+308	16189	20.002334357069	143
+308	16517	20.102570746903	95
+309	12077	18.001285337426	95
+309	14000	19.001285319997	95
+310	12163	18.001477150803	143
+310	13967	19.00104882486	95
+310	15858	20.001048798622	95
+310	16137	20.002142754697	95
+310	16526	20.102570958944	95
+311	12165	18.00147726351	143
+311	14011	19.00128561076	95
+311	16135	20.002142681258	95
+312	12432	18.106503404911	111
+313	13815	19	0
+313	13815	19	0
+313	13815	19	4
+314	13815	19	1
+314	13822	19.000000576127	3
+314	13856	19.000620576127	1
+314	14399	19.284008451607	3
+314	14436	19.284452451607	1
+314	14467	19.360235521813	3
+314	14493	19.360599521813	1
+314	14925	19.605826696699	3
+314	14952	19.606318696699	1
+314	14990	19.636063211859	3
+314	15019	19.636459211859	1
+314	15701	20.000000575666	3
+314	15738	20.000620575666	1
+314	16018	20.001714367461	3
+314	16118	20.002142367461	1
+314	17039	20.374410892558	3
+314	17067	20.374902892558	1
+314	17119	20.407887100215	3
+314	17147	20.408251100215	1
+314	18217	20.853109196921	3
+314	18257	20.853553196921	1
+315	13815	19	1
+315	14061	19.03714599472	2
+315	14087	19.03754199472	1
+315	18136	20.77905101818	2
+315	18165	20.77954301818	1
+316	13857	19.000620576127	143
+316	14437	19.284452451607	99
+316	14494	19.360599521813	79
+316	14953	19.606318696699	111
+316	15020	19.636459211859	87
+316	15739	20.000620575666	143
+316	16119	20.002142367461	95
+316	17068	20.374902892558	111
+316	17148	20.408251100215	79
+316	18258	20.853553196921	99
+317	13857	19.000620576127	143
+317	15739	20.000620575666	143
+318	13969	19.00104898987	95
+318	15863	20.001048976984	95
+318	16511	20.102570538716	95
+319	13974	19.00104903356	95
+320	14058	19.03714599472	1
+321	14060	19.03714599472	64
+321	18135	20.77905101818	88
+322	14060	19.03714599472	64
+322	18135	20.77905101818	88
+323	14060	19.03714599472	1
+323	14060	19.03714599472	0
+323	18135	20.77905101818	1
+323	18135	20.77905101818	0
+324	14060	19.03714599472	64
+324	18135	20.77905101818	88
+325	14060	19.03714599472	0
+325	18135	20.77905101818	0
+326	14060	19.03714599472	87
+326	18135	20.77905101818	111
+327	14437	19.284452451607	76
+327	14494	19.360599521813	56
+327	14953	19.606318696699	88
+327	15020	19.636459211859	64
+327	16119	20.002142367461	72
+327	17068	20.374902892558	88
+327	17148	20.408251100215	56
+327	18258	20.853553196921	76
+328	14838	19.5	0
+328	14838	19.5	0
+328	14838	19.5	4
+329	14838	19.5	1
+329	15702	20.000000617442	3
+329	15740	20.000620617442	1
+329	16024	20.001714552829	3
+329	16131	20.002142552829	1
+329	17041	20.374411077926	3
+329	17076	20.374903077926	1
+329	17254	20.461624697572	3
+329	17282	20.461988697572	1
+329	18138	20.779051428285	3
+329	18170	20.779543428285	1
+329	18218	20.853109235574	3
+329	18262	20.853553235574	1
+330	14838	19.5	1
+330	14988	19.636062804074	2
+330	15015	19.636458804074	1
+330	18386	20.920075367671	2
+331	14985	19.636062804074	1
+332	14987	19.636062804074	64
+332	18384	20.920075367671	88
+332	18385	20.920075367671	88
+333	14987	19.636062804074	64
+333	18384	20.920075367671	88
+333	18385	20.920075367671	88
+334	14987	19.636062804074	1
+334	14987	19.636062804074	0
+334	18384	20.920075367671	1
+334	18384	20.920075367671	0
+334	18385	20.920075367671	1
+334	18385	20.920075367671	0
+335	14987	19.636062804074	64
+335	18384	20.920075367671	88
+335	18385	20.920075367671	88
+336	14987	19.636062804074	0
+336	18384	20.920075367671	0
+336	18385	20.920075367671	0
+337	14987	19.636062804074	87
+337	18384	20.920075367671	111
+337	18385	20.920075367671	111
+338	15023	19.636459245816	87
+339	15023	19.636459245816	64
+340	15694	20	0
+340	15694	20	0
+340	15694	20	4
+341	15694	20	1
+341	16238	20.07639623639	3
+341	16290	20.07688823639	1
+341	16960	20.270725053685	3
+341	17012	20.271089053685	1
+341	17592	20.528293687272	3
+341	17648	20.528785687272	1
+341	17684	20.641539361031	3
+341	17722	20.642031361031	1
+341	17768	20.710452715893	3
+341	17824	20.710944715893	1
+341	17929	20.738109947693	3
+341	17978	20.738505947693	1
+341	18297	20.886648574403	3
+341	18329	20.887140574403	1
+342	15694	20	1
+342	16877	20.218997168518	2
+342	16905	20.219393168518	1
+343	15741	20.000620617442	143
+343	16132	20.002142552829	95
+343	17077	20.374903077926	111
+343	17283	20.461988697572	79
+343	18171	20.779543428285	111
+343	18263	20.853553235574	99
+344	15741	20.000620617442	143
+345	15865	20.001049053118	95
+345	16514	20.102570648169	95
+346	16132	20.002142552829	72
+346	17077	20.374903077926	88
+346	17283	20.461988697572	56
+346	18171	20.779543428285	88
+346	18263	20.853553235574	76
+347	16191	20.002334455803	143
+348	16193	20.002334579422	143
+349	16291	20.07688823639	111
+349	17013	20.271089053685	79
+349	17649	20.528785687272	111
+349	17723	20.642031361031	111
+349	17825	20.710944715893	111
+349	17979	20.738505947693	87
+349	18330	20.887140574403	111
+350	16291	20.07688823639	88
+350	17013	20.271089053685	56
+350	17649	20.528785687272	88
+350	17723	20.642031361031	88
+350	17825	20.710944715893	88
+350	17979	20.738505947693	64
+350	18330	20.887140574403	88
+351	16874	20.218997168518	1
+352	16876	20.218997168518	64
+353	16876	20.218997168518	64
+354	16876	20.218997168518	1
+354	16876	20.218997168518	0
+355	16876	20.218997168518	64
+356	16876	20.218997168518	0
+357	16876	20.218997168518	87
+358	17503	20.5	0
+358	17503	20.5	0
+358	17503	20.5	4
+359	17503	20.5	1
+359	17508	20.502517351312	3
+359	17537	20.503009351312	1
+359	17587	20.528293544097	3
+359	17628	20.528785544097	1
+359	17760	20.710452187638	3
+359	17792	20.710944187638	1
+359	18302	20.886649062631	3
+359	18349	20.887141062631	1
+360	17503	20.5	1
+360	17918	20.73810931074	2
+360	17947	20.73850531074	1
+361	17538	20.503009351312	111
+361	17629	20.528785544097	111
+361	17793	20.710944187638	111
+361	18350	20.887141062631	111
+362	17538	20.503009351312	88
+362	17629	20.528785544097	88
+362	17793	20.710944187638	88
+362	18350	20.887141062631	88
+363	17915	20.73810931074	1
+364	17917	20.73810931074	64
+365	17917	20.73810931074	64
+366	17917	20.73810931074	1
+366	17917	20.73810931074	0
+367	17917	20.73810931074	64
+368	17917	20.73810931074	0
+369	17917	20.73810931074	87
+
