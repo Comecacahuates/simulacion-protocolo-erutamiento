@@ -153,13 +153,19 @@ void RoutingProtocolCar::processHelloCarTimer() {
     const inet::Ipv6InterfaceData *ipv6Data = networkInterface->findProtocolData<
             inet::Ipv6InterfaceData>();
 
-    if (ipv6Data->hasAddress(primaryUnicastAddress))
-        sendHelloCar(createHelloCar(primaryUnicastAddress),
+    if (ipv6Data->hasAddress(primaryUnicastAddress)) {
+        const inet::Ptr<HelloCar> helloCar = createHelloCar(
+                primaryUnicastAddress);
+        sendRoutingMessage(helloCar, primaryUnicastAddress,
                 primaryMulticastAddress);
+    }
 
-    if (ipv6Data->hasAddress(secondaryUnicastAddress))
-        sendHelloCar(createHelloCar(secondaryUnicastAddress),
+    if (ipv6Data->hasAddress(secondaryUnicastAddress)) {
+        const inet::Ptr<HelloCar> helloCar = createHelloCar(
+                secondaryUnicastAddress);
+        sendRoutingMessage(helloCar, secondaryUnicastAddress,
                 secondaryMulticastAddress);
+    }
 
     scheduleHelloCarTimer();
 }
@@ -219,50 +225,6 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
 }
 
 /*!
- * @brief Enviar mensaje HOLA_VEHIC.
- *
- * Encapsula un mensaje HOLA_VEHIC en un datagrama UDP y lo envía
- * a la dirección indicada.
- *
- * @param helloCar [in] Mensaje a enviar.
- * @param destAddress [in] Dirección de destino del mensaje.
- */
-void RoutingProtocolCar::sendHelloCar(const inet::Ptr<HelloCar> &helloCar,
-        const inet::Ipv6Address &destAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::sendHelloCar");
-
-    inet::Packet *udpPacket = new inet::Packet("ANC_VEHIC");
-    udpPacket->insertAtBack(helloCar);
-
-    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
-    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
-    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
-    udpPacket->insertAtFront(udpHeader);
-
-    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
-            inet::L3AddressReq>();
-    addresses->setSrcAddress(inet::L3Address(helloCar->getSrcAddress()));
-    addresses->setDestAddress(inet::L3Address(destAddress));
-
-    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
-            inet::HopLimitReq>();
-    hopLimit->setHopLimit(255);
-
-    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
-            inet::PacketProtocolTag>();
-    packetProtocol->setProtocol(&inet::Protocol::manet);
-
-    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
-            inet::DispatchProtocolReq>();
-    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
-
-    sendUdpPacket(udpPacket);
-}
-
-/*!
  * @brief Procesar mensaje HOLA_VEHIC.
  *
  * @param helloCar [in] Mensaje a procesar.
@@ -298,7 +260,8 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
     EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
-    neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime() + neighbouringCarValidityTime;
+    neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime()
+            + neighbouringCarValidityTime;
     neighbouringCars.getMap()[srcAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
     neighbouringCarsByEdge.insert(NeighbouringCarByEdge(edge, srcAddress));
@@ -400,50 +363,6 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
 }
 
 /*!
- * @brief Enviar mensaje PING.
- *
- * Encapsula un mensaje PING en un datagrama UDP y lo envía
- * a la dirección indicada.
- *
- * @param ping [in] Mensaje a enviar.
- * @param destAddress [in] Dirección IPV6 del siguiente salto.
- */
-void RoutingProtocolCar::sendPing(const inet::Ptr<Ping> &ping,
-        const inet::Ipv6Address &destAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::sendPing");
-
-    inet::Packet *udpPacket = new inet::Packet("Ping");
-    udpPacket->insertAtBack(ping);
-
-    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
-    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
-    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
-    udpPacket->insertAtFront(udpHeader);
-
-    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
-            inet::L3AddressReq>();
-    addresses->setSrcAddress(inet::L3Address(ping->getAddress()));
-    addresses->setDestAddress(inet::L3Address(destAddress));
-
-    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
-            inet::HopLimitReq>();
-    hopLimit->setHopLimit(255);
-
-    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
-            inet::PacketProtocolTag>();
-    packetProtocol->setProtocol(&inet::Protocol::manet);
-
-    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
-            inet::DispatchProtocolReq>();
-    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
-
-    sendUdpPacket(udpPacket);
-}
-
-/*!
  * @brief Procesar mensaje PING.
  *
  * Si el vehículo se encuentra en el vértice de destino,
@@ -506,8 +425,9 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         inet::Ipv6Address nextHopAddress = findNeighbouringCarClosestToVertex(
                 pingVertex);
         if (!nextHopAddress.isUnspecified()) {
-            const inet::Ptr<Pong> pong = createPong(pingAddress, false, pingVertex, pongVertex);
-            sendPong(pong, nextHopAddress);
+            const inet::Ptr<Pong> pong = createPong(pingAddress, false,
+                    pingVertex, pongVertex);
+            sendRoutingMessage(pong, primaryMulticastAddress, nextHopAddress);
         }
 
         /*
@@ -520,7 +440,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         helloCar->setPingPongError(false);
         helloCar->setPingVertex(pingVertex);
         helloCar->setPongVertex(pongVertex);
-        sendHelloCar(helloCar, primaryMulticastAddress);
+        sendRoutingMessage(helloCar, primaryUnicastAddress, primaryMulticastAddress);
 
         /*
          * Si no se encuentra en el vértice de destino, se busca el vecino
@@ -530,7 +450,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         inet::Ipv6Address nextHopAddress = findNeighbouringCarClosestToVertex(
                 pongVertex);
         if (!nextHopAddress.isUnspecified())
-            sendPing(ping, nextHopAddress);
+            sendRoutingMessage(ping, primaryMulticastAddress, nextHopAddress);
 
         /*
          * Si no se encuentra un vecino más cercano al vértice de destino,
@@ -540,8 +460,9 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         else {
             nextHopAddress = findNeighbouringCarClosestToVertex(pingVertex);
             if (!nextHopAddress.isUnspecified()) {
-                const inet::Ptr<Pong> pong = createPong(pingAddress, true, pingVertex, pongVertex);
-                sendPong(pong, nextHopAddress);
+                const inet::Ptr<Pong> pong = createPong(pingAddress, true,
+                        pingVertex, pongVertex);
+                sendRoutingMessage(pong, primaryMulticastAddress, nextHopAddress);
             }
         }
     }
@@ -583,51 +504,6 @@ const inet::Ptr<Pong> RoutingProtocolCar::createPong(
     pong->setPongVertex(pongVertex);
 
     return pong;
-}
-
-/*!
- * @brief Enviar mensaje PONG.
- *
- * Encapsula un mensaje PONG en un datagrama UDP y lo envía
- * a la dirección indicada.
- *
- * @param pong [in] Mensaje a enviar.
- * @param destAddress [in] Dirección IPv6 del siguiente salto.
- */
-void RoutingProtocolCar::sendPong(const inet::Ptr<Pong> &pong,
-        const inet::Ipv6Address &destAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolCar::sendPong");
-
-    inet::Packet *udpPacket = new inet::Packet("Pong");
-    udpPacket->insertAtBack(pong);
-
-    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
-    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
-    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
-    udpPacket->insertAtFront(udpHeader);
-
-    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
-            inet::L3AddressReq>();
-    addresses->setSrcAddress(
-            inet::L3Address(addressCache->getUnicastAddress(PRIMARY_ADDRESS)));
-    addresses->setDestAddress(inet::L3Address(destAddress));
-
-    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
-            inet::HopLimitReq>();
-    hopLimit->setHopLimit(255);
-
-    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
-            inet::PacketProtocolTag>();
-    packetProtocol->setProtocol(&inet::Protocol::manet);
-
-    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
-            inet::DispatchProtocolReq>();
-    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
-
-    sendUdpPacket(udpPacket);
 }
 
 /*!
@@ -700,17 +576,19 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
          * Si el destinatario es un vecino, se selecciona su dirección
          * como siguiente salto.
          */
-        if (neighbouringCars.getMap().count(destAddress))
-            sendPong(pong, destAddress);
+        const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
+            PRIMARY_ADDRESS);
+        if (neighbouringCars.getMap().count(destAddress)) {
+            sendRoutingMessage(pong, primaryUnicastAddress, destAddress);
 
         /*
          * En otro caso, se selecciona un vehículo vecino más cercano
          * al vértice de origen.
          */
-        else {
+        } else {
             inet::Ipv6Address nextHopAddress = findNeighbouringCarClosestToVertex(
                     pingVertex);
-            sendPong(pong, nextHopAddress);
+            sendRoutingMessage(pong, primaryUnicastAddress, nextHopAddress);
         }
     }
 }

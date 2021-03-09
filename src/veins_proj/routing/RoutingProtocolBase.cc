@@ -271,6 +271,50 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
 }
 
 /*
+ * Mensajes de enrutamiento.
+ */
+
+/*!
+ * @brief Se encapsula el mensaje de enrutamiento en un datagrama UDP
+ * y se envía a la dirección indicada.
+ *
+ * @param routingMessage [in] Mensaje a enviar.
+ * @param srcAddress [in] Dirección de origen del mensaje.
+ * @param destAddress [in] Dirección de destino del mensaje.
+ */
+void RoutingProtocolBase::sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
+        const inet::Ipv6Address &srcAddress,
+        const inet::Ipv6Address &destAddress) {
+
+    inet::Packet *udpPacket = new inet::Packet("ANC_VEHIC");
+    udpPacket->insertAtBack(routingMessage);
+
+    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
+    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
+    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
+    udpPacket->insertAtFront(udpHeader);
+
+    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
+            inet::L3AddressReq>();
+    addresses->setSrcAddress(inet::L3Address(srcAddress));
+    addresses->setDestAddress(inet::L3Address(destAddress));
+
+    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
+            inet::HopLimitReq>();
+    hopLimit->setHopLimit(255);
+
+    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
+            inet::PacketProtocolTag>();
+    packetProtocol->setProtocol(&inet::Protocol::manet);
+
+    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
+            inet::DispatchProtocolReq>();
+    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
+
+    sendUdpPacket(udpPacket);
+}
+
+/*
  * Mensajes ACK.
  */
 
@@ -295,51 +339,6 @@ const inet::Ptr<Ack> RoutingProtocolBase::createAck(
     ack->setAddress(address);
 
     return ack;
-}
-
-/*!
- * @brief Enviar mensaje ACK.
- *
- * Encapsula un mensaje ACK en un datagrama UDP y lo envía
- * a la dirección indicada.
- *
- * @param ack [in] Mensaje a enviar.
- * @param destAddress [in] Dirección de destino del mensaje.
- */
-void RoutingProtocolBase::sendAck(const inet::Ptr<Ack> &ack,
-        const inet::Ipv6Address &destAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::sendAck");
-    EV_INFO << "Destination address: " << destAddress.str() << std::endl;
-
-    inet::Packet *udpPacket = new inet::Packet("Ack");
-    udpPacket->insertAtBack(ack);
-
-    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
-    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
-    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
-    udpPacket->insertAtFront(udpHeader);
-
-    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
-            inet::L3AddressReq>();
-    addresses->setSrcAddress(ack->getAddress());
-    addresses->setDestAddress(inet::L3Address(destAddress));
-
-    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
-            inet::HopLimitReq>();
-    hopLimit->setHopLimit(255);
-
-    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
-            inet::PacketProtocolTag>();
-    packetProtocol->setProtocol(&inet::Protocol::manet);
-
-    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
-            inet::DispatchProtocolReq>();
-    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
-
-    sendUdpPacket(udpPacket);
 }
 
 /*!
@@ -395,8 +394,6 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
     ("RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer");
 
     omnetpp::simtime_t nextExpiryTime = neighbouringCars.getNextExpiryTime();
-
-    omnetpp::simtime_t now = omnetpp::simTime();
 
     EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
 

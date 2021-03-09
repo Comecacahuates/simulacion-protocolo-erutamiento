@@ -116,17 +116,6 @@ protected:
      */
     virtual const inet::Ptr<HelloHost> createHelloHost(
             const inet::Ipv6Address &hostAddress) const;
-    /*!
-     * @brief Enviar mensaje HOLA_HOST.
-     *
-     * Encapsula un mensaje HOLA_HOST en un datagrama UDP y lo envía
-     * a la dirección indicada.
-     *
-     * @param helloCar [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección de destino del mensaje.
-     */
-    virtual void sendHelloHost(const inet::Ptr<HelloHost> &helloHost,
-            const inet::Ipv6Address &destAddress);
 
     /*
      * Rutas.

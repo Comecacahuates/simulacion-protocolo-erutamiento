@@ -207,6 +207,21 @@ protected:
     virtual void processUdpPacket(inet::Packet *packet);
 
     /*
+     * Mensajes de enrutamiento.
+     */
+    /*!
+     * @brief Se encapsula el mensaje de enrutamiento en un datagrama UDP
+     * y se envía a la dirección indicada.
+     *
+     * @param routingMessage [in] Mensaje a enviar.
+     * @param srcAddress [in] Dirección de origen del mensaje.
+     * @param destAddress [in] Dirección de destino del mensaje.
+     */
+    virtual void sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
+            const inet::Ipv6Address &srcAddress,
+            const inet::Ipv6Address &destAddress);
+
+    /*
      * Mensajes ACK.
      */
     /*!
@@ -218,17 +233,6 @@ protected:
      */
     virtual const inet::Ptr<Ack> createAck(
             const inet::Ipv6Address &address) const;
-    /*!
-     * @brief Enviar mensaje ACK.
-     *
-     * Encapsula un mensaje ACK en un datagrama UDP y lo envía
-     * a la dirección indicada.
-     *
-     * @param ack [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección de destino del mensaje.
-     */
-    virtual void sendAck(const inet::Ptr<Ack> &ack,
-            const inet::Ipv6Address &destAddress);
     /*!
      * @brief Procesar mensaje ACK.
      *

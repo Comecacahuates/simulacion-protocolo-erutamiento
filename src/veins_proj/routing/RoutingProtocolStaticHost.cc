@@ -176,8 +176,8 @@ void RoutingProtocolStaticHost::processHelloHostTimer() {
     const inet::Ipv6Address &primaryMulticastAddress = addressCache->getMulticastAddress(
             PRIMARY_ADDRESS);
 
-    sendHelloHost(createHelloHost(primaryUnicastAddress),
-            primaryMulticastAddress);
+    const inet::Ptr<HelloHost> helloHost = createHelloHost(primaryUnicastAddress);
+    sendRoutingMessage(helloHost, primaryUnicastAddress, primaryMulticastAddress);
     scheduleHelloHostTimer();
 }
 
@@ -207,50 +207,6 @@ const inet::Ptr<HelloHost> RoutingProtocolStaticHost::createHelloHost(
     helloHost->setGeohash(geohashLocation.getBits());
 
     return helloHost;
-}
-
-/*!
- * @brief Enviar mensaje HOLA_HOST.
- *
- * Encapsula un mensaje HOLA_HOST en un datagrama UDP y lo envía
- * a la dirección indicada.
- *
- * @param helloCar [in] Mensaje a enviar.
- * @param destAddress [in] Dirección de destino del mensaje.
- */
-void RoutingProtocolStaticHost::sendHelloHost(
-        const inet::Ptr<HelloHost> &helloHost,
-        const inet::Ipv6Address &destAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    EV_INFO << "RoutingProtocolStaticHost::sendHelloHost" << std::endl;
-
-    inet::Packet *udpPacket = new inet::Packet("ANC_HOST");
-    udpPacket->insertAtBack(helloHost);
-
-    inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
-    udpHeader->setSourcePort(ROUTING_PROTOCOL_UDP_PORT);
-    udpHeader->setDestinationPort(ROUTING_PROTOCOL_UDP_PORT);
-    udpPacket->insertAtFront(udpHeader);
-
-    inet::Ptr<inet::L3AddressReq> addresses = udpPacket->addTagIfAbsent<
-            inet::L3AddressReq>();
-    addresses->setSrcAddress(helloHost->getAddress());
-    addresses->setDestAddress(inet::L3Address(destAddress));
-
-    inet::Ptr<inet::HopLimitReq> hopLimit = udpPacket->addTagIfAbsent<
-            inet::HopLimitReq>();
-    hopLimit->setHopLimit(255);
-
-    inet::Ptr<inet::PacketProtocolTag> packetProtocol = udpPacket->addTagIfAbsent<
-            inet::PacketProtocolTag>();
-    packetProtocol->setProtocol(&inet::Protocol::manet);
-
-    inet::Ptr<inet::DispatchProtocolReq> dispatchProtocol = udpPacket->addTagIfAbsent<
-            inet::DispatchProtocolReq>();
-    dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
-
-    sendUdpPacket(udpPacket);
 }
 
 /*

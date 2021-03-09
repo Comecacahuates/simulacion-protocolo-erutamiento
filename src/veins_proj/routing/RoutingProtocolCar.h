@@ -141,17 +141,6 @@ protected:
     virtual const inet::Ptr<HelloCar> createHelloCar(
             const inet::Ipv6Address &srcAddress) const;
     /*!
-     * @brief Enviar mensaje HOLA_VEHIC.
-     *
-     * Encapsula un mensaje HOLA_VEHIC en un datagrama UDP y lo envía
-     * a la dirección indicada.
-     *
-     * @param helloCar [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección de destino del mensaje.
-     */
-    virtual void sendHelloCar(const inet::Ptr<HelloCar> &helloCar,
-            const inet::Ipv6Address &destAddress);
-    /*!
      * @brief Procesar mensaje HOLA_VEHIC.
      *
      * @param helloCar [in] Mensaje a procesar.
@@ -184,17 +173,6 @@ protected:
     virtual const inet::Ptr<Ping> createPing(
             const inet::Ipv6Address &carAddress, Vertex pingVertex,
             Vertex pongVertex) const;
-    /*!
-     * @brief Enviar mensaje PING.
-     *
-     * Encapsula un mensaje PING en un datagrama UDP y lo envía
-     * a la dirección indicada.
-     *
-     * @param ping [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección IPv6 del siguiente salto..
-     */
-    virtual void sendPing(const inet::Ptr<Ping> &ping,
-            const inet::Ipv6Address &destAddress);
     /*!
      * @brief Procesar mensaje PING.
      *
@@ -237,17 +215,6 @@ protected:
     virtual const inet::Ptr<Pong> createPong(
             const inet::Ipv6Address &pingAddress, bool error, Vertex pingVertex,
             Vertex pongVertex) const;
-    /*!
-     * @brief Enviar mensaje PONG.
-     *
-     * Encapsula un mensaje PONG en un datagrama UDP y lo envía
-     * a la dirección indicada.
-     *
-     * @param pong [in] Mensaje a enviar.
-     * @param destAddress [in] Dirección IPv6 del siguiente salto.
-     */
-    virtual void sendPong(const inet::Ptr<Pong> &pong,
-            const inet::Ipv6Address &destAddress);
     /*!
      * @brief Procesar mensaje PONG.
      *
