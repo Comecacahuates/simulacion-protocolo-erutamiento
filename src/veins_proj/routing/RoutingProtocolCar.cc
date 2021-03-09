@@ -849,6 +849,7 @@ int RoutingProtocolCar::getNeighbouringCarsOnEdgeCount() const {
 //! vehículos vecinos.
 void RoutingProtocolCar::processPurgeNeighbouringCarsTimer() {
     // TODO Implementar para que se eliminen las rutas de los vehículos vecinos que se eliminaron.
+    RoutingProtocolBase::processPurgeNeighbouringCarsTimer();
 }
 
 /*

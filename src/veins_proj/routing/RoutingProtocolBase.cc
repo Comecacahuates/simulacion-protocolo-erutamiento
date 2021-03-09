@@ -386,7 +386,7 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
 
     } else {
         if (!purgeNeighbouringCarsTimer->isScheduled())
-            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer); // FIXME
+            scheduleAt(nextExpiryTime, purgeNeighbouringCarsTimer); // TODO Arreglar.
 
         else if (purgeNeighbouringCarsTimer->getArrivalTime()
                 != nextExpiryTime) {

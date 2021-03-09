@@ -35,8 +35,13 @@ struct ExpiringValue {
     V value;
 };
 
-//! Clase que implementa un diccionario en el que los valores tienen una hora
-//! de expiración.
+/*!
+ * Clase que implementa un diccionario en el que los valores tienen una hora
+ * de expiración.
+ *
+ * @tparam K Tipo de la clave.
+ * @tparam V Tipo del valor.
+ */
 template<typename K, typename V>
 class ExpiringValuesMap {
 
@@ -68,20 +73,29 @@ public:
         return map;
     }
 
-    //! Eliminar valores cuya hora de expiración es anterior a la hora indicada.
-    void removeOldValues(omnetpp::simtime_t time) {
+    /*!
+     * @brief Eliminar valores cuya hora de expiración es anterior
+     * a la hora indicada.
+     *
+     * @param expiryTime [in] Hora de expiración.
+     */
+    void removeOldValues(omnetpp::simtime_t expiryTime) {
         Iterator it = map.begin();
         Iterator endIt = map.end();
 
         while (it != endIt)
-            if (it->second.expiryTime <= time)
+            if (it->second.expiryTime <= expiryTime)
                 map.erase(it++);
 
             else
                 it++;
     }
 
-    //! Obtener la hora de expiración más próxima.
+    /*!
+     * @brief Obtener la hora de expiración más próxima.
+     *
+     * @return Siguiente hora de expiración.
+     */
     omnetpp::simtime_t getNextExpiryTime() const {
         omnetpp::simtime_t nextExpiryTime = omnetpp::SimTime::getMaxTime();
 
@@ -131,19 +145,28 @@ public:
         return multimap;
     }
 
-    //! Eliminar valores cuya hora de expiración es anterior a la hora indicada.
-    void removeOldValues(omnetpp::simtime_t time) {
+    /*!
+     * @brief Eliminar valores cuya hora de expiración es anterior
+     * a la hora indicada.
+     *
+     * @param expiryTime [in] Hora de expiración.
+     */
+    void removeOldValues(omnetpp::simtime_t expiryTime) {
         Iterator it = multimap.begin();
 
         while (it != multimap.end())
-            if (it->second.expiryTime <= time)
+            if (it->second.expiryTime <= expiryTime)
                 multimap.erase(it++);
 
             else
                 it++;
     }
 
-    //! Obtener la hora de expiración más próxima.
+    /*!
+     * @brief Obtener la hora de expiración más próxima.
+     *
+     * @return Siguiente hora de expiración.
+     */
     omnetpp::simtime_t getNextExpiryTime() const {
         omnetpp::simtime_t nextExpiryTime = omnetpp::SimTime::getMaxTime();
 
