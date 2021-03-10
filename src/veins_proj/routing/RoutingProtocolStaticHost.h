@@ -118,46 +118,48 @@ protected:
             const inet::Ipv6Address &hostAddress) const;
 
     /*
-     * Rutas.
-     */
-    /*!
-     * @brief Agregar ruta hacia un destino a la tabla de enrutamiento.
-     *
-     * Se busca el vehículo vecino más cercano y se selecciona como
-     * siguiente salto para la ruta. Si se encuentra el siguiente salto,
-     * se crea la ruta y se agrega a la tabla de enrutamiento
-     * si esta no existe todavía, o se actualiza si ya existía.
-     *
-     * @param destAddress [in] Dirección de destino.
-     *
-     * @return `true` si se creo la ruta o si ya existía.
-     */
-    virtual bool addRouteToDest(const inet::Ipv6Address &destAddress);
-
-    /*
      * Enrutamiento.
      */
     /*!
      * @brief Enrutar datagrama.
      *
      * Revisa si existe en la tabla de enrutamiento una ruta hacia la
-     * dirección de destino. Si no existe, se intenta descubrir y crear una
-     * ruta. Si no se encuentra la ruta, se descarta el datagrama.
+     * dirección de destino.
+     * Si no existe, se busca el vehículo vecino más cercano
+     * y usa como siguiente salto para la ruta hacia el destino.
+     * Si no se encuentra ningún vehículo vecino,
+     * se descarta el datagrama.
      *
      * @param datagram [in] Datagrama a enrutar.
-     * @param destAddress [in] Dirección IPv6 de destino.
      *
      * @return Resultado del enrutamiento.
      */
     virtual inet::INetfilter::IHook::Result routeDatagram(
-            inet::Packet *datagram, const inet::Ipv6Address &destAddress)
-                    override;
+            inet::Packet *datagram) override;
 
     /*
      * Netfilter.
      */
+    /*!
+     * @brief Procesar datagrama recibido de la capa inferior
+     * antes de enrutarlo.
+     *
+     * @param datagram [in] Datagrama a procesar.
+     *
+     * @return Resultado del procesamiento.
+     */
     virtual inet::INetfilter::IHook::Result datagramPreRoutingHook(
             inet::Packet *datagram) override;
+    /*!
+     * @brief Procesar datagrama recibido de la capa superior
+     * antes de enrutarlo.
+     *
+     * Se agrega la opción TLV de ubicación del destino y se enruta el paquete.
+     *
+     * @param datagram [in] Datagrama a procesar.
+     *
+     * @return Resultado del procesamiento.
+     */
     virtual inet::INetfilter::IHook::Result datagramLocalOutHook(
             inet::Packet *datagram) override;
 

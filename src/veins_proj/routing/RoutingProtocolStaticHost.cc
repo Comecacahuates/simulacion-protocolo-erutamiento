@@ -119,29 +119,27 @@ void RoutingProtocolStaticHost::processHelloCar(
     LocationOnRoadNetwork locationOnRoadNetwork = { edge, 0, distanceToVertexA,
             distanceToVertexB };
 
-    EV_INFO << "Address: " << srcAddress.str() << std::endl;
-    EV_INFO << "Geohash location: " << geohashLocation.getGeohashString()
-            << std::endl;
-    EV_INFO << "Speed: " << speed << std::endl;
-    EV_INFO << "Direction: " << direction << std::endl;
-    EV_INFO << "Vertex A: " << vertexA << std::endl;
-    EV_INFO << "Vertex B: " << vertexB << std::endl;
-    EV_INFO << "Edge: " << edge << std::endl;
-    EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
-    EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
+    EV_DEBUG << "Address: " << srcAddress.str() << std::endl;
+    EV_DEBUG << "Geohash location: " << geohashLocation.getGeohashString()
+             << std::endl;
+    EV_DEBUG << "Speed: " << speed << std::endl;
+    EV_DEBUG << "Direction: " << direction << std::endl;
+    EV_DEBUG << "Vertex A: " << vertexA << std::endl;
+    EV_DEBUG << "Vertex B: " << vertexB << std::endl;
+    EV_DEBUG << "Edge: " << edge << std::endl;
+    EV_DEBUG << "Distance to vertex A: " << distanceToVertexA << std::endl;
+    EV_DEBUG << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
-    neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime();
+    neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime()
+            + neighbouringCarValidityTime;
     neighbouringCars.getMap()[srcAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
 
     int distance = (int) geohashLocation.getDistance(
             mobility->getGeohashLocation());
 
-    addRoute(srcAddress, 64, srcAddress, distance,
-            omnetpp::simTime() + neighbouringCarValidityTime);
-
-    EV_INFO << "Number of car neighbours: " << neighbouringCars.getMap().size()
-            << std::endl;
+    EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size()
+             << std::endl;
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();
@@ -172,12 +170,14 @@ void RoutingProtocolStaticHost::processHelloHostTimer() {
     EV_INFO << "RoutingProtocolStaticHost::processHelloHostTimer" << std::endl;
 
     const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
+    PRIMARY_ADDRESS);
     const inet::Ipv6Address &primaryMulticastAddress = addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+    PRIMARY_ADDRESS);
 
-    const inet::Ptr<HelloHost> helloHost = createHelloHost(primaryUnicastAddress);
-    sendRoutingMessage(helloHost, primaryUnicastAddress, primaryMulticastAddress);
+    const inet::Ptr<HelloHost> helloHost = createHelloHost(
+            primaryUnicastAddress);
+    sendRoutingMessage(helloHost, "HOLA_HOST", primaryUnicastAddress,
+            primaryMulticastAddress);
     scheduleHelloHostTimer();
 }
 
@@ -210,46 +210,6 @@ const inet::Ptr<HelloHost> RoutingProtocolStaticHost::createHelloHost(
 }
 
 /*
- * Rutas.
- */
-
-/*!
- * @brief Agregar ruta hacia un destino a la tabla de enrutamiento.
- *
- * Se busca el vehículo vecino más cercano y se selecciona como
- * siguiente salto para la ruta. Si se encuentra el siguiente salto,
- * se crea la ruta y se agrega a la tabla de enrutamiento
- * si esta no existe todavía, o se actualiza si ya existía.
- *
- * @param destAddress [in] Dirección de destino.
- *
- * @return `true` si se creo la ruta o si ya existía.
- */
-bool RoutingProtocolStaticHost::addRouteToDest(
-        const inet::Ipv6Address &destAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    EV_INFO << "RoutingProtocolStaticHost::addRouteIfNotExists" << std::endl;
-
-    if (routingTable->doLongestPrefixMatch(destAddress) == nullptr) {
-        const GeohashLocation &geohashLocation = mobility->getGeohashLocation();
-        inet::Ipv6Address nextHopAddress = getClosestNeighbouringCar(
-                geohashLocation);
-
-        if (nextHopAddress.isUnspecified())
-            return false;
-
-        const GeohashLocation &neighbouringCarGeohashLocation = neighbouringCars.getMap()[nextHopAddress].value.geohashLocation;
-        int distance = (int) geohashLocation.getDistance(
-                neighbouringCarGeohashLocation);
-        addRoute(destAddress, 64, nextHopAddress, distance,
-                neighbouringCars.getMap()[nextHopAddress].expiryTime);
-    }
-
-    return true;
-}
-
-/*
  * Enrutamiento.
  */
 
@@ -257,36 +217,62 @@ bool RoutingProtocolStaticHost::addRouteToDest(
  * @brief Enrutar datagrama.
  *
  * Revisa si existe en la tabla de enrutamiento una ruta hacia la
- * dirección de destino. Si no existe, se intenta descubrir y crear una
- * ruta. Si no se encuentra la ruta, se descarta el datagrama.
+ * dirección de destino.
+ * Si no existe, se busca el vehículo vecino más cercano
+ * y usa como siguiente salto para la ruta hacia el destino.
+ * Si no se encuentra ningún vehículo vecino,
+ * se descarta el datagrama.
  *
  * @param datagram [in] Datagrama a enrutar.
- * @param destAddress [in] Dirección IPv6 de destino.
  *
  * @return Resultado del enrutamiento.
  */
 inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
-        inet::Packet *datagram, const inet::Ipv6Address &destAddress) {
+        inet::Packet *datagram) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     EV_INFO << "RoutingProtocolStaticHost::routeDatagram" << std::endl;
 
-    // Se crea una ruta si no existe
-    bool routeExists = addRouteToDest(destAddress);
+    /*
+     * Se eliminan las rutas expiradas de la tabla de enrutamiento
+     * y se verifica si en la tabal de enrutamiento existe una ruta hacia esta,
+     * en cuyo caso, se acepta el datagrama.
+     */
+    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
+            datagram);
+    inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
+    removeOldRoutes(omnetpp::simTime());
+    if (routingTable->doLongestPrefixMatch(destAddress))
+        return inet::INetfilter::IHook::ACCEPT;
 
-    // Si no existe la ruta y no se pudo crear
-    if (!routeExists) {
+    /*
+     * Si no existe una ruta, se busca el vehículo vecino más cercano
+     * y se usa como siguiente salto para crear la ruta hacia el destino.
+     */
+    /*
+     * Si no existe una ruta, se busca el vehículo vecino más cercano
+     * y se usa como siguiente salto para crear una ruta..
+     * Si este no se encuentra, se descarta el datagrama.
+     */
+    inet::Ipv6Address nextHopAddress = findClosestNeighbouringCar(
+            mobility->getGeohashLocation());
+    if (nextHopAddress.isUnspecified()) {
         if (hasGUI())
             inet::getContainingNode(host)->bubble(
                     "No next hop found, dropping packet");
         return inet::INetfilter::IHook::DROP;
     }
 
-    GeohashLocation destGeohashLocation = hostsLocationTable->getHostLocation(
-            destAddress).geohashLocation;
-    TlvDestGeohashLocationOption *destGeohashLocationOption = createTlvDestGeohashLocationOption(
-            destGeohashLocation.getBits());
-    setTlvOption(datagram, destGeohashLocationOption);
+    /*
+     * Si sí se encuentra el siguiente salto, se crea una ruta hacia el destino.
+     */
+    inet::Ipv6Route *route = new inet::Ipv6Route(destAddress, 128,
+            inet::IRoute::SourceType::MANET);
+    route->setNextHop(nextHopAddress);
+    route->setInterface(networkInterface);
+    route->setMetric(1);
+    route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+    routingTable->addRoute(route);
 
     return inet::INetfilter::IHook::ACCEPT;
 }
@@ -295,48 +281,102 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
  * Netfilter.
  */
 
+/*!
+ * @brief Procesar datagrama recibido de la capa inferior
+ * antes de enrutarlo.
+ *
+ * @param datagram [in] Datagrama a procesar.
+ *
+ * @return Resultado del procesamiento.
+ */
 inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHook(
         inet::Packet *datagram) {
-    EV_INFO << "******************************************************************************************************************************************************************"
+    EV_DEBUG
+            << "******************************************************************************************************************************************************************"
             << std::endl;
-    EV_INFO << "RoutingProtocolStaticHost::datagramPreRoutingHook" << std::endl;
-    EV_INFO << "Datagram: " << datagram->str() << std::endl;
+    Enter_Method
+    ("RoutingProtocolStaticHost::datagramPreRoutingHook");
+    EV_DEBUG << "Datagram: " << datagram->str() << std::endl;
 
+    /*
+     * Se obtiene la dirección de destino del datagrama para saber hacia
+     * dónde enrutarlo.
+     */
     const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
             datagram);
     inet::Ipv6Address srcAddress = networkHeader->getSourceAddress().toIpv6();
     inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
 
-    EV_INFO << "Source address: " << srcAddress.str() << std::endl;
-    EV_INFO << "Destination address: " << destAddress.str() << std::endl;
+    EV_DEBUG << "Source address: " << srcAddress.str() << std::endl;
+    EV_DEBUG << "Destination address: " << destAddress.str() << std::endl;
 
+    /*
+     * Si la dirección de destino es una dirección local o si es _multicast_,
+     * se acepta el datagrama..
+     */
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
-            || !destAddress.isSiteLocal() || destAddress.isMulticast())
+            || destAddress.isMulticast())
         return inet::INetfilter::IHook::ACCEPT;
 
-    return inet::INetfilter::IHook::ACCEPT;
+    /*
+     * Si el datagrama no está dirigido al _host_, se descarta.
+     */
+    return inet::INetfilter::IHook::DROP;
 }
 
+/*!
+ * @brief Procesar datagrama recibido de la capa superior
+ * antes de enrutarlo.
+ *
+ * Se agrega la opción TLV de ubicación del destino y se enruta el paquete.
+ *
+ * @param datagram [in] Datagrama a procesar.
+ *
+ * @return Resultado del procesamiento.
+ */
 inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
         inet::Packet *datagram) {
-    EV_INFO << "******************************************************************************************************************************************************************"
+    EV_DEBUG
+            << "******************************************************************************************************************************************************************"
             << std::endl;
-    EV_INFO << "RoutingProtocolStaticHost::datagramLocalOutHook" << std::endl;
-    EV_INFO << "Datagram: " << datagram->str() << std::endl;
+    Enter_Method
+    ("RoutingProtocolStaticHost::datagramLocalOutHook");
+    EV_DEBUG << "Datagram: " << datagram->str() << std::endl;
 
+    /*
+     * Se obtiene la dirección de destino del datagrama para saber si
+     * el paquete se procesa o se desecha.
+     */
     const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
             datagram);
     inet::Ipv6Address srcAddress = networkHeader->getSourceAddress().toIpv6();
     inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
 
-    EV_INFO << "Source address: " << srcAddress.str() << std::endl;
-    EV_INFO << "Destination address: " << destAddress.str() << std::endl;
+    EV_DEBUG << "Source address: " << srcAddress.str() << std::endl;
+    EV_DEBUG << "Destination address: " << destAddress.str() << std::endl;
 
+    /*
+     * Si la dirección de destino es una dirección local o si es _multicast_,
+     * se acepta el datagrama..
+     */
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
-            || !destAddress.isSiteLocal() || destAddress.isMulticast())
+            || destAddress.isMulticast())
         return inet::INetfilter::IHook::ACCEPT;
 
-    return routeDatagram(datagram, destAddress);
+    /*
+     * Si el datagrama se tiene que enrutar,
+     * se agrega la opción TLV de ubicación del destino.
+     */
+    GeohashLocation destGeohashLocation = hostsLocationTable->getHostLocation(
+            destAddress).geohashLocation;
+    TlvDestGeohashLocationOption *destGeohashLocationOption = createTlvDestGeohashLocationOption(
+            destGeohashLocation.getBits());
+    setTlvOption(datagram, destGeohashLocationOption);
+
+    /*
+     * Se busca una ruta para el datagrama.
+     */
+    return routeDatagram(datagram);
 }
 
 /*

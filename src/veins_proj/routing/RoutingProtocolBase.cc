@@ -279,14 +279,16 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
  * y se envía a la dirección indicada.
  *
  * @param routingMessage [in] Mensaje a enviar.
+ * @param name [in] Nombre del mensaje.
  * @param srcAddress [in] Dirección de origen del mensaje.
  * @param destAddress [in] Dirección de destino del mensaje.
  */
-void RoutingProtocolBase::sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
+void RoutingProtocolBase::sendRoutingMessage(
+        const inet::Ptr<RoutingPacket> routingMessage, const char *name,
         const inet::Ipv6Address &srcAddress,
         const inet::Ipv6Address &destAddress) {
 
-    inet::Packet *udpPacket = new inet::Packet("ANC_VEHIC");
+    inet::Packet *udpPacket = new inet::Packet(name);
     udpPacket->insertAtBack(routingMessage);
 
     inet::Ptr<inet::UdpHeader> udpHeader = inet::makeShared<inet::UdpHeader>();
@@ -418,7 +420,8 @@ void RoutingProtocolBase::schedulePurgeNeighbouringCarsTimer() {
  * vehículos vecinos.
  */
 void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
+    EV_DEBUG
+            << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
@@ -434,36 +437,39 @@ void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
  * Encuentra el vehículo vecino cuya ubicación es la más cercana
  * a la ubicación indicada.
  *
- * @param geohashLocation [in] Ubicación Geohash de la que se quiere
- * conocer el vehículo vecino más cercano.
+ * @param geohashLocation [in] Ubicación Geohash de referencia.
  *
  * @return Dirección IPv6 del vehículo vecino más cercano.
  */
-inet::Ipv6Address RoutingProtocolBase::getClosestNeighbouringCar(
+inet::Ipv6Address RoutingProtocolBase::findClosestNeighbouringCar(
         const GeohashLocation &geohashLocation) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
+    EV_DEBUG
+            << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolBase::getClosestNeighbouringCar");
+    ("RoutingProtocolBase::getfindClosestNeighbouringCar");
 
+    /*
+     * Se recorre el directorio de vehículos vecinos
+     * y se busca el más cercano.
+     */
     double minDistance = std::numeric_limits<double>::infinity();
-    inet::Ipv6Address closestNeighbourAddress = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
-
-    NeighbouringCarsConstIterator neighbouringCarsIt = neighbouringCars.getMap().begin();
-    NeighbouringCarsConstIterator neighbouringCarsEndIt = neighbouringCars.getMap().end();
-    while (neighbouringCarsIt != neighbouringCarsEndIt) {
+    inet::Ipv6Address address = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
+    NeighbouringCarsConstIterator it = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator endIt = neighbouringCars.getMap().end();
+    while (it != endIt) {
         double distance = geohashLocation.getDistance(
-                neighbouringCarsIt->second.value.geohashLocation);
+                it->second.value.geohashLocation);
 
-        if (distance < minDistance) {
+        if (minDistance > distance) {
             minDistance = distance;
-            closestNeighbourAddress = neighbouringCarsIt->first;
+            address = it->first;
         }
 
-        neighbouringCarsIt++;
+        it++;
     }
 
-    return closestNeighbourAddress;
+    return address;
 }
 
 /*
@@ -481,58 +487,6 @@ void RoutingProtocolBase::showRoutes() const {
 
     for (int i = 0; i < routingTable->getNumRoutes(); i++)
         EV_INFO << "Route: " << routingTable->getRoute(i) << std::endl;
-}
-
-/*!
- * @brief Agregar una ruta a la tabla de enrutamiento.
- *
- * Antes de agregar la ruta, se verifica si esta ya existe en la tabla
- * de enrutamiento, en cuyo caso no se agrega.
- *
- * @param destPrefix [in] Prefijo de la dirección IPv6 de destino.
- * @param prefixLength [in] Longitud del prefijo.
- * @param nextHop [in] Dirección IPv6 del siguiente salto.
- * @param metric [in] Métrica de la ruta.
- * @param expiryTime [in] Hora de expiración de la ruta.
- */
-void RoutingProtocolBase::addRoute(const inet::Ipv6Address &destPrefix,
-        const short prefixLength, const inet::Ipv6Address &nextHop, int metric,
-        omnetpp::simtime_t expiryTime) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::addRoute");
-
-    // Se revisa si ya existe una ruta
-    bool routeExists = false;
-    inet::Ipv6Route *route;
-    for (int i = 0; i < routingTable->getNumRoutes(); i++) {
-        route = routingTable->getRoute(i);
-        if (route->getDestPrefix().matches(destPrefix, prefixLength)
-                && route->getNextHop() == nextHop) {
-            routeExists = true;
-            break;
-        }
-    }
-
-    // Si existe la ruta, se actualiza
-    if (routeExists) {
-        route->setMetric(metric);
-        route->setExpiryTime(expiryTime);
-
-        // Si no existe la ruta, se grega
-    } else {
-        route = new inet::Ipv6Route(destPrefix, prefixLength,
-                inet::IRoute::MANET);
-        route->setNextHop(nextHop);
-        route->setMetric(metric);
-        route->setSource(this);
-        route->setInterface(networkInterface);
-        route->setExpiryTime(expiryTime);
-        routingTable->addRoute(route);
-
-        EV_INFO << "Route: " << route->str() << std::endl;
-    }
 }
 
 /*!

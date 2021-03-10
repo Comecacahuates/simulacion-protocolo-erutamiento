@@ -92,7 +92,7 @@ class HelloEdge extends RoutingPacket {
 }
 
 class TlvDestGeohashLocationOption extends inet::TlvOptionBase {
-	uint64_t geohash; // Ubicaci��n Geohash (8 bytes)
+	uint64_t geohash; // Ubicación Geohash (8 bytes)
 }
 
 class TlvDestLocationOnRoadNetworkOption extends inet::TlvOptionBase {

@@ -156,14 +156,14 @@ void RoutingProtocolCar::processHelloCarTimer() {
     if (ipv6Data->hasAddress(primaryUnicastAddress)) {
         const inet::Ptr<HelloCar> helloCar = createHelloCar(
                 primaryUnicastAddress);
-        sendRoutingMessage(helloCar, primaryUnicastAddress,
+        sendRoutingMessage(helloCar, "ANC_VEHIC", primaryUnicastAddress,
                 primaryMulticastAddress);
     }
 
     if (ipv6Data->hasAddress(secondaryUnicastAddress)) {
         const inet::Ptr<HelloCar> helloCar = createHelloCar(
                 secondaryUnicastAddress);
-        sendRoutingMessage(helloCar, secondaryUnicastAddress,
+        sendRoutingMessage(helloCar, "ANC_VEHIC", secondaryUnicastAddress,
                 secondaryMulticastAddress);
     }
 
@@ -235,6 +235,9 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     Enter_Method
     ("RoutingProtocolCar::processHelloHost");
 
+    /*
+     * Se obtienen los datos del mensaje.
+     */
     const inet::Ipv6Address &srcAddress = helloCar->getSrcAddress();
     GeohashLocation geohashLocation(helloCar->getGeohash(), 12);
     double speed = helloCar->getSpeed();
@@ -242,7 +245,6 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     Vertex vertexA = (Vertex) helloCar->getVertexA();
     Vertex vertexB = (Vertex) helloCar->getVertexB();
     double distanceToVertexA = helloCar->getDistanceToVertexA();
-
     const Graph &graph = roadNetworkDatabase->getRoadNetwork(geohashLocation)->getGraph();
     Edge edge = boost::edge(vertexA, vertexB, graph).first;
     double distanceToVertexB = graph[edge].length - distanceToVertexA;
@@ -260,20 +262,36 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     EV_INFO << "Distance to vertex A: " << distanceToVertexA << std::endl;
     EV_INFO << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
+    /*
+     * Se guarda el registro en el directorio de vehículos vecinos,
+     * y se revisa si ya existe una ruta para este, en cuyo caso,
+     * se actualiza la hora de expiración.
+     * Si no existe, se crea una.
+     */
     neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime()
             + neighbouringCarValidityTime;
     neighbouringCars.getMap()[srcAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
-    neighbouringCarsByEdge.insert(NeighbouringCarByEdge(edge, srcAddress));
-
-    addRoute(srcAddress, 128, srcAddress, 1,
-            omnetpp::simTime() + neighbouringCarValidityTime);
+    neighbouringCarsByEdge.insert(NeighbouringCarByEdge(edge, srcAddress));    // TODO Revisar si es necesario.
+    inet::Ipv6Route *route = const_cast<inet::Ipv6Route*>(routingTable->doLongestPrefixMatch(
+            srcAddress));
+    if (route != nullptr)
+        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+    else {
+        route = new inet::Ipv6Route(srcAddress, 128,
+                inet::IRoute::SourceType::MANET);
+        route->setNextHop(srcAddress);
+        route->setInterface(networkInterface);
+        route->setMetric(1);
+        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+        routingTable->addRoute(route);
+    }
 
     EV_INFO << "Number of car neighbours: " << neighbouringCars.getMap().size()
             << std::endl;
 
     showRoutes();
-    schedulePurgeNeighbouringCarsTimer();
+    schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
 }
 
 /*
@@ -292,19 +310,39 @@ void RoutingProtocolCar::processHelloHost(
     Enter_Method
     ("RoutingProtocolCar::processHelloHost");
 
-    inet::Ipv6Address hostAddress = helloHost->getAddress();
+    /*
+     * Se obtienen los datos del mensaje.
+     */
+    inet::Ipv6Address srcAddress = helloHost->getAddress();
     GeohashLocation geohashLocation(helloHost->getGeohash(), 12);
 
-    EV_INFO << "Address: " << hostAddress.str() << std::endl;
+    EV_INFO << "Address: " << srcAddress.str() << std::endl;
     EV_INFO << "Geohash location: " << helloHost->getGeohash() << std::endl;
     EV_INFO << "                : " << geohashLocation.getGeohashString()
             << std::endl;
 
-    neighbouringHosts.getMap()[hostAddress] = { omnetpp::simTime(),
-            geohashLocation };
-
-    addRoute(hostAddress, 128, hostAddress, 1,
-            omnetpp::simTime() + neighbouringHostValidityTime);
+    /*
+     * Se guarda el registro en el directorio de _hosts_ vecinos,
+     * y se revisa si ya existe una ruta para este, en cuyo caso,
+     * se actualiza la hora de expiración.
+     * Si no existe, se crea una.
+     */
+    neighbouringHosts.getMap()[srcAddress] = { omnetpp::simTime()
+            + neighbouringHostValidityTime, geohashLocation };
+    removeOldRoutes(omnetpp::simTime());
+    inet::Ipv6Route *route = const_cast<inet::Ipv6Route*>(routingTable->doLongestPrefixMatch(
+            srcAddress));
+    if (route != nullptr)
+        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+    else {
+        route = new inet::Ipv6Route(srcAddress, 128,
+                inet::IRoute::SourceType::MANET);
+        route->setNextHop(srcAddress);
+        route->setInterface(networkInterface);
+        route->setMetric(1);
+        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+        routingTable->addRoute(route);
+    }
 
     EV_INFO << "Number of host neighbours: "
             << neighbouringHosts.getMap().size() << std::endl;
@@ -427,7 +465,8 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         if (!nextHopAddress.isUnspecified()) {
             const inet::Ptr<Pong> pong = createPong(pingAddress, false,
                     pingVertex, pongVertex);
-            sendRoutingMessage(pong, primaryMulticastAddress, nextHopAddress);
+            sendRoutingMessage(pong, "PONG", primaryMulticastAddress,
+                    nextHopAddress);
         }
 
         /*
@@ -440,7 +479,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         helloCar->setPingPongError(false);
         helloCar->setPingVertex(pingVertex);
         helloCar->setPongVertex(pongVertex);
-        sendRoutingMessage(helloCar, primaryUnicastAddress,
+        sendRoutingMessage(helloCar, "HOLA_VEHIC", primaryUnicastAddress,
                 primaryMulticastAddress);
 
         /*
@@ -451,7 +490,8 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         inet::Ipv6Address nextHopAddress = findNeighbouringCarClosestToVertex(
                 pongVertex);
         if (!nextHopAddress.isUnspecified())
-            sendRoutingMessage(ping, primaryMulticastAddress, nextHopAddress);
+            sendRoutingMessage(ping, "PING", primaryMulticastAddress,
+                    nextHopAddress);
 
         /*
          * Si no se encuentra un vecino más cercano al vértice de destino,
@@ -463,7 +503,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
             if (!nextHopAddress.isUnspecified()) {
                 const inet::Ptr<Pong> pong = createPong(pingAddress, true,
                         pingVertex, pongVertex);
-                sendRoutingMessage(pong, primaryMulticastAddress,
+                sendRoutingMessage(pong, "PONG", primaryMulticastAddress,
                         nextHopAddress);
             }
         }
@@ -569,7 +609,7 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
             helloCar->setPingPongError(error);
             helloCar->setPingVertex(pingVertex);
             helloCar->setPongVertex(pongVertex);
-            sendRoutingMessage(helloCar, primaryUnicastAddress,
+            sendRoutingMessage(helloCar, "ANC_VEHIC", primaryUnicastAddress,
                     primaryMulticastAddress);
 
             schedulePurgeEdgesStatusTimer();
@@ -581,7 +621,8 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
          */
     } else {
         if (neighbouringCars.getMap().count(destAddress)) {
-            sendRoutingMessage(pong, primaryUnicastAddress, destAddress);
+            sendRoutingMessage(pong, "PONG", primaryUnicastAddress,
+                    destAddress);
 
             /*
              * En otro caso, se selecciona como siguiente salto
@@ -590,7 +631,8 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
         } else {
             inet::Ipv6Address nextHopAddress = findNeighbouringCarClosestToVertex(
                     pingVertex);
-            sendRoutingMessage(pong, primaryUnicastAddress, nextHopAddress);
+            sendRoutingMessage(pong, "PONG", primaryUnicastAddress,
+                    nextHopAddress);
         }
     }
 }
@@ -746,6 +788,8 @@ int RoutingProtocolCar::getNeighbouringCarsOnEdgeCount() const {
 
 /*!
  * @brief Imrpimir el directorio de _hosts_ vecinos.
+ *
+ * TODO Implementar.
  */
 void RoutingProtocolCar::showNeighbouringHosts() const {
     EV_INFO << "******************************************************************************************************************************************************************"
@@ -790,7 +834,8 @@ void RoutingProtocolCar::schedulePurgeNeighbouringHostsTimer() {
  * de _hosts_ vecinos.
  */
 void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
+    EV_DEBUG
+            << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::processPurgeNeighbouringHostsTimer");
@@ -978,24 +1023,30 @@ void RoutingProtocolCar::processPurgePendingPongsTimer() {
 /*!
  * @brief Enrutar datagrama.
  *
+ * TODO Corregir la documentación.
+ * Primero, se valida la cabecera de opciones de salto por salto.
+ *
  * Revisa si existe en la tabla de enrutamiento una ruta hacia la
  * dirección de destino. Si no existe, se intenta descubrir y crear una
  * ruta. Si no se encuentra la ruta, se descarta el datagrama.
  *
  * @param datagram [in] Datagrama a enrutar.
- * @param destAddress [in] Dirección IPv6 de destino.
  *
  * @return Resultado del enrutamiento.
  */
 inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
-        inet::Packet *datagram, const inet::Ipv6Address &destAddress) {
+        inet::Packet *datagram) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::routeDatagram");
 
+    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
+            datagram);
+    inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
+
     /*********************************************************************************
-     * Validaci��n de la cabecera de opciones de salto por salto
+     * Validación de la cabecera de opciones de salto por salto
      *********************************************************************************/
     if (!validateHopByHopOptionsHeader(datagram))
         return inet::INetfilter::IHook::Result::DROP;
@@ -1003,8 +1054,9 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
     /*********************************************************************************
      * Verificar si ya existe una ruta
      *********************************************************************************/
-    const inet::Ipv6Route *route = routingTable->doLongestPrefixMatch(
-            destAddress);
+    removeOldRoutes(omnetpp::simTime());
+    inet::Ipv6Route *route = const_cast<inet::Ipv6Route*>(routingTable->doLongestPrefixMatch(
+            destAddress));
     if (route != nullptr) {
         if (omnetpp::simTime() < route->getExpiryTime())
             return inet::INetfilter::IHook::ACCEPT;
@@ -1054,7 +1106,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
      *********************************************************************************/
     Vertex destVertex = getLocalDestVertex(datagram, shortestPath);
 
-// Se obtiene la ruta m��s corta al vértice de destino
+// Se obtiene la ruta más corta al vértice de destino
     VertexVector shortestPathToDestVertex = shortestPath.getShortestPathToVertex(
             destVertex, graph);
 
@@ -1063,8 +1115,14 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
             shortestPath);
 
     if (!nextHopAddress.isUnspecified()) {
-        addRoute(destAddress, 128, nextHopAddress, 1,
-                omnetpp::simTime() + routeValidityTime);
+        route = new inet::Ipv6Route(destAddress, 128,
+                inet::IRoute::SourceType::MANET);
+        route->setNextHop(nextHopAddress);
+        route->setInterface(networkInterface);
+        route->setMetric(1);
+        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+        routingTable->addRoute(route);
+
         return inet::INetfilter::IHook::Result::ACCEPT;
     }
 
@@ -1554,6 +1612,14 @@ void RoutingProtocolCar::showStatus() const {
  * Netfilter.
  */
 
+/*!
+ * @brief Procesar datagrama recibido de la capa inferior
+ * antes de enrutarlo.
+ *
+ * @param datagram [in] Datagrama a procesar.
+ *
+ * @return Resultado del procesamiento.
+ */
 inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
         inet::Packet *datagram) {
     EV_INFO << "******************************************************************************************************************************************************************"
@@ -1578,6 +1644,14 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
     return inet::INetfilter::IHook::ACCEPT;
 }
 
+/*!
+ * @brief Procesar datagrama recibido de la capa superior
+ * antes de enrutarlo.
+ *
+ * @param datagram [in] Datagrama a procesar.
+ *
+ * @return Resultado del procesamiento.
+ */
 inet::INetfilter::IHook::Result RoutingProtocolCar::datagramLocalOutHook(
         inet::Packet *datagram) {
     EV_INFO << "******************************************************************************************************************************************************************"

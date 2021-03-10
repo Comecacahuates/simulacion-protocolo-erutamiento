@@ -25,14 +25,14 @@ simple RoutingProtocolBase like IManetRouting {
         @display("i=block/routing");
 
 		// Parámetros de enrutamiento
-        double helloCarInterval @unit(s) = default(1s);
-        double neighbouringCarValidityTime @unit(s) = default(2.5 * helloCarInterval);
-        double helloHostInterval @unit(s) = default(1s);
-        double neighbouringHostValidityTime @unit(s) = default(2.5 * helloHostInterval);
+        double helloCarInterval @unit(s) = default(2.5s);
+        double neighbouringCarValidityTime @unit(s) = default(3s);
+        double helloHostInterval @unit(s) = default(2.5s);
+        double neighbouringHostValidityTime @unit(s) = default(3s);
         double pingInterval @unit(s) = default(3s);
         double pongTimeout @unit(s) = default(1s);
         double edgeStatusValidityTime @unit(s) = default(4.5 * pingInterval);
-        double routeValidityTime @unit(s) = default(1s);
+        double routeValidityTime @unit(s) = default(3s);
         double vertexProximityRadius @unit(m) = default(10m);
 
 		string roadNetworkDatabaseModule = default("roadNetworkDatabase");

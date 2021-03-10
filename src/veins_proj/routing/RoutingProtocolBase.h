@@ -74,13 +74,12 @@ protected:
      */
     omnetpp::simtime_t helloHostInterval;
     /*!
-     * @brief Tiempo de vigencia de los registros del
-     * de vehículos vecinos.
+     * @brief Tiempo de vigencia de los registros del de vehículos vecinos.
      */
     omnetpp::simtime_t neighbouringCarValidityTime;
     /*!
      * @brief Tiempo de vigencia de los registros del directorio
-     * de _hosts_ vecinos.
+     de _hosts_ vecinos.
      */
     omnetpp::simtime_t neighbouringHostValidityTime;
     /*!
@@ -195,7 +194,7 @@ protected:
      *
      * @param packet [in] Paque a enviar.
      */
-    virtual void sendUdpPacket(inet::Packet *packet);
+    void sendUdpPacket(inet::Packet *packet);
     /*!
      * @brief Procesar paquete UDP.
      *
@@ -204,7 +203,7 @@ protected:
      *
      * @param packet [in] Paquete a procesar.
      */
-    virtual void processUdpPacket(inet::Packet *packet);
+    void processUdpPacket(inet::Packet *packet);
 
     /*
      * Mensajes de enrutamiento.
@@ -214,11 +213,12 @@ protected:
      * y se envía a la dirección indicada.
      *
      * @param routingMessage [in] Mensaje a enviar.
+     * @param name [in] Nombre del mensaje.
      * @param srcAddress [in] Dirección de origen del mensaje.
      * @param destAddress [in] Dirección de destino del mensaje.
      */
-    virtual void sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
-            const inet::Ipv6Address &srcAddress,
+    void sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
+            const char *name, const inet::Ipv6Address &srcAddress,
             const inet::Ipv6Address &destAddress);
 
     /*
@@ -353,12 +353,11 @@ protected:
      * Encuentra el vehículo vecino cuya ubicación es la más cercana
      * a la ubicación indicada.
      *
-     * @param geohashLocation [in] Ubicación Geohash de la que se quiere
-     * conocer el vehículo vecino más cercano.
+     * @param geohashLocation [in] Ubicación Geohash de referencia.
      *
      * @return Dirección IPv6 del vehículo vecino más cercano.
      */
-    virtual inet::Ipv6Address getClosestNeighbouringCar(
+    inet::Ipv6Address findClosestNeighbouringCar(
             const GeohashLocation &geohashLocation) const;
 
     /*
@@ -367,22 +366,7 @@ protected:
     /*!
      * @brief Mostrar rutas en la tabla de enrutamiento.
      */
-    virtual void showRoutes() const;
-    /*!
-     * @brief Agregar una ruta a la tabla de enrutamiento.
-     *
-     * Antes de agregar la ruta, se verifica si esta ya existe en la tabla
-     * de enrutamiento, en cuyo caso no se agrega.
-     *
-     * @param destPrefix [in] Prefijo de la dirección IPv6 de destino.
-     * @param prefixLength [in] Longitud del prefijo.
-     * @param nextHop [in] Dirección IPv6 del siguiente salto.
-     * @param metric [in] Métrica de la ruta.
-     * @param expiryTime [in] Hora de expiración de la ruta.
-     */
-    virtual void addRoute(const inet::Ipv6Address &destPrefix,
-            const short prefixLength, const inet::Ipv6Address &nextHop,
-            int metric, omnetpp::simtime_t expiryTime);
+    void showRoutes() const;
     /*!
      * @brief Eliminar rutas por dirección IPv6 de siguiente salto.
      *
@@ -392,7 +376,7 @@ protected:
      * @param nextHopAddress [in] Dirección IPv6 de siguiente salto de las
      * rutas a eliminar.
      */
-    virtual void purgeNextHopRoutes(const inet::Ipv6Address &nextHopAddress);
+    void purgeNextHopRoutes(const inet::Ipv6Address &nextHopAddress);
     /*!
      * @brief Eliminar rutas viejas.
      *
@@ -401,7 +385,7 @@ protected:
      *
      * @param expiryTime [in] Hora de expiración máxima para eliminar las rutas.
      */
-    virtual void removeOldRoutes(omnetpp::simtime_t expiryTime);
+    void removeOldRoutes(omnetpp::simtime_t expiryTime);
 
     /*
      * Enrutamiento
@@ -414,12 +398,11 @@ protected:
      * ruta. Si no se encuentra la ruta, se descarta el datagrama.
      *
      * @param datagram [in] Datagrama a enrutar.
-     * @param destAddress [in] Dirección IPv6 de destino.
      *
      * @return Resultado del enrutamiento.
      */
     virtual inet::INetfilter::IHook::Result routeDatagram(
-            inet::Packet *datagram, const inet::Ipv6Address &destAddress) = 0;
+            inet::Packet *datagram) = 0;
 
     /*
      * Opciones TLV.
@@ -564,6 +547,14 @@ protected:
     /*
      * Netfilter.
      */
+    /*!
+     * @brief Procesar datagrama recibido de la capa inferior
+     * antes de enrutarlo.
+     *
+     * @param datagram [in] Datagrama a procesar.
+     *
+     * @return Resultado del procesamiento.
+     */
     virtual inet::INetfilter::IHook::Result datagramPreRoutingHook(
             inet::Packet *datagram) override {
         return inet::INetfilter::IHook::ACCEPT;
@@ -580,6 +571,14 @@ protected:
             inet::Packet *datagram) override {
         return inet::INetfilter::IHook::ACCEPT;
     }
+    /*!
+     * @brief Procesar datagrama recibido de la capa superior
+     * antes de enrutarlo.
+     *
+     * @param datagram [in] Datagrama a procesar.
+     *
+     * @return Resultado del procesamiento.
+     */
     virtual inet::INetfilter::IHook::Result datagramLocalOutHook(
             inet::Packet *datagram) override {
         return inet::INetfilter::IHook::ACCEPT;

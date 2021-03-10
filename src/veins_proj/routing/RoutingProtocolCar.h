@@ -466,12 +466,11 @@ protected:
      * ruta. Si no se encuentra la ruta, se descarta el datagrama.
      *
      * @param datagram [in] Datagrama a enrutar.
-     * @param destAddress [in] Dirección IPv6 de destino.
      *
      * @return Resultado del enrutamiento.
      */
-    inet::INetfilter::IHook::Result routeDatagram(inet::Packet *datagram,
-            const inet::Ipv6Address &destAddress) override;
+    virtual inet::INetfilter::IHook::Result routeDatagram(
+            inet::Packet *datagram) override;
     /*!
      * @brief Verificar la cabecera de opciones de salto por salto.
      *
@@ -483,7 +482,7 @@ protected:
      *
      * Si la cabecera no contiene la opción de vértices visitados, la agrega.
      */
-    bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
+    virtual bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
     /*!
      * @brief Obtener el vértice de destino local.
      *
@@ -492,7 +491,7 @@ protected:
      *
      * @return Vértice de destino local.
      */
-    Vertex getLocalDestVertex(inet::Packet *datagram,
+    virtual Vertex getLocalDestVertex(inet::Packet *datagram,
             const ShortestPath &shortestPath) const;
     /*!
      * @brief Se obtiene el conjunto de vértices visitados.
@@ -501,7 +500,7 @@ protected:
      *
      * @return Conjunto de vértices visitados.
      */
-    VertexSet getVisitedVertices(
+    virtual VertexSet getVisitedVertices(
             TlvVisitedVerticesOption *visitedVerticesOption) const;
     /*!
      * @brief Obtener el vértice de destino.
@@ -512,7 +511,7 @@ protected:
      *
      * @return Vértice de destino.
      */
-    Vertex getDestVertex(const GeohashLocation &destGeohashLocation,
+    virtual Vertex getDestVertex(const GeohashLocation &destGeohashLocation,
             Edge destEdge, const ShortestPath &shortestPath) const;
     /*!
      * @brief Obtener aristas en la ruta más corta que forman un tramo recto.
@@ -526,7 +525,8 @@ protected:
      *
      * @return Aristas que forman un
      */
-    EdgeVector getReachableEdges(const VertexVector &shortestPathToDestVertex,
+    virtual EdgeVector getReachableEdges(
+            const VertexVector &shortestPathToDestVertex,
             const ShortestPath &shortestPath) const;
     /*!
      * @brief Encontrar siguiente salto.
@@ -539,7 +539,8 @@ protected:
      *
      * @return Dirección IPv6 del siguiente salto.
      */
-    inet::Ipv6Address findNextHop(const VertexVector &shortestPathToDestVertex,
+    virtual inet::Ipv6Address findNextHop(
+            const VertexVector &shortestPathToDestVertex,
             const ShortestPath &shortestPath) const;
     /*!
      * @brief Obtener vehículo vecino en la región Geohash adyacente.
@@ -548,7 +549,7 @@ protected:
      *
      * @return Dirección IPv6 del vehículo vecino en la región Geohash indicada.
      */
-    inet::Ipv6Address findNeighbourInNeighbourinRegion(
+    virtual inet::Ipv6Address findNeighbourInNeighbourinRegion(
             const GeohashLocation &neighbouringGeohashRegion) const;
 
     /*
@@ -557,13 +558,29 @@ protected:
     /*!
      * @brief Mostrar la dirección IPv6 del vehículo y su ubicación vial.
      */
-    void showStatus() const;
+    virtual void showStatus() const;
 
     /*
      * Netfilter.
      */
+    /*!
+     * @brief Procesar datagrama recibido de la capa inferior
+     * antes de enrutarlo.
+     *
+     * @param datagram [in] Datagrama a procesar.
+     *
+     * @return Resultado del procesamiento.
+     */
     virtual inet::INetfilter::IHook::Result datagramPreRoutingHook(
             inet::Packet *datagram) override;
+    /*!
+     * @brief Procesar datagrama recibido de la capa superior
+     * antes de enrutarlo.
+     *
+     * @param datagram [in] Datagrama a procesar.
+     *
+     * @return Resultado del procesamiento.
+     */
     virtual inet::INetfilter::IHook::Result datagramLocalOutHook(
             inet::Packet *datagram) override;
 
