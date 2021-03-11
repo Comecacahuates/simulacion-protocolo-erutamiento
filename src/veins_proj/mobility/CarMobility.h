@@ -76,6 +76,7 @@ protected:
 
     /*
      * Estatus.
+     * TODO Revisar si es necesario.
      */
     //! Bandera de cambio de ubicación.
     bool locationChanged_;
@@ -221,6 +222,16 @@ public:
      * @brief Actualizar la ubicación.
      */
     void updateLocation();
+    /*!
+     * @brief Determinar si el vehículo se encuentra en una región *gateway*.
+     *
+     * Si alguno de los dos vértices de la árista en la que se encuentra
+     * el vehículo es *gateway*, se devuelve su tipo de adyacencia.
+     *
+     * @return Tipo de adyacencia de la región
+     * en la que se encuentra el vehículo.
+     */
+    GeohashLocation::Adjacency getGatewayRegionAdjacency() const;
     /*!
      * @brief Verificar si el vehículo se encuentra en un vértice.
      *

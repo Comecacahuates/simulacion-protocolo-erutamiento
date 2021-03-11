@@ -25,7 +25,7 @@ protected:
     static const std::string border[4][2];
 
 public:
-   enum Direction { NONE = -1, NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 };
+   enum Adjacency { NONE = -1, NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 };
 
 protected:
     std::string geohash;
@@ -64,12 +64,12 @@ public:
 
     int commonPrefixLength(GeohashLocation &other);
 
-    void getNeighbour(const GeohashLocation::Direction &direction, GeohashLocation &neighbourGeohashLocation) const { GeohashLocation::neighbourGeohashLocation(geohash, direction, neighbourGeohashLocation); }
+    void getAdjacentGeohashLocation(const Adjacency &adjacency, GeohashLocation &adjacentGeohashLocation) const { GeohashLocation::adjacentGeohashLocation(geohash, adjacency, adjacentGeohashLocation); }
 
     static void encode(const GeographicLib::GeoCoords &location, unsigned int precision, std::string &geohash, GeographicLib::GeoCoords &center, Bounds &bounds, uint64_t &bits);
     static void encode(const uint64_t &bits, unsigned int precision, std::string &geohash, GeographicLib::GeoCoords &center, Bounds &bounds);
     static void decode(const std::string &geohash, GeographicLib::GeoCoords &center, Bounds &bounds, uint64_t &bits);
-    static void neighbourGeohashLocation(const std::string &geohash, const GeohashLocation::Direction direction, GeohashLocation &neighbourGeohashLocation);
+    static void adjacentGeohashLocation(const std::string &geohash, const Adjacency adjacency, GeohashLocation &adjacentGeohashLocation);
 };
 
 

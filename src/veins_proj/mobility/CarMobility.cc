@@ -25,6 +25,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/tuple/tuple.hpp>
 #include "veins_proj/geohash/GeohashLocation.h"
+#include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include <utility>
 #include <iomanip>
 #include <cmath>
@@ -112,8 +113,9 @@ void CarMobility::scheduleLocationUpdateTimer() {
  * @brief Procesar el temporizador de actualización de la ubicacion.
  */
 void CarMobility::processLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+            << std::endl
+    << "CarMobility::scheduleLocationUpdateTimer" << std::endl;
     Enter_Method
     ("CarMobility::scheduleLocationUpdateTimer");
 
@@ -171,6 +173,31 @@ void CarMobility::updateLocation() {
 
         edgeChanged_ = locationOnRoadNetwork.edge != previousEdge;
     }
+}
+
+/*!
+ * @brief Determinar si el vehículo se encuentra en una región *gateway*.
+ *
+ * Si alguno de los dos vértices de la árista en la que se encuentra
+ * el vehículo es *gateway*, se devuelve su tipo de adyacencia.
+ *
+ * @return Tipo de adyacencia de la región
+ * en la que se encuentra el vehículo.
+ */
+GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+            << std::endl
+    << "CarMobility::getGatewayRegion" << std::endl;
+    Enter_Method
+    ("CarMobility::getGatewayRegion");
+
+    const Graph &graph = roadNetwork->getGraph();
+    const Edge &edge = locationOnRoadNetwork.edge;
+    const Vertex &vertexA = boost::source(edge, graph);
+    const Vertex &vertexB = boost::target(edge, graph);
+    if (graph[vertexA].adjacency != GeohashLocation::Adjacency::NONE)
+        return graph[vertexA].adjacency;
+    return graph[vertexB].adjacency;
 }
 
 /*!

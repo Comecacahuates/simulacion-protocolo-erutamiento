@@ -308,15 +308,15 @@ void GeohashLocation::decode(const std::string &geohash, GeographicLib::GeoCoord
 }
 
 
-void GeohashLocation::neighbourGeohashLocation(const std::string &geohash, const GeohashLocation::Direction direction, GeohashLocation &neighbourGeohashLocation) {
+void GeohashLocation::adjacentGeohashLocation(const std::string &geohash, const Adjacency adjacency, GeohashLocation &adjacentGeohashLocation) {
     char lastChar = geohash.back();
     std::string parent = geohash.substr(0, geohash.length() - 1);
 
     unsigned int type = geohash.length() % 2;
 
-    if (GeohashLocation::border[direction][type].find(lastChar) != std::string::npos && parent.empty())
-        GeohashLocation::neighbourGeohashLocation(parent, direction, neighbourGeohashLocation);
+    if (GeohashLocation::border[adjacency][type].find(lastChar) != std::string::npos && parent.empty())
+        GeohashLocation::adjacentGeohashLocation(parent, adjacency, adjacentGeohashLocation);
 
-    parent.push_back(GeohashLocation::base32.at(GeohashLocation::neighbour[direction][type].find(lastChar)));
-    neighbourGeohashLocation.setGeohash(parent);
+    parent.push_back(GeohashLocation::base32.at(GeohashLocation::neighbour[adjacency][type].find(lastChar)));
+    adjacentGeohashLocation.setGeohash(parent);
 }

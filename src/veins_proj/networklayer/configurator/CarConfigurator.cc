@@ -69,6 +69,11 @@ void CarConfigurator::initialize(int stage) {
          * Mensajes propios.
          */
         locationUpdateTimer = new omnetpp::cMessage("LocationUpdateTimer");
+
+        /*
+         * FSM de actualización de la ubicación.
+         */
+        fsm.setName("CarConfigurator::FSM");
     }
 }
 
@@ -129,41 +134,120 @@ void CarConfigurator::scheduleLocationUpdateTimer() {
  * se configura la dirección correspondiente a la subred adyacente
  * como subred secundaria.
  *
- * TODO Implementar con un FSM.
+ * Se calcula la ubicación del vehícula y se compara con la anterior
+ * para saber si el vehículo se movió y si se encuentra
+ * en la misma región Geohash.
+ * Después, se usan estos datos para realizar la transición del FSM
+ * y realizar la configuración correspondiente.
  */
 void CarConfigurator::processLocationUpdateTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     EV_INFO << "CarConfigurator::processLocationUpdateTimer" << std::endl;
 
-    if (mobility->locationChanged()) {
-        EV_INFO << "Cambió la ubicación" << std::endl;
+    /*
+     * Se guarda la ubicación previa y se calcula la nueva ubicación
+     * para determinar qué transiciones debe realizar el FSM.
+     */
+    GeohashLocation geohashLocation = mobility->getGeohashLocation();
+    const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
+    mobility->updateLocation();
+    const GeohashLocation &newGeohashLocation = mobility->getGeohashLocation();
+    const RoadNetwork *newRoadNetwork = mobility->getRoadNetwork();
+    GeohashLocation::Adjacency gatewayRegionAdjacency =
+            mobility->getGatewayRegionAdjacency();
 
-        const Graph &graph = mobility->getRoadNetwork()->getGraph();
+    /*
+     * Si la ubicación es la misma, no se hace ningún cambio en la
+     * configuración de la interfaz.
+     */
+    if (geohashLocation == newGeohashLocation)
+        return;
 
-        Vertex gatewayVertex;
-        bool isAtGateway;
-        boost::tie(gatewayVertex, isAtGateway) = mobility->isAtGateway();
-
-        // Si el vehículo se encuentra en un gateway, se une a la red secundaria
-        if (isAtGateway) {
-            GeohashLocation::Direction gatewayType =
-                    graph[gatewayVertex].gatewayType;
-            GeohashLocation neighbourGeohashRegion;
-            mobility->getRoadNetwork()->getGeohashRegion().getNeighbour(
-                    gatewayType, neighbourGeohashRegion);
-
-            joinNetwork(neighbourGeohashRegion, NetworkType::SECONDARY);
-
-            // Si el vehículo no se encuentra en un gateway, se sale de la red secundaria
-        } else
+    /*
+     * Si la ubicación cambió, se hace una transición del FSM.
+     */
+    FSM_Switch(fsm)
+    {
+        case FSM_Exit(INIT): {
+            /*
+             * Si el vehículo no está en una región *gateway*,
+             * se hace una transición al estado NO_GATEWAY.
+             */
+            if (gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE)
+                FSM_Goto(fsm, NO_GATEWAY);
+            /*
+             * Si el vehículo está en una región *gateway*,
+             * se hace una transición al estado GATEWAY.
+             */
+            else
+                FSM_Goto(fsm, GATEWAY);
+            break;
+        }
+        case FSM_Enter(NO_GATEWAY): {
+            /*
+             * Cuando se entra al estado NO_GATEWAY,
+             * se sale de la subred secundaria.
+             */
+            ASSERT(gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE);
             leaveNetwork(NetworkType::SECONDARY);
-    } else
-        EV_INFO << "No cambió la ubicación" << std::endl;
-
-    // Si el vehículo cambió de una región a otra, se intercambian las subredes primaria y secundaria
-    if (mobility->regionChanged()) {
-        swapNetworks();
+            break;
+        }
+        case FSM_Exit(NO_GATEWAY): {
+            /*
+             * Si el vehículo no está en una región *gateway*,
+             * se hace una transición al estado NO_GATEWAY.
+             */
+            if (gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE)
+                FSM_Goto(fsm, NO_GATEWAY);
+            /*
+             * Si el vehículo está en una región *gateway*,
+             * se hace una transición al estado GATEWAY.
+             */
+            else
+                FSM_Goto(fsm, GATEWAY);
+            break;
+        }
+        case FSM_Enter(GATEWAY): {
+            /*
+             * Cuando se entra al estado GATEWAY,
+             * se une a la subred adyacente como subred secundaria.
+             */
+            ASSERT(gatewayRegionAdjacency != GeohashLocation::Adjacency::NONE);
+            GeohashLocation adjacentGeohashRegion;
+            GeohashLocation::adjacentGeohashLocation(
+                    geohashLocation.getGeohashString().substr(0, 6),
+                    gatewayRegionAdjacency, adjacentGeohashRegion);
+            joinNetwork(adjacentGeohashRegion, NetworkType::SECONDARY);
+            break;
+        }
+        case FSM_Exit(GATEWAY): {
+            /*
+             * Si el vehículo cambió a otra región Geohash,
+             * se intercambia la subred primaria con la secundaria
+             * y se hace una transición al estado GATEWAY.
+             */
+            if (roadNetwork != newRoadNetwork) {
+                ASSERT(
+                        gatewayRegionAdjacency
+                                != GeohashLocation::Adjacency::NONE);
+                swapNetworks();
+                FSM_Goto(fsm, GATEWAY);
+                /*
+                 * Si el vehículo no está en una región *gateway*,
+                 * se hace una transición al estado NO_GATEWAY.
+                 */
+            } else if (gatewayRegionAdjacency
+                    == GeohashLocation::Adjacency::NONE)
+                FSM_Goto(fsm, NO_GATEWAY);
+            /*
+             * Si el vehículo está en una región *gateway*,
+             * se hace una transición al estado GATEWAY.
+             */
+            else
+                FSM_Goto(fsm, GATEWAY);
+            break;
+        }
     }
 
     scheduleLocationUpdateTimer();

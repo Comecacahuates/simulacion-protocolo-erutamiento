@@ -33,7 +33,7 @@ public:
 
     const GeohashLocation &getGeohashRegion() const { return geohashRegion; }
 
-    const VertexVector &getGatewayVertices(GeohashLocation::Direction direction) const { return gatewayVertices[direction]; }
+    const VertexVector &getGatewayVertices(GeohashLocation::Adjacency adjacency) const { return gatewayVertices[adjacency]; }
 
     bool getLocationOnRoadNetwork(const GeographicLib::GeoCoords &location, const double speed, const double direction, LocationOnRoadNetwork &locationOnRoadNetwork) const;
 

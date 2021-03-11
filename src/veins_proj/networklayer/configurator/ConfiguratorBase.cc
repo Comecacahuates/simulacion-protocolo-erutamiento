@@ -137,12 +137,14 @@ void ConfiguratorBase::joinNetwork(const GeohashLocation &geohashRegion,
     multicastAddresses[networkType] = Ipv6GeohashAddress::ipv6MulticastAddress(
             geohashRegion);
     geohashRegions[networkType] = geohashRegion;
-    ipv6Data->assignAddress(unicastAddresses[networkType], false, SIMTIME_ZERO,
-    SIMTIME_ZERO);
-    ipv6Data->assignAddress(multicastAddresses[networkType], false,
-    SIMTIME_ZERO,
-    SIMTIME_ZERO);
-    ipv6Data->joinMulticastGroup(multicastAddresses[networkType]);
+    if (!ipv6Data->hasAddress(unicastAddresses[networkType]))
+        ipv6Data->assignAddress(unicastAddresses[networkType], false,
+        SIMTIME_ZERO, SIMTIME_ZERO);
+    if (!ipv6Data->hasAddress(multicastAddresses[networkType]))
+        ipv6Data->assignAddress(multicastAddresses[networkType], false,
+        SIMTIME_ZERO, SIMTIME_ZERO);
+    if (!ipv6Data->isMemberOfMulticastGroup(multicastAddresses[networkType]))
+        ipv6Data->joinMulticastGroup(multicastAddresses[networkType]);
 
     showAddresses();
 }

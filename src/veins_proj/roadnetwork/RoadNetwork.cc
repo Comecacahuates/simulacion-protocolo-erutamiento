@@ -28,7 +28,7 @@ RoadNetwork::RoadNetwork(std::string geohash, std::string fileName):
 
     double lat,
            lon;
-    GeohashLocation::Direction gatewayType;
+    GeohashLocation::Adjacency adjacency;
     unsigned int i = 0;
 
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, tree.get_child("network.vertices")) {
@@ -36,14 +36,14 @@ RoadNetwork::RoadNetwork(std::string geohash, std::string fileName):
 
         lat = v.second.get<double>("<xmlattr>.lat");
         lon = v.second.get<double>("<xmlattr>.lon");
-        gatewayType = static_cast<GeohashLocation::Direction>(v.second.get<int>("<xmlattr>.gateway") - 1);
+        adjacency = static_cast<GeohashLocation::Adjacency>(v.second.get<int>("<xmlattr>.gateway") - 1);
         GeographicLib::GeoCoords location(lat, lon);
 
 
-        boost::add_vertex({ location, gatewayType }, graph);
+        boost::add_vertex({ location, adjacency }, graph);
 
-        if (gatewayType != GeohashLocation::Direction::NONE)
-            gatewayVertices[gatewayType].push_back(i);
+        if (adjacency != GeohashLocation::Adjacency::NONE)
+            gatewayVertices[adjacency].push_back(i);
         i++;
     }
 

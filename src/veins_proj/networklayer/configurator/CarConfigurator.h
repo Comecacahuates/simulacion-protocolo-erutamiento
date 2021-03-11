@@ -63,6 +63,31 @@ protected:
     omnetpp::cMessage *locationUpdateTimer;
 
     /*
+     * FSM de actualización de la ubicación.
+     */
+    /*!
+     * @brief Estados del FSM de actualización de la ubicación.
+     */
+    enum {
+        /*!
+         * @brief Estado inicial.
+         */
+        INIT = 0,
+        /*!
+         * @brief El vehículo está fuera de cualquier región *gateway*.
+         */
+        NO_GATEWAY = FSM_Steady(1),
+        /*!
+         * @brief El vehículo está en una región *gateway*.
+         */
+        GATEWAY = FSM_Steady(2),
+    };
+    /*!
+     * @brief FSM de actualización de la ubicación.
+     */
+    omnetpp::cFSM fsm;
+
+    /*
      * Interfaz del módulo.
      */
     /*!

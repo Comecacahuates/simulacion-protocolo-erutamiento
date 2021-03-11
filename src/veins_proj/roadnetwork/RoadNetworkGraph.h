@@ -36,7 +36,7 @@ struct VertexData {
 	//! Ubicación del vértice.
 	GeographicLib::GeoCoords location;
 	//! Tipo de _gateway_.
-	GeohashLocation::Direction gatewayType;
+	GeohashLocation::Adjacency adjacency;
 };
 
 //! Datos de cada arista.

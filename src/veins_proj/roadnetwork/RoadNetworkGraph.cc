@@ -59,7 +59,7 @@ bool veins_proj::sortedVertices(Vertex vertexA, Vertex vertexB,
  * @return `true` en caso de que el vértice sea _gateway_.
  */
 bool veins_proj::isGateway(Vertex vertex, const Graph &graph) {
-	return graph[vertex].gatewayType != GeohashLocation::Direction::NONE;
+	return graph[vertex].adjacency != GeohashLocation::Adjacency::NONE;
 }
 
 //! Verifica si dos direcciones acimutales coinciden.

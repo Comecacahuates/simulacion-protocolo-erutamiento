@@ -218,12 +218,12 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
     EV_DEBUG << "Address: " << srcAddress.str() << std::endl
              << "Geohash location: " << geohashLocation.getGeohashString() << std::endl
              << "Speed: " << speed << std::endl
-             << "Direction: " << direction << std::endl
+             << "Adjacency: " << direction << std::endl
              << "Vertex A: " << vertexA << std::endl
              << "Vertex B: " << vertexB << std::endl
              << "Distance to vertex A: " << distanceToVertexA << std::endl
              << "Distance to vertex B: " << distanceToVertexB << std::endl;
-                                        // @formatter:on
+                                            // @formatter:on
 
     /*
      * Se crea el mensaje y se le agregan los datos.
@@ -297,7 +297,7 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     EV_INFO << "Address: " << srcAddress.str() << std::endl
             << "Geohash location: " << geohashLocation.getGeohashString() << std::endl
             << "Speed: " << speed << std::endl
-            << "Direction: " << direction << std::endl
+            << "Adjacency: " << direction << std::endl
             << "Vertex A: " << vertexA << std::endl
             << "Vertex B: " << vertexB << std::endl
             << "Edge: " << edge << std::endl
@@ -306,7 +306,7 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size()
              << std::endl;
-                                                // @formatter:on
+                                                    // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -400,7 +400,7 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Target vertex: " << pongVertex << std::endl
             << "Source vertex: " << pingVertex << std::endl;
-                        // @formatter:on
+                            // @formatter:on
 
     inet::Ipv6Address nextHopAddress =
             getRandomNeighbouringCarAddressAheadOnEdge(pongVertex);
@@ -1017,7 +1017,8 @@ void RoutingProtocolCar::startPingPong(const Vertex pingVertex,
      * Después, se envía el mensaje a este.
      */
     const inet::Ipv6Address &primaryUnicastAddress =
-            configurator->getUnicastAddress(ConfiguratorBase::NetworkType::PRIMARY);
+            configurator->getUnicastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ptr<Ping> ping = createPing(primaryUnicastAddress, pingVertex,
             pongVertex);
     const inet::Ipv6Address &nextHopAddress =
@@ -1045,7 +1046,7 @@ void RoutingProtocolCar::showPendingPongs() const {
         EV_INFO << "Ping vertex: " << it->second.value.pingVertex << std::endl
                 << "Pong vertex: " << it->second.value.pongVertex << std::endl
                 << "Expiry time: " << it->second.expiryTime << std::endl;
-                                                                                // @formatter:on
+                                                                                        // @formatter:on
         it++;
     }
 }
@@ -1344,7 +1345,7 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
             // Se obtienen los vértices gateway del norte
             const VertexVector &northGatewayVertices =
                     roadNetwork->getGatewayVertices(
-                            GeohashLocation::Direction::NORTH);
+                            GeohashLocation::Adjacency::NORTH);
             gatewayVertices.insert(gatewayVertices.end(),
                     northGatewayVertices.begin(), northGatewayVertices.end());
 
@@ -1353,7 +1354,7 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
             // Se obtienen los vértices gateway del sur
             const VertexVector &southGatewayVertices =
                     roadNetwork->getGatewayVertices(
-                            GeohashLocation::Direction::SOUTH);
+                            GeohashLocation::Adjacency::SOUTH);
             gatewayVertices.insert(gatewayVertices.end(),
                     southGatewayVertices.begin(), southGatewayVertices.end());
         }
@@ -1363,7 +1364,7 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
             // Se obtienen los vértices gateway del este
             const VertexVector &eastGatewayVertices =
                     roadNetwork->getGatewayVertices(
-                            GeohashLocation::Direction::EAST);
+                            GeohashLocation::Adjacency::EAST);
             gatewayVertices.insert(gatewayVertices.end(),
                     eastGatewayVertices.begin(), eastGatewayVertices.end());
 
@@ -1372,7 +1373,7 @@ Vertex RoutingProtocolCar::getLocalDestVertex(inet::Packet *datagram,
             // Se obtienen los vértices gateway del oeste
             const VertexVector &westGatewayVertices =
                     roadNetwork->getGatewayVertices(
-                            GeohashLocation::Direction::WEST);
+                            GeohashLocation::Adjacency::WEST);
             gatewayVertices.insert(gatewayVertices.end(),
                     westGatewayVertices.begin(), westGatewayVertices.end());
         }
@@ -1449,30 +1450,30 @@ Vertex RoutingProtocolCar::getDestVertex(
         const GeographicLib::GeoCoords &B = destGeohashLocation.getLocation();
 
         // Se determina en qu������ direcci������n en latitud se encuentra la regi������n de destino
-        GeohashLocation::Direction directionLat =
-                GeohashLocation::Direction::NONE;
+        GeohashLocation::Adjacency directionLat =
+                GeohashLocation::Adjacency::NONE;
         if (B.Latitude() < A.Latitude())
-            directionLat = GeohashLocation::Direction::SOUTH;
+            directionLat = GeohashLocation::Adjacency::SOUTH;
         else if (B.Latitude() > A.Longitude())
-            directionLat = GeohashLocation::Direction::NORTH;
+            directionLat = GeohashLocation::Adjacency::NORTH;
 
         // Se determina en qu������ direcci������n en longitud se encuentra la regi������n de destino
-        GeohashLocation::Direction directionLon =
-                GeohashLocation::Direction::NONE;
+        GeohashLocation::Adjacency directionLon =
+                GeohashLocation::Adjacency::NONE;
         if (B.Longitude() < A.Longitude())
-            directionLon = GeohashLocation::Direction::WEST;
+            directionLon = GeohashLocation::Adjacency::WEST;
         else if (B.Longitude() > A.Longitude())
-            directionLon = GeohashLocation::Direction::EAST;
+            directionLon = GeohashLocation::Adjacency::EAST;
 
         // Se obtienen los vértices gateway posibles
         VertexVector gatewayVertices;
-        if (directionLat != GeohashLocation::Direction::NONE) {
+        if (directionLat != GeohashLocation::Adjacency::NONE) {
             const VertexVector &gatewayVerticesLat =
                     roadNetwork->getGatewayVertices(directionLat);
             gatewayVertices.insert(gatewayVertices.end(),
                     gatewayVerticesLat.begin(), gatewayVerticesLat.end());
         }
-        if (directionLat != GeohashLocation::Direction::NONE) {
+        if (directionLat != GeohashLocation::Adjacency::NONE) {
             const VertexVector &gatewayVerticesLon =
                     roadNetwork->getGatewayVertices(directionLon);
             gatewayVertices.insert(gatewayVertices.end(),
@@ -1605,16 +1606,17 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
     if (reachableEdges.size() == 1) {
         edge = reachableEdges[0];
         vertexB = boost::target(edge, graph);
-        GeohashLocation::Direction gatewayType = graph[vertexB].gatewayType;
+        GeohashLocation::Adjacency adjacency = graph[vertexB].adjacency;
 
         // Si el vértice de destino de la arista es un gateway
-        if (gatewayType != GeohashLocation::Direction::NONE) {
+        if (adjacency != GeohashLocation::Adjacency::NONE) {
             const GeohashLocation &geohashRegion =
                     roadNetwork->getGeohashRegion();
-            GeohashLocation neighbourGeohashRegion;
-            geohashRegion.getNeighbour(gatewayType, neighbourGeohashRegion);
+            GeohashLocation adjacentGeohashRegion;
+            geohashRegion.getAdjacentGeohashLocation(adjacency,
+                    adjacentGeohashRegion);
             nextHopAddress = findNeighbourCarInAdjacentdRegion(
-                    neighbourGeohashRegion);
+                    adjacentGeohashRegion);
 
             if (!nextHopAddress.isUnspecified())
                 return nextHopAddress;
@@ -1724,7 +1726,7 @@ void RoutingProtocolCar::showStatus() const {
             << "Edge: " << edge << std::endl
             << "Distance to vertex A: " << distanceToVertexA << std::endl
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
-                                            // @formatter:on
+                                                // @formatter:on
 }
 
 /*
@@ -1760,7 +1762,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
     // @formatter:off
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Destination address: " << destAddress.str() << std::endl;
-                                            // @formatter:on
+                                                // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -1804,7 +1806,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramLocalOutHook(
     // @formatter:off
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Destination address: " << destAddress.str() << std::endl;
-                                            // @formatter:on
+                                                // @formatter:on
 
     return inet::INetfilter::IHook::ACCEPT;
 }
