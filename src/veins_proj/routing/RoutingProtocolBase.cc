@@ -18,6 +18,7 @@
  * @author Adrián Juárez Monroy
  */
 
+#include "veins_proj/geohash/GeohashLocation.h"
 #include "veins_proj/routing/RoutingProtocolBase.h"
 #include "inet/common/INETUtils.h"
 #include "inet/common/ModuleAccess.h"
@@ -34,7 +35,6 @@
 #include "inet/networklayer/nexthop/NextHopForwardingHeader_m.h"
 #include "inet/transportlayer/udp/UdpHeader_m.h"
 #include "veins_proj/routing/Routing_m.h"
-#include "veins_proj/geohash/GeohashLocation.h"
 #include "veins_proj/roadnetwork/RoadNetwork.h"
 #include <cmath>
 #include <vector>
@@ -58,7 +58,7 @@ void RoutingProtocolBase::initialize(int stage) {
     inet::RoutingProtocolBase::initialize(stage);
 
     /*
-     * Inicialización local.
+     * Etapa de inicialización local.
      */
     if (stage == inet::INITSTAGE_LOCAL) {
         /*
@@ -100,7 +100,7 @@ void RoutingProtocolBase::initialize(int stage) {
                 "purgeNeighbouringCarsTimer");
 
         /*
-         * Inicialización de interfaces de red.
+         * Etapa de inicialización de interfaces de red.
          */
     } else if (stage == inet::INITSTAGE_NETWORK_INTERFACE_CONFIGURATION) {
         networkInterface = interfaceTable->findInterfaceByName(
@@ -109,7 +109,7 @@ void RoutingProtocolBase::initialize(int stage) {
             throw omnetpp::cRuntimeError("Output interface not found");
 
         /*
-         * Inicialización de protocolos de enrutamiento.
+         * Etapa de inicialización de protocolos de enrutamiento.
          */
     } else if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
         inet::registerProtocol(inet::Protocol::manet, gate("ipOut"),
@@ -125,16 +125,13 @@ void RoutingProtocolBase::initialize(int stage) {
  * @param message [in] Mensaje a procesar.
  */
 void RoutingProtocolBase::handleMessageWhenUp(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************"
+    EV_DEBUG << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolBase::handleMessageWhenUp");
-    EV_INFO << message->getName() << std::endl;
-    //EV_INFO << boost::stacktrace::stacktrace() << std::endl;
 
     if (message->isSelfMessage())
         processSelfMessage(message);
-
     else
         processMessage(message);
 }

@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+/*!
+ * @file CarConfigurator.cc
+ * @author Adrián Juárez Monroy
+ */
+
 #include "veins_proj/networklayer/configurator/CarConfigurator.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/ModuleOperations.h"
@@ -29,79 +34,106 @@
 
 using namespace veins_proj;
 
-
 Define_Module(CarConfigurator);
 
+/*
+ * Interfaz del módulo.
+ */
 
+/*!
+ * @brief Inicialización.
+ *
+ * @param stage [in] Etapa de inicialización.
+ */
 void CarConfigurator::initialize(int stage) {
-    OperationalBase::initialize(stage);
+    ConfiguratorBase::initialize(stage);
 
+    /*
+     * Etapa de inicialización local.
+     */
     if (stage == inet::INITSTAGE_LOCAL) {
-        // Parameters
-        interface = par("interface").stdstringValue();
+        /*
+         * Parámetros de configuración.
+         */
         locationUpdateInterval = par("locationUpdateInterval");
 
-        // Context
-        host = inet::getContainingNode(this);
-
-        interfaceTable = inet::L3AddressResolver().interfaceTableOf(host);
-
-        if (!interfaceTable)
-            throw omnetpp::cRuntimeError("No interface table found");
-
-        mobility = omnetpp::check_and_cast<CarMobility *>(host->getSubmodule("mobility"));
-
+        /*
+         * Contexto.
+         */
+        mobility = omnetpp::check_and_cast<CarMobility*>(
+                host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
 
-        addressCache = omnetpp::check_and_cast<AddressCache *>(host->getSubmodule("addressCache"));
-
-        if (!addressCache)
-            throw omnetpp::cRuntimeError("No address cache module found");
-
-        // Self messages
+        /*
+         * Mensajes propios.
+         */
         locationUpdateTimer = new omnetpp::cMessage("LocationUpdateTimer");
-
-    } else if (stage == inet::INITSTAGE_NETWORK_INTERFACE_CONFIGURATION) {
-        networkInterface = interfaceTable->findInterfaceByName(interface.c_str());
-
-        if (!networkInterface)
-            throw omnetpp::cRuntimeError("No such interface '%s'", interface.c_str());
-
-        if (networkInterface->isLoopback())
-            throw omnetpp::cRuntimeError("Interface %s is loopback", interface.c_str());
     }
 }
 
-
+/*!
+ * @brief Manejo de mensajes.
+ *
+ * @param message [in] Mensaje a procesar.
+ */
 void CarConfigurator::handleMessageWhenUp(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    EV_INFO << "CarConfigurator::handleMessageWhenUp" << std::endl;
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl;
+    Enter_Method
+    ("CarConfigurator::handleMessageWhenUp");
 
     if (message->isSelfMessage())
         processSelfMessage(message);
 }
 
+/*
+ * Manejo de mensajes.
+ */
 
+/*!
+ * @brief Manejo de mensajes propios.
+ *
+ * @param message [in] Mensaje a procesar.
+ */
 void CarConfigurator::processSelfMessage(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
     EV_INFO << "CarConfigurator::processSelfMessage" << std::endl;
 
     if (message == locationUpdateTimer)
         processLocationUpdateTimer();
 }
 
+/*
+ * Actualización de la ubicación.
+ */
 
+/*!
+ * @brief Programar el temporizador de actualización de la ubicación.
+ */
 void CarConfigurator::scheduleLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
     EV_INFO << "CarConfigurator::scheduleLocationUpdateTimer" << std::endl;
 
-    scheduleAt(omnetpp::simTime() + locationUpdateInterval, locationUpdateTimer);
+    scheduleAt(omnetpp::simTime() + locationUpdateInterval,
+            locationUpdateTimer);
 }
 
-
+/*!
+ * @brief Procesar el temporizador de actualización de la ubicación.
+ *
+ * Se revisa si la ubicación del vehículo cambió. En ese caso,
+ * si se encuentra en un vértice *gateway*,
+ * se configura la dirección correspondiente a la subred adyacente
+ * como subred secundaria.
+ *
+ * TODO Implementar con un FSM.
+ */
 void CarConfigurator::processLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
     EV_INFO << "CarConfigurator::processLocationUpdateTimer" << std::endl;
 
     if (mobility->locationChanged()) {
@@ -115,15 +147,17 @@ void CarConfigurator::processLocationUpdateTimer() {
 
         // Si el vehículo se encuentra en un gateway, se une a la red secundaria
         if (isAtGateway) {
-            GeohashLocation::Direction gatewayType = graph[gatewayVertex].gatewayType;
+            GeohashLocation::Direction gatewayType =
+                    graph[gatewayVertex].gatewayType;
             GeohashLocation neighbourGeohashRegion;
-            mobility->getRoadNetwork()->getGeohashRegion().getNeighbour(gatewayType, neighbourGeohashRegion);
+            mobility->getRoadNetwork()->getGeohashRegion().getNeighbour(
+                    gatewayType, neighbourGeohashRegion);
 
-            joinNetwork(neighbourGeohashRegion, SECONDARY_NETWORK);
+            joinNetwork(neighbourGeohashRegion, NetworkType::SECONDARY);
 
-        // Si el vehículo no se encuentra en un gateway, se sale de la red secundaria
+            // Si el vehículo no se encuentra en un gateway, se sale de la red secundaria
         } else
-            leaveNetwork(SECONDARY_NETWORK);
+            leaveNetwork(NetworkType::SECONDARY);
     } else
         EV_INFO << "No cambió la ubicación" << std::endl;
 
@@ -135,130 +169,44 @@ void CarConfigurator::processLocationUpdateTimer() {
     scheduleLocationUpdateTimer();
 }
 
+/*
+ * Lifecycle.
+ */
 
-void CarConfigurator::handleStartOperation(inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::handleStartOperation");
+void CarConfigurator::handleStartOperation(
+        inet::LifecycleOperation *operation) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("CarConfigurator::handleStartOperation");
 
-    initInterface();
-
-    // El vehículo se une a la subred de la región donde se encuentra
-    joinNetwork(mobility->getGeohashLocation(), PRIMARY_NETWORK);
+    inet::Ipv6InterfaceData *ipv6Data =
+            networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
+    ipv6Data->setAdvSendAdvertisements(false);
+    joinNetwork(mobility->getGeohashLocation(), NetworkType::PRIMARY);
 
     scheduleLocationUpdateTimer();
 }
 
-
 void CarConfigurator::handleStopOperation(inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::handleStartOperation");
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("CarConfigurator::handleStartOperation");
 
     cancelAndDelete(locationUpdateTimer);
+    leaveNetwork(NetworkType::PRIMARY);
+    leaveNetwork(NetworkType::SECONDARY);
 }
 
-
-void CarConfigurator::handleCrashOperation(inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::handleStartOperation");
+void CarConfigurator::handleCrashOperation(
+        inet::LifecycleOperation *operation) {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl;
+    Enter_Method
+    ("CarConfigurator::handleStartOperation");
 
     cancelAndDelete(locationUpdateTimer);
-}
-
-
-void CarConfigurator::initInterface() {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::initInterface");
-
-    inet::Ipv6InterfaceData *ipv6Data = networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
-    ipv6Data->setAdvSendAdvertisements(false);
-}
-
-
-void CarConfigurator::joinNetwork(const GeohashLocation &geohashRegion, const int &networkType) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::joinNetwork");
-    EV_INFO << "Network geohash: " << geohashRegions[networkType].getGeohashString() << std::endl;
-    EV_INFO << "New network geohash: " << geohashRegion.getGeohashString() << std::endl;
-
-    // Si la región geohash es igual a la nueva región geohash, no se hace nada
-    if (geohashRegions[networkType] == geohashRegion)
-        return;
-
-    inet::Ipv6InterfaceData* ipv6Data = networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
-
-    inet::Ipv6Address unicastAddress = Ipv6GeohashAddress::ipv6UnicastAddress(geohashRegion, networkInterface->getInterfaceToken());
-    addressCache->setUnicastAddress(unicastAddress, networkType);
-    ipv6Data->assignAddress(unicastAddress, false, SIMTIME_ZERO, SIMTIME_ZERO);
-
-    // Se remplaza la dirección multicast
-    inet::Ipv6Address multicastAddress = Ipv6GeohashAddress::ipv6MulticastAddress(geohashRegion);
-    addressCache->setMulticastAddress(multicastAddress, networkType);
-
-    ipv6Data->joinMulticastGroup(multicastAddress);
-    ipv6Data->assignAddress(multicastAddress, false, SIMTIME_ZERO, SIMTIME_ZERO);
-
-    geohashRegions[networkType].setGeohash(geohashRegion.getGeohashString());
-
-    EV_INFO << "Unicast address: " << unicastAddress.str() << std::endl;
-    EV_INFO << "Multicast address: " << multicastAddress.str() << std::endl;
-
-    showAddresses();
-}
-
-
-void CarConfigurator::leaveNetwork(const int &networkType) {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::leaveNetwork");
-
-    // Si la región geohash primaria es nula, no se hace nada
-    if (geohashRegions[networkType].isNull())
-        return;
-
-    inet::Ipv6InterfaceData *ipv6Data = networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
-
-    const inet::Ipv6Address &unicastAddress = addressCache->getUnicastAddress(networkType);
-
-    // Se elimina la dirección unicast
-    if (ipv6Data->hasAddress(unicastAddress)) {
-        ipv6Data->removeAddress(unicastAddress);
-    };
-
-    const inet::Ipv6Address &multicastAddress = addressCache->getMulticastAddress(networkType);
-
-    // Se elimina la dirección multicast
-    if (ipv6Data->isMemberOfMulticastGroup(multicastAddress)) {
-        ipv6Data->leaveMulticastGroup(multicastAddress);
-        ipv6Data->removeAddress(multicastAddress);
-    }
-
-    addressCache->clear(networkType);
-
-    showAddresses();
-}
-
-
-void CarConfigurator::swapNetworks() {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::swapNetworks");
-
-    boost::swap(geohashRegions[PRIMARY_NETWORK], geohashRegions[SECONDARY_NETWORK]);
-    addressCache->swapAddresses();
-}
-
-
-void CarConfigurator::showAddresses() const {
-    EV_INFO << "******************************************************************************************************************************************************************" << std::endl;
-    Enter_Method("CarConfigurator::showAddresses");
-
-    const inet::Ipv6InterfaceData* ipv6Data = networkInterface->findProtocolData<inet::Ipv6InterfaceData>();
-
-    EV_INFO << "Unicast addresses" << std::endl;
-
-    for (int i = 0; i < ipv6Data->getNumAddresses(); i++)
-        EV_INFO << ipv6Data->getAddress(i).str() << std::endl;
-
-    EV_INFO << "Multicast addresses" << std::endl;
-
-    for (const inet::Ipv6Address &multicastAddress: ipv6Data->getJoinedMulticastGroups())
-        EV_INFO << multicastAddress.str() << std::endl;
+    leaveNetwork(NetworkType::PRIMARY);
+    leaveNetwork(NetworkType::SECONDARY);
 }

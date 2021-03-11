@@ -42,7 +42,7 @@ void ConfiguratorBase::initialize(int stage) {
     OperationalBase::initialize(stage);
 
     /*
-     * Inicialización local.
+     * Etapa de inicialización local.
      */
     if (stage == inet::INITSTAGE_LOCAL) {
         /*
@@ -59,7 +59,7 @@ void ConfiguratorBase::initialize(int stage) {
             throw omnetpp::cRuntimeError("No interface table found");
 
         /*
-         * Inicialización de las interfaces.
+         * Etapa de inicialización de las interfaces.
          */
     } else if (stage == inet::INITSTAGE_NETWORK_INTERFACE_CONFIGURATION) {
         /*

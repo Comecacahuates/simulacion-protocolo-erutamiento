@@ -17,7 +17,6 @@ package org.car2x.veins.subprojects.veins_proj.node;
 
 import inet.node.inet.AdhocHost;
 import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.StaticHostConfigurator;
-import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.AddressCache;
 import org.car2x.veins.subprojects.veins_proj.mobility.StaticHostMobility;
 import org.car2x.veins.subprojects.veins_proj.routing.RoutingProtocolStaticHost;
 

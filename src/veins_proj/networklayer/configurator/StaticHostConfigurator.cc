@@ -46,7 +46,7 @@ void StaticHostConfigurator::initialize(int stage) {
     ConfiguratorBase::initialize(stage);
 
     /*
-     * Inicialización local.
+     * Etapa de inicialización local.
      */
     if (stage == inet::INITSTAGE_LOCAL) {
         /*

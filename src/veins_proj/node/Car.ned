@@ -17,7 +17,6 @@ package org.car2x.veins.subprojects.veins_proj.node;
 
 import inet.node.inet.AdhocHost;
 import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.CarConfigurator;
-import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.AddressCache;
 import org.car2x.veins.subprojects.veins_proj.mobility.CarMobility;
 import org.car2x.veins.subprojects.veins_proj.routing.RoutingProtocolCar;
 
@@ -32,9 +31,6 @@ module Car extends AdhocHost {
 
         @display("bgb=1253.47,916.05994");
     submodules:
-        addressCache: AddressCache {
-            @display("p=124.424995,727.64996");
-        }
         configurator: CarConfigurator {
             @display("p=124.424995,641.02496;is=s");
         }

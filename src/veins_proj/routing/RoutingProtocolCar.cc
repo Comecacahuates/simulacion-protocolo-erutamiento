@@ -18,6 +18,7 @@
  * @author Adrián Juárez Monroy
  */
 
+#include "veins_proj/geohash/GeohashLocation.h"
 #include "veins_proj/routing/RoutingProtocolCar.h"
 #include "inet/common/Protocol.h"
 #include "inet/common/ProtocolTag_m.h"
@@ -33,7 +34,6 @@
 #include "inet/transportlayer/udp/UdpHeader_m.h"
 #include "inet/networklayer/common/L3Tools.h"
 #include "veins_proj/routing/Routing_m.h"
-#include "veins_proj/geohash/GeohashLocation.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "veins_proj/roadnetwork/RoadNetwork.h"
 #include "veins_proj/mobility/CarMobility.h"
@@ -64,7 +64,7 @@ void RoutingProtocolCar::initialize(int stage) {
     RoutingProtocolBase::initialize(stage);
 
     /*
-     * Inicialización local.
+     * Etapa de Inicialización local.
      */
     if (stage == inet::INITSTAGE_LOCAL) {
         /*
@@ -74,14 +74,10 @@ void RoutingProtocolCar::initialize(int stage) {
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
-        /*
-         *
-         * TODO Quitar.
-         */
-        addressCache = omnetpp::check_and_cast<AddressCache*>(
-                host->getSubmodule("addressCache"));
-        if (!addressCache)
-            throw omnetpp::cRuntimeError("No address cache module found");
+        configurator = omnetpp::check_and_cast<CarConfigurator*>(
+                getModuleByPath(par("configuratorModule")));
+        if (!configurator)
+            throw omnetpp::cRuntimeError("No configurator module found");
 
         /*
          * Mensajes propios.
@@ -153,17 +149,17 @@ void RoutingProtocolCar::processHelloCarTimer() {
     ("RoutingProtocolCar::processHelloCarTimer");
 
     const inet::Ipv6Address &primaryUnicastAddress =
-            addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
+            configurator->getUnicastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ipv6Address &primaryMulticastAddress =
-            addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+            configurator->getMulticastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ipv6Address &secondaryUnicastAddress =
-            addressCache->getUnicastAddress(
-            SECONDARY_ADDRESS);
+            configurator->getUnicastAddress(
+                    ConfiguratorBase::NetworkType::SECONDARY);
     const inet::Ipv6Address &secondaryMulticastAddress =
-            addressCache->getMulticastAddress(
-            SECONDARY_ADDRESS);
+            configurator->getMulticastAddress(
+                    ConfiguratorBase::NetworkType::SECONDARY);
 
     const inet::Ipv6InterfaceData *ipv6Data =
             networkInterface->findProtocolData<inet::Ipv6InterfaceData>();
@@ -227,7 +223,7 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
              << "Vertex B: " << vertexB << std::endl
              << "Distance to vertex A: " << distanceToVertexA << std::endl
              << "Distance to vertex B: " << distanceToVertexB << std::endl;
-                            // @formatter:on
+                                        // @formatter:on
 
     /*
      * Se crea el mensaje y se le agregan los datos.
@@ -310,7 +306,7 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size()
              << std::endl;
-                                    // @formatter:on
+                                                // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -404,7 +400,7 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Target vertex: " << pongVertex << std::endl
             << "Source vertex: " << pingVertex << std::endl;
-            // @formatter:on
+                        // @formatter:on
 
     inet::Ipv6Address nextHopAddress =
             getRandomNeighbouringCarAddressAheadOnEdge(pongVertex);
@@ -470,11 +466,11 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
     const LocationOnRoadNetwork &locationOnRoadNetwork =
             mobility->getLocationOnRoadNetwork();
     const inet::Ipv6Address &primaryUnicastAddress =
-            addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
+            configurator->getUnicastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ipv6Address &primaryMulticastAddress =
-            addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+            configurator->getMulticastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     if (inVertex(locationOnRoadNetwork, pongVertex, graph)) {
         edgesStatus.getMap()[edge].expiryTime = omnetpp::simTime()
                 + edgeStatusValidityTime;
@@ -619,11 +615,11 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
      * y se transmite un mensaje HOLA_VEHIC para anunciarlo.
      */
     const inet::Ipv6Address &primaryUnicastAddress =
-            addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
+            configurator->getUnicastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ipv6Address &primaryMulticastAddress =
-            addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+            configurator->getMulticastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     if (interfaceTable->isLocalAddress(destAddress)) {
         if (pendingPongs.getMap().count(edge)) {
             pendingPongs.getMap().erase(edge);
@@ -1021,7 +1017,7 @@ void RoutingProtocolCar::startPingPong(const Vertex pingVertex,
      * Después, se envía el mensaje a este.
      */
     const inet::Ipv6Address &primaryUnicastAddress =
-            addressCache->getUnicastAddress(PRIMARY_ADDRESS);
+            configurator->getUnicastAddress(ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ptr<Ping> ping = createPing(primaryUnicastAddress, pingVertex,
             pongVertex);
     const inet::Ipv6Address &nextHopAddress =
@@ -1049,7 +1045,7 @@ void RoutingProtocolCar::showPendingPongs() const {
         EV_INFO << "Ping vertex: " << it->second.value.pingVertex << std::endl
                 << "Pong vertex: " << it->second.value.pongVertex << std::endl
                 << "Expiry time: " << it->second.expiryTime << std::endl;
-                                                        // @formatter:on
+                                                                                // @formatter:on
         it++;
     }
 }
@@ -1724,11 +1720,11 @@ void RoutingProtocolCar::showStatus() const {
     const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
 
     // @formatter:off
-    EV_INFO << "Address: " << addressCache->getUnicastAddress(PRIMARY_ADDRESS) << std::endl
+    EV_INFO << "Address: " << configurator->getUnicastAddress(ConfiguratorBase::NetworkType::PRIMARY) << std::endl
             << "Edge: " << edge << std::endl
             << "Distance to vertex A: " << distanceToVertexA << std::endl
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
-                                // @formatter:on
+                                            // @formatter:on
 }
 
 /*
@@ -1764,7 +1760,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
     // @formatter:off
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Destination address: " << destAddress.str() << std::endl;
-                                // @formatter:on
+                                            // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -1808,7 +1804,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramLocalOutHook(
     // @formatter:off
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Destination address: " << destAddress.str() << std::endl;
-                                // @formatter:on
+                                            // @formatter:on
 
     return inet::INetfilter::IHook::ACCEPT;
 }

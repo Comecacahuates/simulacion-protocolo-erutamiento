@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+/*!
+ * @file CarConfigurator.h
+ * @author Adrián Juárez Monroy
+ */
+
 #pragma once
 
 #include <omnetpp.h>
@@ -28,72 +33,82 @@
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #include "veins_proj/veins_proj.h"
 #include "veins_proj/mobility/CarMobility.h"
-#include "veins_proj/networklayer/configurator/AddressCache.h"
+#include "veins_proj/networklayer/configurator/ConfiguratorBase.h"
 #include <vector>
 #include <algorithm>
 
-#define PRIMARY_NETWORK   0
-#define SECONDARY_NETWORK 1
-
 namespace veins_proj {
 
-
-class CarConfigurator : public inet::OperationalBase {
-
-public:
-    enum NetworkType { PRIMARY = 0, SECONDARY = 1 };
+/*!
+ * @brief Módulo que implementa la configuración
+ * de la interfaz de los vehículos.
+ */
+class CarConfigurator: public ConfiguratorBase {
 
 protected:
-    // Parameters
-    std::string interface;
+
+    /*
+     * Parámetros de configuración.
+     */
     omnetpp::simtime_t locationUpdateInterval;
 
-    // Context
-    omnetpp::cModule *host;  // TODO Cambiar al módulo ConfiguratorBase.
-    inet::IInterfaceTable *interfaceTable;  // TODO Cambiar al módulo ConfiguratorBase.
-    inet::NetworkInterface *networkInterface;  // TODO Cambiar al módulo ConfiguratorBase.
+    /*
+     * Contexto.
+     */
     CarMobility *mobility;
-    AddressCache *addressCache;  // TODO Eliminar.
 
-    // Internal
-    GeohashLocation geohashRegions[2];  // TODO Cambiar al módulo ConfiguratorBase.
-
-    // Self messages
+    /*
+     * Mensajes propios.
+     */
     omnetpp::cMessage *locationUpdateTimer;
 
-public:
-    const GeohashLocation &getGeohashRegion(const int &networkType) const { return geohashRegions[networkType]; }
-
-
-protected:
-    // Module interface
-    virtual int numInitStages() const override { return inet::NUM_INIT_STAGES; }
+    /*
+     * Interfaz del módulo.
+     */
+    /*!
+     * @brief Inicialización.
+     *
+     * @param stage [in] Etapa de inicialización.
+     */
     virtual void initialize(int stage) override;
+    /*!
+     * @brief Manejo de mensajes.
+     *
+     * @param message [in] Mensaje a procesar.
+     */
     virtual void handleMessageWhenUp(omnetpp::cMessage *message) override;
 
-    // Message handling
+    /*
+     * Manejo de mensajes.
+     */
+    /*!
+     * @brief Manejo de mensajes propios.
+     *
+     * @param message [in] Mensaje a procesar.
+     */
     void processSelfMessage(omnetpp::cMessage *message);
 
-    // Location update timer
+    /*
+     * Actualización de la ubicación.
+     */
+    /*!
+     * @brief Programar el temporizador de actualización de la ubicación.
+     */
     void processLocationUpdateTimer();
+    /*!
+     * @brief Procesar el temporizador de actualización de la ubicación.
+     */
     void scheduleLocationUpdateTimer();
 
-protected:
-    // Lifecylce
-    virtual void handleStartOperation(inet::LifecycleOperation *operation) override;
-    virtual void handleStopOperation(inet::LifecycleOperation *operation) override;
-    virtual void handleCrashOperation(inet::LifecycleOperation *operation) override;
-    virtual bool isInitializeStage(int stage) override { return stage == inet::INITSTAGE_NETWORK_CONFIGURATION; }
-    virtual bool isModuleStartStage(int stage) override { return stage == inet::ModuleStartOperation::STAGE_NETWORK_LAYER; }
-    virtual bool isModuleStopStage(int stage) override { return stage == inet::ModuleStopOperation::STAGE_NETWORK_LAYER; }
-
-    virtual void initInterface();
-    virtual void joinNetwork(const GeohashLocation &geohashRegion, const int &networkType);
-    virtual void leaveNetwork(const int &networkType);
-    virtual void swapNetworks();
-
-    virtual void showAddresses() const;
+    /*
+     * Lifecycle.
+     */
+    virtual void handleStartOperation(inet::LifecycleOperation *operation)
+            override;
+    virtual void handleStopOperation(inet::LifecycleOperation *operation)
+            override;
+    virtual void handleCrashOperation(inet::LifecycleOperation *operation)
+            override;
 };
 
-
-} // namespace veins_proj
+}    // namespace veins_proj

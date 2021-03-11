@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "veins_proj/networklayer/configurator/AddressCache.h"
 #include <omnetpp.h>
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Ptr.h"
@@ -28,6 +27,7 @@
 #include "inet/networklayer/contract/ipv6/Ipv6Address.h"
 #include "inet/networklayer/contract/INetfilter.h"
 #include "inet/networklayer/ipv6/Ipv6RoutingTable.h"
+#include "veins_proj/networklayer/configurator/CarConfigurator.h"
 #include "veins_proj/routing/RoutingProtocolBase.h"
 #include "veins_proj/routing/Routing_m.h"
 #include "veins_proj/locationservice/HostsLocationTable.h"
@@ -57,8 +57,10 @@ protected:
      * @brief Módulo de movilidad.
      */
     CarMobility *mobility = nullptr;
-
-    AddressCache *addressCache = nullptr; // TODO Quitar.
+    /*!
+     * @brief Módulo de configurador de interfaz.
+     */
+    CarConfigurator *configurator = nullptr;
 
     /*
      * Vehículos vecinos por arista.

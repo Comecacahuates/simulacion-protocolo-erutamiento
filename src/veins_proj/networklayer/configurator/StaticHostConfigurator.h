@@ -32,7 +32,6 @@
 #include "inet/networklayer/contract/ipv6/Ipv6Address.h"
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #include "veins_proj/mobility/StaticHostMobility.h"
-#include "veins_proj/networklayer/configurator/AddressCache.h"
 #include "veins_proj/networklayer/configurator/ConfiguratorBase.h"
 #include "veins_proj/locationservice/HostsLocationTable.h"
 #include <vector>
@@ -41,7 +40,8 @@
 namespace veins_proj {
 
 /*!
- * @brief Módulo que implementa la configuración de la interfaz de los _hosts_.
+ * @brief Módulo que implementa la configuración
+ * de la interfaz de los *hosts*.
  */
 class StaticHostConfigurator: public ConfiguratorBase {
 

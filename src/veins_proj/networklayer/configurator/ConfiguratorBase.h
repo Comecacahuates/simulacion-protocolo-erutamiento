@@ -94,7 +94,7 @@ public:
          * @brief Subred de la región Geohash adyacente
          * cuando se encuentra en un vértice *gateway*.
          */
-        SECONDARY = 0,
+        SECONDARY = 1,
     };
 
 protected:
@@ -137,6 +137,7 @@ public:
      */
     const inet::Ipv6Address& getUnicastAddress(
             const NetworkType networktype) const {
+        showAddresses();
         return unicastAddresses[networktype];
     }
     /*!
@@ -148,6 +149,7 @@ public:
      */
     const inet::Ipv6Address& getMulticastAddress(
             const NetworkType networktype) const {
+        showAddresses();
         return multicastAddresses[networktype];
     }
 

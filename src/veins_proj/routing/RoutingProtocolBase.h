@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "veins_proj/networklayer/configurator/AddressCache.h"
 #include <omnetpp.h>
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Ptr.h"

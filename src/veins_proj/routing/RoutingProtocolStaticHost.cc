@@ -18,6 +18,7 @@
  * @author Adrián Juárez Monroy
  */
 
+#include "veins_proj/roadnetwork/RoadNetwork.h"
 #include "veins_proj/routing/RoutingProtocolStaticHost.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/packet/chunk/Chunk.h"
@@ -29,7 +30,6 @@
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
-#include "veins_proj/roadnetwork/RoadNetwork.h"
 
 using namespace veins_proj;
 
@@ -48,7 +48,7 @@ void RoutingProtocolStaticHost::initialize(int stage) {
     RoutingProtocolBase::initialize(stage);
 
     /*
-     * Inicialización local.
+     * Etapa de inicialización local.
      */
     if (stage == inet::INITSTAGE_LOCAL) {
         /*
