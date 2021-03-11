@@ -23,11 +23,9 @@
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "veins_proj/roadnetwork/RoadNetworkDatabase.h"
 
-
 namespace veins_proj {
 
-
-class StaticHostMobility : public inet::MovingMobilityBase {
+class StaticHostMobility: public inet::MovingMobilityBase {
 
 protected:
     // Context
@@ -42,13 +40,21 @@ protected:
 public:
     StaticHostMobility();
 
+    const RoadNetwork *getRoadNetwork() const {
+        return roadNetwork;
+    }
+
     virtual void initialize(int stage) override;
 
-    const GeohashLocation &getGeohashLocation() const { return geohashLocation; }
-    const LocationOnRoadNetwork &getLocationOnRoadNetwork() const { return locationOnRoadNetwork; }
+    const GeohashLocation& getGeohashLocation() const {
+        return geohashLocation;
+    }
+    const LocationOnRoadNetwork& getLocationOnRoadNetwork() const {
+        return locationOnRoadNetwork;
+    }
 
-    virtual void move() override {}
+    virtual void move() override {
+    }
 };
 
-
-} // namespace veins_proj
+}    // namespace veins_proj

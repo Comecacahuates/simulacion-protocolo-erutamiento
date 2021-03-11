@@ -90,7 +90,7 @@ protected:
      * Mensajes HOLA_VEHIC.
      */
     /*!
-     * @brief Procesar mensaje HOLA_VEIC.
+     * @brief Procesar mensaje HOLA_VEHIC.
      *
      * @param helloCar [in] Mensaje a procesar.
      */

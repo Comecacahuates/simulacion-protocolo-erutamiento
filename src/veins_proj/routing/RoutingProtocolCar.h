@@ -164,14 +164,14 @@ protected:
     /*!
      * @brief Crear mensaje PING.
      *
-     * @param carAddress [in] Dirección del vehículo remitente.
+     * @param srcAddress [in] Dirección del vehículo remitente.
      * @param pingVertex [in] Vértice de origen.
      * @param pongVertex [in] Vértice de destino.
      *
      * @return Mensaje PING.
      */
     virtual const inet::Ptr<Ping> createPing(
-            const inet::Ipv6Address &carAddress, Vertex pingVertex,
+            const inet::Ipv6Address &srcAddress, Vertex pingVertex,
             Vertex pongVertex) const;
     /*!
      * @brief Procesar mensaje PING.
@@ -264,7 +264,7 @@ protected:
      * @return Dirección IPv6 del vecino encontrado, o `::/128`
      * si no se encuentra ninguno.
      */
-    virtual inet::Ipv6Address findNeighbouringCarClosestToVertex(Vertex vertex);
+    const inet::Ipv6Address &findNeighbouringCarClosestToVertex(Vertex vertex) const;
     /*!
      * @brief Obtener la cantidad de vehículos vecinos que se encuentran
      * en la misma arista.
@@ -402,6 +402,21 @@ protected:
     virtual void processPurgeDelayedDatagramsTimer();
 
     /*
+     * Operación ping-pong
+     *
+     */
+    /*!
+     * @brief Iniciar una operación ping-pong.
+     *
+     * Se crea un mensaje PING y se transmite hacia el vehículo vecino
+     * más cercano al vértice de destino.
+     *
+     * @param pingVertex [in] Vértice de origen.
+     * @param pongVertex [in] Vértice de destino.
+     */
+    void startPingPong(const Vertex pingVertex, const Vertex pongVertex);
+
+    /*
      * Mensajes PONG pendientes.
      */
     /*!
@@ -411,11 +426,11 @@ protected:
         /*!
          * @brief Vértice de origen.
          */
-        Vertex srcVertex;
+        Vertex pingVertex;
         /*!
          * @brief Vértice de destino.
          */
-        Vertex destVertex;
+        Vertex pongVertex;
     };
     /*!
      * @brief Diccionario de mensajes PONG pendientes.
