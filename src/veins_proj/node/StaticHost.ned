@@ -33,10 +33,7 @@ module StaticHost extends AdhocHost
         mobility.typename = "org.car2x.veins.subprojects.veins_proj.mobility.StaticHostMobility";
 
     submodules:
-        addressCache: AddressCache {
-            @display("p=124.424995,727.64996");
-        }
-        hostConfigurator: StaticHostConfigurator {
+        configurator: StaticHostConfigurator {
             @display("p=124.424995,641.02496;is=s");
         }
         routingProtocol: RoutingProtocolStaticHost {

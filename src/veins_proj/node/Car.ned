@@ -35,7 +35,7 @@ module Car extends AdhocHost {
         addressCache: AddressCache {
             @display("p=124.424995,727.64996");
         }
-        hostConfigurator: CarConfigurator {
+        configurator: CarConfigurator {
             @display("p=124.424995,641.02496;is=s");
         }
         routingProtocol: RoutingProtocolCar {

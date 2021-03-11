@@ -130,10 +130,6 @@ protected:
      * @brief Módulo de la base de datos de redes viales.
      */
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
-    /*!
-     * @brief Módulo de la caché de direcciones.
-     */
-    AddressCache *addressCache = nullptr;
 
     /*
      * Mensajes propios.

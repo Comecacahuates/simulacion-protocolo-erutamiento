@@ -74,6 +74,14 @@ void RoutingProtocolCar::initialize(int stage) {
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
+        /*
+         *
+         * TODO Quitar.
+         */
+        addressCache = omnetpp::check_and_cast<AddressCache*>(
+                host->getSubmodule("addressCache"));
+        if (!addressCache)
+            throw omnetpp::cRuntimeError("No address cache module found");
 
         /*
          * Mensajes propios.

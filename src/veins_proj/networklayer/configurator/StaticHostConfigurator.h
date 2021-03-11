@@ -31,63 +31,60 @@
 #include "inet/networklayer/common/NetworkInterface.h"
 #include "inet/networklayer/contract/ipv6/Ipv6Address.h"
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
-#include "veins_proj/veins_proj.h"
 #include "veins_proj/mobility/StaticHostMobility.h"
 #include "veins_proj/networklayer/configurator/AddressCache.h"
+#include "veins_proj/networklayer/configurator/ConfiguratorBase.h"
 #include "veins_proj/locationservice/HostsLocationTable.h"
 #include <vector>
 #include <algorithm>
-
-#define PRIMARY_NETWORK   0
-#define SECONDARY_NETWORK 1
 
 namespace veins_proj {
 
 /*!
  * @brief Módulo que implementa la configuración de la interfaz de los _hosts_.
  */
-class StaticHostConfigurator: public inet::OperationalBase {
+class StaticHostConfigurator: public ConfiguratorBase {
 
 protected:
-    // Parameter
-    std::string interface; // TODO Cambiar al módulo ConfiguratorBase.
 
     /*
      * Contexto.
      */
-    omnetpp::cModule *host;  // TODO Cambiar al módulo ConfiguratorBase.
-    inet::IInterfaceTable *interfaceTable;  // TODO Cambiar al módulo ConfiguratorBase.
-    inet::NetworkInterface *networkInterface;  // TODO Cambiar al módulo ConfiguratorBase.
+    /*!
+     * @brief Módulo de movilidad.
+     */
     StaticHostMobility *mobility;
-    AddressCache *addressCache;
+    /*!
+     * @brief Módulo de la tabla de ubicación de *hosts*.
+     */
     HostsLocationTable *hostsLocationTable;
 
-    // Internal
-    GeohashLocation geohashRegions[2];  // TODO Cambiar al módulo ConfiguratorBase.
-
-public:
-    const GeohashLocation &getGeohashRegion(const int &networkType) const { return geohashRegions[networkType]; }
-
-protected:
-    // Module interface
-    virtual int numInitStages() const override { return inet::NUM_INIT_STAGES; }
+    /*
+     * Interfaz del módulo.
+     */
+    /*!
+     * @brief Inicialización.
+     *
+     * @param stage [in] Etapa de inicialización.
+     */
     virtual void initialize(int stage) override;
-    virtual void handleMessageWhenUp(omnetpp::cMessage *message) override {}
+    /*!
+     * @brief Manejo de mensajes.
+     *
+     * @param message [in] Mensaje a procesar.
+     */
+    virtual void handleMessageWhenUp(omnetpp::cMessage *message) override {
+    }
 
-protected:
-    // lifecylce
-    virtual void handleStartOperation(inet::LifecycleOperation *operation) override;
-    virtual void handleStopOperation(inet::LifecycleOperation *operation) override {}
-    virtual void handleCrashOperation(inet::LifecycleOperation *operation) override {}
-    virtual bool isInitializeStage(int stage) override { return stage == inet::INITSTAGE_NETWORK_CONFIGURATION; }
-    virtual bool isModuleStartStage(int stage) override { return stage == inet::ModuleStartOperation::STAGE_NETWORK_LAYER; }
-    virtual bool isModuleStopStage(int stage) override { return stage == inet::ModuleStopOperation::STAGE_NETWORK_LAYER; }
-
-    virtual void joinNetwork(const GeohashLocation &geohashRegion);
-    virtual void leaveNetwork();
-
-    virtual void initInterface();
-    virtual void showAddresses() const;
+    /*
+     * Lifecycle.
+     */
+    virtual void handleStartOperation(inet::LifecycleOperation *operation)
+            override;
+    virtual void handleStopOperation(inet::LifecycleOperation *operation)
+            override;
+    virtual void handleCrashOperation(inet::LifecycleOperation *operation)
+            override;
 };
 
-} // namespace veins_proj
+}    // namespace veins_proj

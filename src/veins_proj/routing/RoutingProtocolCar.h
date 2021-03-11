@@ -58,6 +58,8 @@ protected:
      */
     CarMobility *mobility = nullptr;
 
+    AddressCache *addressCache = nullptr; // TODO Quitar.
+
     /*
      * Vehículos vecinos por arista.
      * TODO Revisar si hace falta.

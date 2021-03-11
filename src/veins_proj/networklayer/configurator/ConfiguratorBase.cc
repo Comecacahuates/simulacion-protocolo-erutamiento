@@ -143,6 +143,8 @@ void ConfiguratorBase::joinNetwork(const GeohashLocation &geohashRegion,
     SIMTIME_ZERO,
     SIMTIME_ZERO);
     ipv6Data->joinMulticastGroup(multicastAddresses[networkType]);
+
+    showAddresses();
 }
 
 /*!
@@ -186,7 +188,10 @@ void ConfiguratorBase::swapNetworks() {
     Enter_Method
     ("StaticHostConfigurator::swapNetworks");
 
-    boost::swap(unicastAddresses[NetworkType::PRIMARY], unicastAddresses[NetworkType::SECONDARY]);
-    boost::swap(multicastAddresses[NetworkType::PRIMARY], multicastAddresses[NetworkType::SECONDARY]);
-    boost::swap(geohashRegions[NetworkType::PRIMARY], geohashRegions[NetworkType::SECONDARY]);
+    boost::swap(unicastAddresses[NetworkType::PRIMARY],
+            unicastAddresses[NetworkType::SECONDARY]);
+    boost::swap(multicastAddresses[NetworkType::PRIMARY],
+            multicastAddresses[NetworkType::SECONDARY]);
+    boost::swap(geohashRegions[NetworkType::PRIMARY],
+            geohashRegions[NetworkType::SECONDARY]);
 }

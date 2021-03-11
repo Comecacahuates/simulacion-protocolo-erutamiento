@@ -88,10 +88,6 @@ void RoutingProtocolBase::initialize(int stage) {
                 par("networkProtocolModule"), this);
         if (!networkProtocol)
             throw omnetpp::cRuntimeError("No network protocol module found");
-        addressCache = omnetpp::check_and_cast<AddressCache*>(
-                host->getSubmodule("addressCache"));
-        if (!addressCache)
-            throw omnetpp::cRuntimeError("No host configurator module found");
         roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase*>(
                 getModuleByPath(par("roadNetworkDatabaseModule")));
         if (!roadNetworkDatabase)

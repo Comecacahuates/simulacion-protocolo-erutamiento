@@ -24,6 +24,7 @@
 #include "veins_proj/routing/RoutingProtocolBase.h"
 #include "veins_proj/locationservice/HostsLocationTable.h"
 #include "veins_proj/mobility/StaticHostMobility.h"
+#include "veins_proj/networklayer/configurator/StaticHostConfigurator.h"
 #include "veins_proj/routing/Routing_m.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "inet/networklayer/contract/INetfilter.h"
@@ -45,6 +46,10 @@ protected:
      * @brief Módulo de movilidad.
      */
     StaticHostMobility *mobility = nullptr;
+    /*!
+     * @brief Módulo de configurador de interfaz.
+     */
+    StaticHostConfigurator *configurator = nullptr;
     /*!
      * @brief Módulo de la tabla de ubicación de _hosts_.
      */

@@ -38,7 +38,7 @@ simple RoutingProtocolBase like IManetRouting {
 		string roadNetworkDatabaseModule = default("roadNetworkDatabase");
         string routingTableModule = default("^.ipv6.routingTable");
         string networkProtocolModule = default("^.ipv6.ipv6");
-        string hostConfiguratorModule = default("^.hostConfigurator");
+        string configuratorModule = default("^.configurator");
         string outputInterface = default("wlan0");
 
     gates:

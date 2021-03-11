@@ -123,24 +123,35 @@ protected:
      */
     virtual void handleMessageWhenUp(omnetpp::cMessage *message) override = 0;
 
+public:
+
     /*
-     * Lifecycle.
+     * Acceso a las direcciones.
      */
-    virtual void handleStartOperation(inet::LifecycleOperation *operation)
-            override = 0;
-    virtual void handleStopOperation(inet::LifecycleOperation *operation)
-            override = 0;
-    virtual void handleCrashOperation(inet::LifecycleOperation *operation)
-            override = 0;
-    virtual bool isInitializeStage(int stage) override {
-        return stage == inet::INITSTAGE_NETWORK_INTERFACE_CONFIGURATION;
+    /*!
+     * Obtener una de las dos direcciones *unicast*.
+     *
+     * @param networktype [in] Tipo de dirección que se quiere obtener.
+     *
+     * @return Dirección asignada.
+     */
+    const inet::Ipv6Address& getUnicastAddress(
+            const NetworkType networktype) const {
+        return unicastAddresses[networktype];
     }
-    virtual bool isModuleStartStage(int stage) override {
-        return stage == inet::ModuleStartOperation::STAGE_NETWORK_LAYER;
+    /*!
+     * Obtener una de las dos direcciones *multicast*.
+     *
+     * @param networktype [in] Tipo de dirección que se quiere obtener.
+     *
+     * @return Dirección asignada.
+     */
+    const inet::Ipv6Address& getMulticastAddress(
+            const NetworkType networktype) const {
+        return multicastAddresses[networktype];
     }
-    virtual bool isModuleStopStage(int stage) override {
-        return stage == inet::ModuleStopOperation::STAGE_NETWORK_LAYER;
-    }
+
+protected:
 
     /*
      * Configuración de la interfaz.
@@ -158,7 +169,8 @@ protected:
      * @param geohashRegion [in] Región Geohash a cuya red se une
      * @param networkType [in] Tipo de red a la que se va a unir.
      */
-    void joinNetwork(const GeohashLocation &geohashRegion, const NetworkType networkType);
+    void joinNetwork(const GeohashLocation &geohashRegion,
+            const NetworkType networkType);
     /*!
      * @brief Salirse de una subred.
      *
@@ -173,6 +185,25 @@ protected:
      * Se utiliza cuando un vehículo cambia de una región Geohash a otra.
      */
     void swapNetworks();
+
+    /*
+     * Lifecycle.
+     */
+    virtual void handleStartOperation(inet::LifecycleOperation *operation)
+            override = 0;
+    virtual void handleStopOperation(inet::LifecycleOperation *operation)
+            override = 0;
+    virtual void handleCrashOperation(inet::LifecycleOperation *operation)
+            override = 0;
+    virtual bool isInitializeStage(int stage) override {
+        return stage == inet::INITSTAGE_NETWORK_CONFIGURATION;
+    }
+    virtual bool isModuleStartStage(int stage) override {
+        return stage == inet::ModuleStartOperation::STAGE_NETWORK_LAYER;
+    }
+    virtual bool isModuleStopStage(int stage) override {
+        return stage == inet::ModuleStopOperation::STAGE_NETWORK_LAYER;
+    }
 };
 
 }    // namespace veins_proj

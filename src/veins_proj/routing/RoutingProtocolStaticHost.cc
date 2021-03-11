@@ -58,6 +58,10 @@ void RoutingProtocolStaticHost::initialize(int stage) {
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
+        configurator = omnetpp::check_and_cast<StaticHostConfigurator*>(
+                getModuleByPath(par("configuratorModule")));
+        if (!configurator)
+            throw omnetpp::cRuntimeError("No configurator module found");
         hostsLocationTable = omnetpp::check_and_cast<HostsLocationTable*>(
                 getModuleByPath(par("hostsLocationTableModule")));
         if (!hostsLocationTable)
@@ -147,7 +151,7 @@ void RoutingProtocolStaticHost::processHelloCar(
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-        // @formatter:on
+            // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -178,10 +182,12 @@ void RoutingProtocolStaticHost::processHelloHostTimer() {
              << std::endl;
     EV_DEBUG << "RoutingProtocolStaticHost::processHelloHostTimer" << std::endl;
 
-    const inet::Ipv6Address &primaryUnicastAddress = addressCache->getUnicastAddress(
-            PRIMARY_ADDRESS);
-    const inet::Ipv6Address &primaryMulticastAddress = addressCache->getMulticastAddress(
-            PRIMARY_ADDRESS);
+    const inet::Ipv6Address &primaryUnicastAddress =
+            configurator->getUnicastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
+    const inet::Ipv6Address &primaryMulticastAddress =
+            configurator->getMulticastAddress(
+                    ConfiguratorBase::NetworkType::PRIMARY);
     const inet::Ptr<HelloHost> helloHost = createHelloHost(
             primaryUnicastAddress);
     sendRoutingMessage(helloHost, "HOLA_HOST", primaryUnicastAddress,
@@ -248,9 +254,10 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
      * y se verifica si en la tabal de enrutamiento existe una ruta hacia esta,
      * en cuyo caso, se acepta el datagrama.
      */
-    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
-            datagram);
-    inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
+    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader =
+            inet::getNetworkProtocolHeader(datagram);
+    inet::Ipv6Address destAddress =
+            networkHeader->getDestinationAddress().toIpv6();
     removeOldRoutes(omnetpp::simTime());
     if (routingTable->doLongestPrefixMatch(destAddress))
         return inet::INetfilter::IHook::ACCEPT;
@@ -307,15 +314,16 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
      * Se obtiene la dirección de destino del datagrama para saber hacia
      * dónde enrutarlo.
      */
-    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
-            datagram);
+    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader =
+            inet::getNetworkProtocolHeader(datagram);
     inet::Ipv6Address srcAddress = networkHeader->getSourceAddress().toIpv6();
-    inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
+    inet::Ipv6Address destAddress =
+            networkHeader->getDestinationAddress().toIpv6();
 
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-    // @formatter:on
+        // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -353,15 +361,16 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
      * Se obtiene la dirección de destino del datagrama para saber si
      * el paquete se procesa o se desecha.
      */
-    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader = inet::getNetworkProtocolHeader(
-            datagram);
+    const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader =
+            inet::getNetworkProtocolHeader(datagram);
     inet::Ipv6Address srcAddress = networkHeader->getSourceAddress().toIpv6();
-    inet::Ipv6Address destAddress = networkHeader->getDestinationAddress().toIpv6();
+    inet::Ipv6Address destAddress =
+            networkHeader->getDestinationAddress().toIpv6();
 
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-    // @formatter:on
+        // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -377,8 +386,8 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
      */
     GeohashLocation destGeohashLocation = hostsLocationTable->getHostLocation(
             destAddress).geohashLocation;
-    TlvDestGeohashLocationOption *destGeohashLocationOption = createTlvDestGeohashLocationOption(
-            destGeohashLocation.getBits());
+    TlvDestGeohashLocationOption *destGeohashLocationOption =
+            createTlvDestGeohashLocationOption(destGeohashLocation.getBits());
     setTlvOption(datagram, destGeohashLocationOption);
 
     /*
@@ -406,7 +415,8 @@ void RoutingProtocolStaticHost::handleStopOperation(
         inet::LifecycleOperation *operation) {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl;
-    Enter_Method("RoutingProtocolStaticHost::handleStopOperation");
+    Enter_Method
+    ("RoutingProtocolStaticHost::handleStopOperation");
 
     RoutingProtocolBase::handleStopOperation(operation);
     cancelAndDelete(helloHostTimer);
@@ -416,7 +426,8 @@ void RoutingProtocolStaticHost::handleCrashOperation(
         inet::LifecycleOperation *operation) {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl;
-    Enter_Method("RoutingProtocolStaticHost::handleCrashOperation");
+    Enter_Method
+    ("RoutingProtocolStaticHost::handleCrashOperation");
 
     RoutingProtocolBase::handleCrashOperation(operation);
     cancelAndDelete(helloHostTimer);
@@ -430,8 +441,9 @@ void RoutingProtocolStaticHost::receiveSignal(omnetpp::cComponent *source,
         omnetpp::simsignal_t signalID, omnetpp::cObject *obj,
         cObject *details) {
     EV_DEBUG << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method("RoutingProtocolStaticHost::receiveSignal");
+             << std::endl;
+    Enter_Method
+    ("RoutingProtocolStaticHost::receiveSignal");
 
 }
 
