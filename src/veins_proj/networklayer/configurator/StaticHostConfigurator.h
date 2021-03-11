@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+/*!
+ * @file StaticHostConfigurator.h
+ * @author Adrián Juárez Monroy
+ */
+
 #pragma once
 
 #include <omnetpp.h>
@@ -38,23 +43,27 @@
 
 namespace veins_proj {
 
-
+/*!
+ * @brief Módulo que implementa la configuración de la interfaz de los _hosts_.
+ */
 class StaticHostConfigurator: public inet::OperationalBase {
 
 protected:
-    // Parameters
-    std::string interface;
+    // Parameter
+    std::string interface; // TODO Cambiar al módulo ConfiguratorBase.
 
-    // Context
-    omnetpp::cModule *host;
-    inet::IInterfaceTable *interfaceTable;
-    inet::NetworkInterface *networkInterface;
+    /*
+     * Contexto.
+     */
+    omnetpp::cModule *host;  // TODO Cambiar al módulo ConfiguratorBase.
+    inet::IInterfaceTable *interfaceTable;  // TODO Cambiar al módulo ConfiguratorBase.
+    inet::NetworkInterface *networkInterface;  // TODO Cambiar al módulo ConfiguratorBase.
     StaticHostMobility *mobility;
     AddressCache *addressCache;
     HostsLocationTable *hostsLocationTable;
 
     // Internal
-    GeohashLocation geohashRegions[2];
+    GeohashLocation geohashRegions[2];  // TODO Cambiar al módulo ConfiguratorBase.
 
 public:
     const GeohashLocation &getGeohashRegion(const int &networkType) const { return geohashRegions[networkType]; }

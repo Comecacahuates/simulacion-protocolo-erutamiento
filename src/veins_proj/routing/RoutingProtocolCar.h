@@ -391,15 +391,15 @@ protected:
     /*!
      * @brief Imprimir los datagramas demorados.
      */
-    virtual void showDelayedDatagrams();
+    void showDelayedDatagrams();
     /*!
      * @brief Programar el temporizador de limpieza de datagramas demorados.
      */
-    virtual void schedulePurgeDelayedDatagramsTimer();
+    void schedulePurgeDelayedDatagramsTimer();
     /*!
      * @brief Procesar el temporizador de limpieza de datagramas demorados.
      */
-    virtual void processPurgeDelayedDatagramsTimer();
+    void processPurgeDelayedDatagramsTimer();
 
     /*
      * Operación ping-pong
@@ -458,17 +458,17 @@ protected:
     /*!
      * @brief Imprimir los mensajes PONG pendientes.
      */
-    virtual void showPendingPongs() const;
+    void showPendingPongs() const;
     /*!
      * @brief Programar el temporizador de limpieza de mensajes
      * PONG pendientes.
      */
-    virtual void schedulePurgePendingPongsTimer();
+    void schedulePurgePendingPongsTimer();
     /*!
      * @brief Procesar el temporizador de limpieza de mensajes
      * PONG pendientes.
      */
-    virtual void processPurgePendingPongsTimer();
+    void processPurgePendingPongsTimer();
 
     /*
      * Enrutamiento.
@@ -564,7 +564,7 @@ protected:
      *
      * @return Dirección IPv6 del vehículo vecino en la región Geohash indicada.
      */
-    virtual inet::Ipv6Address findNeighbourInNeighbourinRegion(
+    inet::Ipv6Address findNeighbourCarInAdjacentdRegion(
             const GeohashLocation &neighbouringGeohashRegion) const;
 
     /*
@@ -573,7 +573,7 @@ protected:
     /*!
      * @brief Mostrar la dirección IPv6 del vehículo y su ubicación vial.
      */
-    virtual void showStatus() const;
+    void showStatus() const;
 
     /*
      * Netfilter.

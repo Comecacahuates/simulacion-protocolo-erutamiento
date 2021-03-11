@@ -32,7 +32,6 @@ private:
     std::map<std::string, RoadNetwork *> roadNetworksMap;
 
 public:
-    RoadNetworkDatabase() {}
     virtual ~RoadNetworkDatabase();
 
 protected:

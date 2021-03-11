@@ -49,6 +49,7 @@ public:
     int getPrecision() const { return geohash.length(); }
     const GeographicLib::GeoCoords &getLocation() const {return location; }
     const Bounds &getBounds() const { return bounds; }
+    void setNull();
     void setGeohash(const std::string &geohash);
     void setLocation(const double &lat, const double &lon);
     void setLocation(const double &lat, const double &lon, unsigned int precision);

@@ -219,7 +219,7 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
              << "Vertex B: " << vertexB << std::endl
              << "Distance to vertex A: " << distanceToVertexA << std::endl
              << "Distance to vertex B: " << distanceToVertexB << std::endl;
-                    // @formatter:on
+                            // @formatter:on
 
     /*
      * Se crea el mensaje y se le agregan los datos.
@@ -302,7 +302,7 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size()
              << std::endl;
-                            // @formatter:on
+                                    // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -386,7 +386,7 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
         const inet::Ipv6Address &srcAddress, Vertex pingVertex,
         Vertex pongVertex) const {
     EV_DEBUG << "******************************************************************************************************************************************************************"
-            << std::endl;
+             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::createPing");
 
@@ -396,7 +396,7 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Target vertex: " << pongVertex << std::endl
             << "Source vertex: " << pingVertex << std::endl;
-    // @formatter:on
+            // @formatter:on
 
     inet::Ipv6Address nextHopAddress =
             getRandomNeighbouringCarAddressAheadOnEdge(pongVertex);
@@ -1041,7 +1041,7 @@ void RoutingProtocolCar::showPendingPongs() const {
         EV_INFO << "Ping vertex: " << it->second.value.pingVertex << std::endl
                 << "Pong vertex: " << it->second.value.pongVertex << std::endl
                 << "Expiry time: " << it->second.expiryTime << std::endl;
-                                        // @formatter:on
+                                                        // @formatter:on
         it++;
     }
 }
@@ -1609,7 +1609,7 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
                     roadNetwork->getGeohashRegion();
             GeohashLocation neighbourGeohashRegion;
             geohashRegion.getNeighbour(gatewayType, neighbourGeohashRegion);
-            nextHopAddress = findNeighbourInNeighbourinRegion(
+            nextHopAddress = findNeighbourCarInAdjacentdRegion(
                     neighbourGeohashRegion);
 
             if (!nextHopAddress.isUnspecified())
@@ -1675,23 +1675,21 @@ inet::Ipv6Address RoutingProtocolCar::findNextHop(
  *
  * @return Dirección IPv6 del vehículo vecino en la región Geohash indicada.
  */
-inet::Ipv6Address RoutingProtocolCar::findNeighbourInNeighbourinRegion(
+inet::Ipv6Address RoutingProtocolCar::findNeighbourCarInAdjacentdRegion(
         const GeohashLocation &neighbouringGeohashRegion) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::findNeighbourInNeighbourinRegion");
+    ("RoutingProtocolCar::findNeighbourCarInAdjacentdRegion");
 
-    NeighbouringCarsConstIterator neighbouringCarsIt =
-            neighbouringCars.getMap().begin();
-    NeighbouringCarsConstIterator neighbouringCarsEndIt =
-            neighbouringCars.getMap().end();
+    NeighbouringCarsConstIterator it = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIterator endIt = neighbouringCars.getMap().end();
 
-    while (neighbouringCarsIt != neighbouringCarsEndIt) {
+    while (it != endIt) {
         const GeohashLocation &neighbouringCarGeohashLocation =
-                neighbouringCarsIt->second.value.geohashLocation;
+                it->second.value.geohashLocation;
         if (neighbouringGeohashRegion.contains(neighbouringCarGeohashLocation))
-            return neighbouringCarsIt->first;
+            return it->first;
     }
 
     return inet::Ipv6Address::UNSPECIFIED_ADDRESS;
@@ -1722,7 +1720,7 @@ void RoutingProtocolCar::showStatus() const {
             << "Edge: " << edge << std::endl
             << "Distance to vertex A: " << distanceToVertexA << std::endl
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
-                        // @formatter:on
+                                // @formatter:on
 }
 
 /*
@@ -1758,7 +1756,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramPreRoutingHook(
     // @formatter:off
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Destination address: " << destAddress.str() << std::endl;
-                        // @formatter:on
+                                // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -1802,7 +1800,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::datagramLocalOutHook(
     // @formatter:off
     EV_INFO << "Source address: " << srcAddress.str() << std::endl
             << "Destination address: " << destAddress.str() << std::endl;
-                        // @formatter:on
+                                // @formatter:on
 
     return inet::INetfilter::IHook::ACCEPT;
 }

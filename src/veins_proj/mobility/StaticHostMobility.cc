@@ -46,7 +46,7 @@ void StaticHostMobility::initialize(int stage) {
 
         geohashLocation.setLocation(location.latitude.get(), location.longitude.get());
 
-        RoadNetwork *roadNetwork = roadNetworkDatabase->getRoadNetwork(geohashLocation);
+        roadNetwork = roadNetworkDatabase->getRoadNetwork(geohashLocation);
         bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(geohashLocation.getLocation(), 0, 0, locationOnRoadNetwork);
     }
 }

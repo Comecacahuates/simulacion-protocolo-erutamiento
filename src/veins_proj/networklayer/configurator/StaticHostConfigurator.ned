@@ -15,13 +15,13 @@
 
 package org.car2x.veins.subprojects.veins_proj.networklayer.configurator;
 
+import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.ConfiguratorBase;
 
-simple StaticHostConfigurator {
+simple StaticHostConfigurator extends ConfiguratorBase {
+    
     parameters:
         @class(veins_proj::StaticHostConfigurator);
         @display("i=block/cogwheel");
-        
-        string interface = default("wlan0");
         
         string roadNetworkDatabaseModule = default("roadNetworkDatabase");
         string hostsLocationTableModule = "hostsLocationTable";

@@ -15,9 +15,6 @@
 
 package org.car2x.veins.subprojects.veins_proj.networklayer.configurator;
 
-//
-// TODO auto-generated module
-//
 simple CarConfigurator {
     
     parameters:

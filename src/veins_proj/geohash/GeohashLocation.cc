@@ -56,6 +56,14 @@ GeohashLocation::GeohashLocation(uint64_t bits, unsigned int precision) {
 GeohashLocation::~GeohashLocation() {}
 
 
+void GeohashLocation::setNull() {
+    geohash.clear();
+    bits = 0;
+    location.Reset(GeographicLib::Math::NaN(), GeographicLib::Math::NaN());
+    bounds.setBounds(90, 180, -90, -180);
+}
+
+
 void GeohashLocation::setGeohash(const std::string &geohash) {
     this->geohash = geohash;
     GeohashLocation::decode(geohash, location, bounds, bits);

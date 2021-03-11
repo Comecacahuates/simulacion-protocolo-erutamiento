@@ -107,13 +107,17 @@ protected:
      * Contexto.
      */
     /*!
-     * @brief Módulo del _host_ o vehículo contenedor.
+     * @brief Módulo del *host* o vehículo contenedor.
      */
     omnetpp::cModule *host = nullptr;
     /*!
      * @brief Módulo de la tabla de interfaces.
      */
     inet::IInterfaceTable *interfaceTable = nullptr;
+    /*!
+     * @brief Módulo de la interfaz de red.
+     */
+    inet::NetworkInterface *networkInterface = nullptr;
     /*!
      * @brief Módulo de la tabla de enrutamiento IPv6.
      */
@@ -122,10 +126,6 @@ protected:
      * @brief Módulo del protocolo de red.
      */
     inet::INetfilter *networkProtocol = nullptr;
-    /*!
-     * @brief Módulo de la interfaz de red.
-     */
-    inet::NetworkInterface *networkInterface = nullptr;
     /*!
      * @brief Módulo de la base de datos de redes viales.
      */

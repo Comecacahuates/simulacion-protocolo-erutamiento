@@ -49,14 +49,14 @@ protected:
     omnetpp::simtime_t locationUpdateInterval;
 
     // Context
-    omnetpp::cModule *host;
-    inet::IInterfaceTable *interfaceTable;
-    inet::NetworkInterface *networkInterface;
+    omnetpp::cModule *host;  // TODO Cambiar al módulo ConfiguratorBase.
+    inet::IInterfaceTable *interfaceTable;  // TODO Cambiar al módulo ConfiguratorBase.
+    inet::NetworkInterface *networkInterface;  // TODO Cambiar al módulo ConfiguratorBase.
     CarMobility *mobility;
-    AddressCache *addressCache;
+    AddressCache *addressCache;  // TODO Eliminar.
 
     // Internal
-    GeohashLocation geohashRegions[2];
+    GeohashLocation geohashRegions[2];  // TODO Cambiar al módulo ConfiguratorBase.
 
     // Self messages
     omnetpp::cMessage *locationUpdateTimer;
