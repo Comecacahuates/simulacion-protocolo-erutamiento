@@ -42,12 +42,12 @@ void RoadNetworkDatabase::initialize() {
 
 
 RoadNetwork *RoadNetworkDatabase::getRoadNetwork(const GeohashLocation &geohashLocation) {
-    if (geohashLocation.getPrecision() < 6)
+    if (geohashLocation.getGeohashLength() < 6)
         return nullptr;
 
-    std::string geohashString = geohashLocation.getGeohashString().substr(0, 6);
-    if (roadNetworksMap.find(geohashString) != roadNetworksMap.end())
-        return roadNetworksMap[geohashString];
+    std::string geohash = geohashLocation.getGeohash().substr(0, 6);
+    if (roadNetworksMap.find(geohash) != roadNetworksMap.end())
+        return roadNetworksMap[geohash];
 
     return nullptr;
 }

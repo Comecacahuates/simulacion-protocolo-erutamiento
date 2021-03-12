@@ -75,17 +75,6 @@ protected:
     RoadNetwork *roadNetwork = nullptr;
 
     /*
-     * Estatus.
-     * TODO Revisar si es necesario.
-     */
-    //! Bandera de cambio de ubicación.
-    bool locationChanged_;
-    //! Bandera de cambio de arista.
-    bool edgeChanged_;
-    //! Bandera de cambio de región Geohash.
-    bool regionChanged_;
-
-    /*
      * Mensaje spropios.
      */
     //! Temporizador de actualización de la ubicación.
@@ -178,34 +167,6 @@ public:
     }
 
     /*
-     * Acceso al estatus.
-     */
-    /*!
-     * @brief Acceso a la bandera de cambio de ubicación.
-     *
-     * @return Bandera de cambio de ubicación.
-     */
-    bool locationChanged() const {
-        return locationChanged_;
-    }
-    /*!
-     * @brief Acceso a la bandera de cambio de arista.
-     *
-     * @return Bandera de cambio de arista.
-     */
-    bool edgeChanged() const {
-        return edgeChanged_;
-    }
-    /*!
-     * @brief Acceso a la bandera de cambio de región Geohash.
-     *
-     * @return Bandera de cambio de región Geohash.
-     */
-    bool regionChanged() const {
-        return regionChanged_;
-    }
-
-    /*
      * Actualización de la ubicación.
      */
 protected:
@@ -237,26 +198,15 @@ public:
      *
      * @param vertex [in] Vértice de referencia.
      * @return `true` si el vehículo se encuentra en el vértice.
-     *
-     * TODO Eliminar.
      */
     bool isAtVertex(const Vertex vertex) const;
-    /*!
-     * @brief Verificar si el vehículo se encuentra en un vértice _gateway_.
-     *
-     * @return `true` si el vehículo se encuentra en un vértice _gateway_.
-     * TODO Eliminar:
-     */
-    std::pair<Vertex, bool> isAtGateway() const;
 
 private:
 
     /*!
      * @brief Actualizar la red vial si es necesario.
-     *
-     * @return `true` si se actualizó la red vial.
      */
-    bool updateRoadNetwork();
+    void updateRoadNetwork();
 };
 
 }    // namespace veins_proj

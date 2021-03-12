@@ -53,13 +53,9 @@ protected:
     /*
      * Contexto.
      */
-    /*!
-     * @brief Módulo de movilidad.
-     */
+    //! Módulo de movilidad.
     CarMobility *mobility = nullptr;
-    /*!
-     * @brief Módulo de configurador de interfaz.
-     */
+    //! Módulo de configurador de interfaz.
     CarConfigurator *configurator = nullptr;
 
     /*
@@ -75,25 +71,15 @@ protected:
     /*
      * Mensajes propios.
      */
-    /*!
-     * @brief Temporizador de transmisión de mensajes HOLA_VEHIC.
-     */
+    //! Temporizador de transmisión de mensajes HOLA_VEHIC.
     omnetpp::cMessage *helloCarTimer;
-    /*!
-     * @brief Temporizador de limpieza del directorio de _hosts_ vecinos.
-     */
+    //! Temporizador de limpieza del directorio de *hosts* vecinos.
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
-    /*!
-     * @brief Temporizador de limpieza de aristas activas.
-     */
+    //! Temporizador de limpieza de aristas activas.
     omnetpp::cMessage *purgeEdgesStatusTimer;
-    /*!
-     * @brief Temporizador de datagramas demorados.
-     */
+    //! Temporizador de datagramas demorados.
     omnetpp::cMessage *purgeDelayedDatagramsTimer;
-    /*!
-     * @brief Temporizador de limpieza de mensajes PONG pendientes.
-     */
+    //! Temporizador de limpieza de mensajes PONG pendientes.
     omnetpp::cMessage *purgePendingPongsTimer;
 
     /*
@@ -139,7 +125,6 @@ protected:
      * @brief Crear mensaje HOLA_VEHIC.
      *
      * @param srcAddress [in] Dirección del vehículo que trnasmite el mensaje.
-     *
      * @return Mensaje HOLA_VEHIC.
      */
     virtual const inet::Ptr<HelloCar> createHelloCar(
@@ -171,7 +156,6 @@ protected:
      * @param srcAddress [in] Dirección del vehículo remitente.
      * @param pingVertex [in] Vértice de origen.
      * @param pongVertex [in] Vértice de destino.
-     *
      * @return Mensaje PING.
      */
     virtual const inet::Ptr<Ping> createPing(
@@ -213,7 +197,6 @@ protected:
      * @param error [in] Bandera de error.
      * @param pingVertex [in] Vértice de origen.
      * @param pongVertex [in] Vértice de destino.
-     *
      * @return Mensaje PONG.
      */
     virtual const inet::Ptr<Pong> createPong(
@@ -250,7 +233,6 @@ protected:
      * arista, y que esté más cerca del vértice indicado.
      *
      * @param targetVertex [in] Vértice de referencia.
-     *
      * @return Dirección IPv6 del vehículo vecino seleccionado.
      */
     virtual inet::Ipv6Address getRandomNeighbouringCarAddressAheadOnEdge(
@@ -264,11 +246,11 @@ protected:
      * indicado.
      *
      * @param vertex [in] Vértice de referencia.
-     *
      * @return Dirección IPv6 del vecino encontrado, o `::/128`
      * si no se encuentra ninguno.
      */
-    const inet::Ipv6Address &findNeighbouringCarClosestToVertex(Vertex vertex) const;
+    const inet::Ipv6Address& findNeighbouringCarClosestToVertex(
+            Vertex vertex) const;
     /*!
      * @brief Obtener la cantidad de vehículos vecinos que se encuentran
      * en la misma arista.
@@ -282,14 +264,14 @@ protected:
      * Directorio de hosts vecinos.
      */
     /*!
-     * @brief Diccionario de directorio de _hosts_ vecinos.
+     * @brief Diccionario de directorio de *hosts* vecinos.
      *
      * La clave es la dirección IPv6 del _host_ vecino, y el valor es el
      * registro de _host_ vecino.
      */
     typedef ExpiringValuesMap<inet::Ipv6Address, GeohashLocation> NeighbouringHosts;
     /*!
-     * @brief Registro de diccionario de directorio de _hosts_ vecinos.
+     * @brief Registro de diccionario de directorio de *hosts* vecinos.
      *
      * La clave es la dirección IPv6 del _host_ vecino, y el valor es el
      * registro de _host_ vecino.
@@ -297,30 +279,30 @@ protected:
     typedef std::pair<inet::Ipv6Address, GeohashLocation> NeighbouringHost;
     /*!
      * @brief Iterador de registros para diccionario del directorio
-     * de _hosts_ vecinos.
+     * de *hosts* vecinos.
      */
     typedef NeighbouringHosts::Iterator NeighbouringHostsIterator;
     /*!
-     * @brief Iterador de registros para diccionario del directorio de _hosts_
+     * @brief Iterador de registros para diccionario del directorio de *hosts*
      * vecinos constante.
      */
     typedef NeighbouringHosts::ConstIterator NeighbouringHostsConstIterator;
     /*!
-     * @brief Directorio de _hosts_ vecinos.
+     * @brief Directorio de *hosts* vecinos.
      */
     NeighbouringHosts neighbouringHosts;
     /*!
-     * @brief Imrpimir el directorio de _hosts_ vecinos.
+     * @brief Imrpimir el directorio de *hosts* vecinos.
      */
     virtual void showNeighbouringHosts() const;
     /*!
      * @brief Programar el temporizador de limpieza del directorio
-     * de _hosts_ vecinos.
+     * de *hosts* vecinos.
      */
     virtual void schedulePurgeNeighbouringHostsTimer();
     /*!
      * @brief Procesar el temporizador de limpieza del directorio
-     * de _hosts_ vecinos.
+     * de *hosts* vecinos.
      */
     virtual void processPurgeNeighbouringHostsTimer();
 
@@ -440,7 +422,7 @@ protected:
      * @brief Diccionario de mensajes PONG pendientes.
      *
      * La clave es la arista por la que se envió el mensaje PING,
-     * y el valor es la hora de expiración.
+     * y el valor es el par de vértices de origen y destino.
      */
     typedef ExpiringValuesMap<Edge, PendingPongValue> PendingPongs;
     /*!
@@ -485,7 +467,6 @@ protected:
      * ruta. Si no se encuentra la ruta, se descarta el datagrama.
      *
      * @param datagram [in] Datagrama a enrutar.
-     *
      * @return Resultado del enrutamiento.
      */
     virtual inet::INetfilter::IHook::Result routeDatagram(
@@ -507,7 +488,6 @@ protected:
      *
      * @param datagram [in] Datagrama a enrutar.
      * @param shortestPath [in] Rutas más cortas.
-     *
      * @return Vértice de destino local.
      */
     virtual Vertex getLocalDestVertex(inet::Packet *datagram,
@@ -516,7 +496,6 @@ protected:
      * @brief Se obtiene el conjunto de vértices visitados.
      *
      * @param visitedVerticesOption [in] Opción de vértices visitados.
-     *
      * @return Conjunto de vértices visitados.
      */
     virtual VertexSet getVisitedVertices(
@@ -527,7 +506,6 @@ protected:
      * @param destGeohashLocation [in] Ubicación Geohash del destino.
      * @param destEdge [in] Arista de la ubicación del destno.
      * @param shortestPath [in] Rutas más cortas.
-     *
      * @return Vértice de destino.
      */
     virtual Vertex getDestVertex(const GeohashLocation &destGeohashLocation,
@@ -541,7 +519,6 @@ protected:
      * @param shortestPathToDestVertex [in] Ruta más corta al vértice
      * de destino.
      * @param shortestPath [in] Rutas más cortas.
-     *
      * @return Aristas que forman un
      */
     virtual EdgeVector getReachableEdges(
@@ -555,7 +532,6 @@ protected:
      * @param shortestPathToDestVertex [in] Ruta más corta al vértice
      * de destino.
      * @param shortestPath [in] Rutas más cortas.
-     *
      * @return Dirección IPv6 del siguiente salto.
      */
     virtual inet::Ipv6Address findNextHop(
@@ -565,7 +541,6 @@ protected:
      * @brief Obtener vehículo vecino en la región Geohash adyacente.
      *
      * @param neighbouringGeohashRegion [in] Región Geohash adyacente.
-     *
      * @return Dirección IPv6 del vehículo vecino en la región Geohash indicada.
      */
     inet::Ipv6Address findNeighbourCarInAdjacentdRegion(
@@ -587,7 +562,6 @@ protected:
      * antes de enrutarlo.
      *
      * @param datagram [in] Datagrama a procesar.
-     *
      * @return Resultado del procesamiento.
      */
     virtual inet::INetfilter::IHook::Result datagramPreRoutingHook(
@@ -597,7 +571,6 @@ protected:
      * antes de enrutarlo.
      *
      * @param datagram [in] Datagrama a procesar.
-     *
      * @return Resultado del procesamiento.
      */
     virtual inet::INetfilter::IHook::Result datagramLocalOutHook(

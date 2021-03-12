@@ -42,9 +42,11 @@ void StaticHostMobility::initialize(int stage) {
         inet::IGeographicCoordinateSystem *coordinateSystem = omnetpp::check_and_cast<inet::IGeographicCoordinateSystem *>(getModuleByPath(par("coordinateSystemModule")));
 
         inet::Coord position = getCurrentPosition();
-        inet::GeoCoord location = coordinateSystem->computeGeographicCoordinate(position);
+        inet::GeoCoord inetLocation = coordinateSystem->computeGeographicCoordinate(position);
 
-        geohashLocation.setLocation(location.latitude.get(), location.longitude.get());
+        GeographicLib::GeoCoords location(inetLocation.latitude.get(), inetLocation.longitude.get());
+
+        geohashLocation.setLocation(location);
 
         roadNetwork = roadNetworkDatabase->getRoadNetwork(geohashLocation);
         bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(geohashLocation.getLocation(), 0, 0, locationOnRoadNetwork);

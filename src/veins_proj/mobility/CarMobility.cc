@@ -114,8 +114,9 @@ void CarMobility::scheduleLocationUpdateTimer() {
  */
 void CarMobility::processLocationUpdateTimer() {
     EV_DEBUG << "******************************************************************************************************************************************************************"
-            << std::endl
-    << "CarMobility::scheduleLocationUpdateTimer" << std::endl;
+             << std::endl
+             << "CarMobility::scheduleLocationUpdateTimer"
+             << std::endl;
     Enter_Method
     ("CarMobility::scheduleLocationUpdateTimer");
 
@@ -127,18 +128,15 @@ void CarMobility::processLocationUpdateTimer() {
  * @brief Actualizar la ubicación.
  */
 void CarMobility::updateLocation() {
-    locationChanged_ = false;
-    edgeChanged_ = false;
-    regionChanged_ = false;
-
     // Obtener coordenadas cartesianas
     inet::Coord inetLocation = veins::VeinsInetMobility::getCurrentPosition();
     veins::Coord veinsLocation = veins::Coord(inetLocation.x, inetLocation.y);
 
     // Obtener coordenadas geogr��ficas
     double lat, lon;
-    boost::tie(lon, lat) = veins::VeinsInetMobility::getCommandInterface()->getLonLat(
-            veinsLocation);
+    boost::tie(lon, lat) =
+            veins::VeinsInetMobility::getCommandInterface()->getLonLat(
+                    veinsLocation);
 
     // Obtener velocidad
     inet::Coord inetSpeed = veins::VeinsInetMobility::getCurrentVelocity();
@@ -151,27 +149,24 @@ void CarMobility::updateLocation() {
                         - inet::math::rad2deg(
                                 std::atan2(-inetSpeed.y, inetSpeed.x)), 360.0);
 
-    // Se verifica si la ubicaci��n cambi��
-    if (geohashLocation.isNull()
-            || !geohashLocation.getBounds().contains(lat, lon)) {
-        geohashLocation.setLocation(lat, lon);
+    GeographicLib::GeoCoords location(lat, lon);
 
-        locationChanged_ = true;
+    // Se verifica si la ubicación cambió
+    if (geohashLocation.isNull()
+            || !geohashLocation.contains(location)) {
+        geohashLocation.setLocation(location);
 
         // Se actualiza la red vial
-        regionChanged_ = updateRoadNetwork();
+        updateRoadNetwork();
 
-        Edge previousEdge = locationOnRoadNetwork.edge;
         bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(
                 getLocation(), speed, direction, locationOnRoadNetwork);
 
         if (locationSuccess)
-            EV_INFO << "Ubicaci��n correcta" << std::endl;
+            EV_INFO << "Ubicación correcta" << std::endl;
 
         else
-            EV_INFO << "Error obtenindo ubicaci��n" << std::endl;
-
-        edgeChanged_ = locationOnRoadNetwork.edge != previousEdge;
+            EV_INFO << "Error obtenindo ubicación" << std::endl;
     }
 }
 
@@ -186,8 +181,9 @@ void CarMobility::updateLocation() {
  */
 GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
     EV_DEBUG << "******************************************************************************************************************************************************************"
-            << std::endl
-    << "CarMobility::getGatewayRegion" << std::endl;
+             << std::endl
+             << "CarMobility::getGatewayRegion"
+             << std::endl;
     Enter_Method
     ("CarMobility::getGatewayRegion");
 
@@ -205,61 +201,15 @@ GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
  *
  * @param vertex [in] Vértice de referencia.
  * @return `true` si el vehículo se encuentra en el vértice.
- *
- * TODO Eliminar.
  */
 bool CarMobility::isAtVertex(const Vertex vertex) const {
-    const Graph &graph = roadNetwork->getGraph();
-    const Edge &edge = locationOnRoadNetwork.edge;
-    Vertex vertexA = boost::source(edge, graph);
-    Vertex vertexB = boost::target(edge, graph);
-
-    // Si el v��rtice no es un v��rtice de la arista
-    if (vertex != vertexA && vertex != vertexB)
-        return false;
-
-    double distanceToVertex;
-
-    if (vertex == vertexA)
-        distanceToVertex = locationOnRoadNetwork.distanceToVertexA;
-
-    else
-        distanceToVertex = locationOnRoadNetwork.distanceToVertexB;
-
-    return distanceToVertex <= vertexProximityRadius;
-}
-
-/*!
- * @brief Verificar si el vehículo se encuentra en un vértice _gateway_.
- *
- * @return `true` si el vehículo se encuentra en un vértice _gateway_.
- * TODO Eliminar:
- */
-std::pair<Vertex, bool> CarMobility::isAtGateway() const {
-    const Graph &graph = roadNetwork->getGraph();
-    Vertex vertexA = boost::source(locationOnRoadNetwork.edge, graph);
-    Vertex vertexB = boost::target(locationOnRoadNetwork.edge, graph);
-
-    // Si el vértice A es gateway y se encuentra dentro del radio de proximidad
-    if (isGateway(vertexA, graph)) {
-        if (inVertex(locationOnRoadNetwork, vertexA, graph))
-            return std::pair<Vertex, bool>(vertexA, true);
-
-        // Si el v��rtice B es gateway y se encuentra dentro del radio de proximidad
-    } else if (isGateway(vertexB, graph)) {
-        if (inVertex(locationOnRoadNetwork, vertexB, graph))
-            return std::pair<Vertex, bool>(vertexB, true);
-    }
-
-    return std::pair<Vertex, bool>(vertexA, false);
+    return veins_proj::isAtVertex(locationOnRoadNetwork, vertex, roadNetwork->getGraph());
 }
 
 /*!
  * @brief Actualizar la red vial si es necesario.
- *
- * @return `true` si se actualizó la red vial.
  */
-bool CarMobility::updateRoadNetwork() {
+void CarMobility::updateRoadNetwork() {
     if (roadNetwork == nullptr
             || !roadNetwork->getGeohashRegion().getBounds().contains(
                     geohashLocation.getLocation())) {
@@ -268,10 +218,6 @@ bool CarMobility::updateRoadNetwork() {
         if (roadNetwork == nullptr)
             throw omnetpp::cRuntimeError(
                     "Couldn't find network geohash location %s",
-                    geohashLocation.getGeohashString().c_str());
-
-        return true;
+                    geohashLocation.getGeohash().c_str());
     }
-
-    return false;
 }

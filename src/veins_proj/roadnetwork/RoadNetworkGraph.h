@@ -33,27 +33,27 @@ namespace veins_proj {
 
 //! Datos de cada vértice.
 struct VertexData {
-	//! Ubicación del vértice.
-	GeographicLib::GeoCoords location;
-	//! Tipo de _gateway_.
-	GeohashLocation::Adjacency adjacency;
+    //! Ubicación del vértice.
+    GeographicLib::GeoCoords location;
+    //! Tipo de _gateway_.
+    GeohashLocation::Adjacency adjacency;
 };
 
 //! Datos de cada arista.
 struct EdgeData {
-	//! Peso de la arista.
-	double weight;
-	//! Longitud de la arista en metros.
-	double length;
-	//! Dirección del segundo vértice respecto al primero.
-	double direction1;
-	//! Dirección del primer vértice respecto a segundo.
-	double direction2;
+    //! Peso de la arista.
+    double weight;
+    //! Longitud de la arista en metros.
+    double length;
+    //! Dirección del segundo vértice respecto al primero.
+    double direction1;
+    //! Dirección del primer vértice respecto a segundo.
+    double direction2;
 };
 
 //! Grafo vial.
 typedef boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS,
-		VertexData, EdgeData> Graph;
+        VertexData, EdgeData> Graph;
 //! Vértice del grafo vial.
 typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
 //! Iterador de vértices para grafo vial.
@@ -97,18 +97,20 @@ typedef EdgeSet::const_iterator EdgeSetConstIterator;
 
 //! Ubicación vial de un objeto.
 struct LocationOnRoadNetwork {
-	//! Arista en la que se ubica el objeto.
-	Edge edge;
-	//! Distancia hacia la arista.
-	double distanceToEdge;
-	//! Sistancia hacia el primer vértice de la arista.
-	double distanceToVertexA;
-	//! Distancia hacia el segundo vértice de la arista.
-	double distanceToVertexB;
+    //! Arista en la que se ubica el objeto.
+    Edge edge;
+    //! Distancia hacia la arista.
+    double distanceToEdge;
+    //! Sistancia hacia el primer vértice de la arista.
+    double distanceToVertexA;
+    //! Distancia hacia el segundo vértice de la arista.
+    double distanceToVertexB;
 };
 
-//! Determina si la ubicación del primer vértice es menor a la del segundo.
 /*!
+ * @brief Determina si la ubicación del primer vértice es
+ * menor a la del segundo.
+ *
  * Para que la ubicación del primer vértice sea menor, su latitud debe ser
  * menor a la del segundo. Si las latitudes son iguales, la longitud debe ser
  * menor.
@@ -121,16 +123,18 @@ struct LocationOnRoadNetwork {
  */
 bool sortedVertices(Vertex vertexA, Vertex vertexB, const Graph &graph);
 
-//! Determina si un vértice es _gateway_.
 /*!
+ * @brief Determina si un vértice es *gateway*.
+ *
  * @param vertex [in] Vértice que se va a revisar.
  * @param graph [in] Grafo al que pertenece el vértice.
  * @return `true` en caso de que el vértice sea _gateway_.
  */
 bool isGateway(Vertex vertex, const Graph &graph);
 
-//! Verifica si dos direcciones acimutales coinciden.
 /*!
+ * @brief Verifica si dos direcciones acimutales coinciden.
+ *
  * Para que dos direcciones coincidan, su diferencia debe ser menor
  * a 15 grados.
  *
@@ -140,8 +144,9 @@ bool isGateway(Vertex vertex, const Graph &graph);
  */
 bool directionMatches(double direction1, double direction2);
 
-//! Calcula la diferencia de dos direcciones acimutales.
 /*!
+ *  @brief Calcula la diferencia de dos direcciones acimutales.
+ *
  * La diferencia es el ángulo menor, en grados, que forman dos direcciones.
  *
  * @param direction1 [in] Primera dirección en grados.
@@ -150,8 +155,10 @@ bool directionMatches(double direction1, double direction2);
  */
 double getDirectionDifference(double direction1, double direction2);
 
-//! Verifica si una ubicación vial se encuentra dentro del dominio de la arista.
 /*!
+ * @brief Verifica si una ubicación vial se encuentra dentro
+ * del dominio de la arista.
+ *
  * La ubicación vial se encuentra dentro del dominio de la arista si
  * la distancia a esta es menor a 20 metros.
  *
@@ -160,9 +167,10 @@ double getDirectionDifference(double direction1, double direction2);
  */
 bool inEdgeDomain(const LocationOnRoadNetwork &locationOnRoadNetwork);
 
-//! Verifica si una ubicación vial se encuentra dentro del radio de
-//! proximidad de un vértice.
 /*!
+ * @brief Verifica si una ubicación vial se encuentra dentro del radio de
+ * proximidad de un vértice.
+ *
  * La ubicación se encuentra dentro del radio de proximidad del vértice si
  * su distancia a este es menor a 10 metros.
  *
@@ -172,11 +180,12 @@ bool inEdgeDomain(const LocationOnRoadNetwork &locationOnRoadNetwork);
  * @return `true` si la ubicación se encuentra dentro del radio de proximidad
  * del vértice.
  */
-bool inVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
-		Vertex vertex, const Graph &graph);
+bool isAtVertex(const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,
+        const Graph &graph);
 
-//! Calcula el peso de una arista a partir de otra.
 /*!
+ * @brief Calcula el peso de una arista a partir de otra.
+ *
  * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
  * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
  * y la dirección de la arista _B_ hacia el vértice _v_.
@@ -190,8 +199,9 @@ bool inVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
  */
 double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
 
-//! Obtiene la distancia en metros de una ubicación vial hacia un vértice.
 /*!
+ * @brief Obtiene la distancia en metros de una ubicación vial hacia un vértice.
+ *
  * Para obtener la distancia, el vértice debe ser parte de la arista de la
  * ubicación vial.
  *
@@ -202,6 +212,5 @@ double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
  * @return
  */
 double getDistanceToVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
-		Vertex vertex, const Graph &graph);
-
-} // namespace veins_proj
+        Vertex vertex, const Graph &graph);
+}    // namespace veins_proj

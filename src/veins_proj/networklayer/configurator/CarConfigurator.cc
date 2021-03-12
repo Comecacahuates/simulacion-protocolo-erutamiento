@@ -214,10 +214,11 @@ void CarConfigurator::processLocationUpdateTimer() {
              * se une a la subred adyacente como subred secundaria.
              */
             ASSERT(gatewayRegionAdjacency != GeohashLocation::Adjacency::NONE);
-            GeohashLocation adjacentGeohashRegion;
-            GeohashLocation::adjacentGeohashLocation(
-                    geohashLocation.getGeohashString().substr(0, 6),
-                    gatewayRegionAdjacency, adjacentGeohashRegion);
+            GeohashLocation geohashRegion(
+                    geohashLocation.getGeohash().substr(0, 6));
+            GeohashLocation adjacentGeohashRegion =
+                    geohashRegion.getAdjacentGeohashRegion(
+                            gatewayRegionAdjacency);
             joinNetwork(adjacentGeohashRegion, NetworkType::SECONDARY);
             break;
         }

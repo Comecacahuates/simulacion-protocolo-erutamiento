@@ -25,8 +25,10 @@
 
 using namespace veins_proj;
 
-//! Determina si la ubicación del primer vértice es menor a la del segundo.
 /*!
+ * @brief Determina si la ubicación del primer vértice es
+ * menor a la del segundo.
+ *
  * Para que la ubicación del primer vértice sea menor, su latitud debe ser
  * menor a la del segundo. Si las latitudes son iguales, la longitud debe ser
  * menor.
@@ -38,32 +40,34 @@ using namespace veins_proj;
  * segundo.
  */
 bool veins_proj::sortedVertices(Vertex vertexA, Vertex vertexB,
-		const Graph &graph) {
-	const GeographicLib::GeoCoords &locationA = graph[vertexA].location;
-	const GeographicLib::GeoCoords &locationB = graph[vertexB].location;
+        const Graph &graph) {
+    const GeographicLib::GeoCoords &locationA = graph[vertexA].location;
+    const GeographicLib::GeoCoords &locationB = graph[vertexB].location;
 
-	if (locationA.Latitude() > locationB.Latitude())
-		return false;
+    if (locationA.Latitude() > locationB.Latitude())
+        return false;
 
-	else if (locationA.Latitude() == locationB.Latitude())
-		if (locationA.Longitude() > locationB.Longitude())
-			return false;
+    else if (locationA.Latitude() == locationB.Latitude())
+        if (locationA.Longitude() > locationB.Longitude())
+            return false;
 
-	return true;
+    return true;
 }
 
-//! Determina si un vértice es _gateway_.
 /*!
+ * @brief Determina si un vértice es *gateway*.
+ *
  * @param vertex [in] Vértice que se va a revisar.
  * @param graph [in] Grafo al que pertenece el vértice.
  * @return `true` en caso de que el vértice sea _gateway_.
  */
 bool veins_proj::isGateway(Vertex vertex, const Graph &graph) {
-	return graph[vertex].adjacency != GeohashLocation::Adjacency::NONE;
+    return graph[vertex].adjacency != GeohashLocation::Adjacency::NONE;
 }
 
-//! Verifica si dos direcciones acimutales coinciden.
 /*!
+ * @brief Verifica si dos direcciones acimutales coinciden.
+ *
  * Para que dos direcciones coincidan, su diferencia debe ser menor
  * a 15 grados.
  *
@@ -72,11 +76,12 @@ bool veins_proj::isGateway(Vertex vertex, const Graph &graph) {
  * @return `true` si las dos direcciones coinciden.
  */
 bool veins_proj::directionMatches(double direction1, double direction2) {
-	return getDirectionDifference(direction1, direction2) < 15.0;
+    return getDirectionDifference(direction1, direction2) < 15.0;
 }
 
-//! Calcula la diferencia de dos direcciones acimutales.
 /*!
+ *  @brief Calcula la diferencia de dos direcciones acimutales.
+ *
  * La diferencia es el ángulo menor, en grados, que forman dos direcciones.
  *
  * @param direction1 [in] Primera dirección en grados.
@@ -84,17 +89,19 @@ bool veins_proj::directionMatches(double direction1, double direction2) {
  * @return Valor absoluto de la diferencia de las dos direcciones.
  */
 double veins_proj::getDirectionDifference(double direction1,
-		double direction2) {
-	double directionDifference = std::abs(direction1 - direction2);
+        double direction2) {
+    double directionDifference = std::abs(direction1 - direction2);
 
-	if (directionDifference > 180.0)
-		directionDifference = 360.0 - directionDifference;
+    if (directionDifference > 180.0)
+        directionDifference = 360.0 - directionDifference;
 
-	return directionDifference;
+    return directionDifference;
 }
 
-//! Verifica si una ubicación vial se encuentra dentro del dominio de la arista.
 /*!
+ * @brief Verifica si una ubicación vial se encuentra dentro
+ * del dominio de la arista.
+ *
  * La ubicación vial se encuentra dentro del dominio de la arista si
  * la distancia a esta es menor a 20 metros.
  *
@@ -102,22 +109,23 @@ double veins_proj::getDirectionDifference(double direction1,
  * @return `true` si la distancia a la arista es menor que 20.
  */
 bool veins_proj::inEdgeDomain(
-		const LocationOnRoadNetwork &locationOnRoadNetwork) {
-	if (locationOnRoadNetwork.distanceToVertexA < 0)
-		return false;
+        const LocationOnRoadNetwork &locationOnRoadNetwork) {
+    if (locationOnRoadNetwork.distanceToVertexA < 0)
+        return false;
 
-	if (locationOnRoadNetwork.distanceToVertexB < 0)
-		return false;
+    if (locationOnRoadNetwork.distanceToVertexB < 0)
+        return false;
 
-	if (locationOnRoadNetwork.distanceToEdge > 20.0)
-		return false;
+    if (locationOnRoadNetwork.distanceToEdge > 20.0)
+        return false;
 
-	return true;
+    return true;
 }
 
-//! Verifica si una ubicación vial se encuentra dentro del radio de
-//! proximidad de un vértice.
 /*!
+ * @brief Verifica si una ubicación vial se encuentra dentro del radio de
+ * proximidad de un vértice.
+ *
  * La ubicación se encuentra dentro del radio de proximidad del vértice si
  * su distancia a este es menor a 10 metros.
  *
@@ -127,33 +135,28 @@ bool veins_proj::inEdgeDomain(
  * @return `true` si la ubicación se encuentra dentro del radio de proximidad
  * del vértice.
  */
-bool veins_proj::inVertex(
-		const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,
-		const Graph &graph) {
-	const Edge &edge = locationOnRoadNetwork.edge;
-	Vertex vertexA = boost::source(edge, graph);
-	Vertex vertexB = boost::target(edge, graph);
-	const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-	const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+bool veins_proj::isAtVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
+        Vertex vertex, const Graph &graph) {
+    const Edge &edge = locationOnRoadNetwork.edge;
+    Vertex vertexA = boost::source(edge, graph);
+    Vertex vertexB = boost::target(edge, graph);
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
 
-	double distanceToVertex;
-	if (vertex == vertexA)
-		distanceToVertex = distanceToVertexA;
+    double distanceToVertex;
+    if (vertex == vertexA)
+        return distanceToVertexA < 10;
 
-	else if (vertex == vertexB)
-		distanceToVertex = distanceToVertexB;
+    else if (vertex == vertexB)
+        return distanceToVertexB < 10;
 
-	else
-		return false;
-
-	if (distanceToVertex < 10)
-		return true;
-
-	return false;
+    else
+        return false;
 }
 
-//! Calcula el peso de una arista a partir de otra.
 /*!
+ * @brief Calcula el peso de una arista a partir de otra.
+ *
  * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
  * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
  * y la dirección de la arista _B_ hacia el vértice _v_.
@@ -166,43 +169,44 @@ bool veins_proj::inVertex(
  * @return Peso de la arista
  */
 double veins_proj::getEdgeWeight(Edge edge, Edge sourceEdge,
-		const Graph &graph) {
-	Edge &f = edge;
-	Edge &e = sourceEdge;
-	Vertex vertexAE = boost::source(e, graph);
-	Vertex vertexBE = boost::target(e, graph);
-	if (sortedVertices(vertexAE, vertexBE, graph))
-		boost::swap(vertexAE, vertexBE);
+        const Graph &graph) {
+    Edge &f = edge;
+    Edge &e = sourceEdge;
+    Vertex vertexAE = boost::source(e, graph);
+    Vertex vertexBE = boost::target(e, graph);
+    if (sortedVertices(vertexAE, vertexBE, graph))
+        boost::swap(vertexAE, vertexBE);
 
-	Vertex vertexAF = boost::source(f, graph);
-	Vertex vertexBF = boost::target(f, graph);
-	if (sortedVertices(vertexAF, vertexBF, graph))
-		boost::swap(vertexAF, vertexBF);
+    Vertex vertexAF = boost::source(f, graph);
+    Vertex vertexBF = boost::target(f, graph);
+    if (sortedVertices(vertexAF, vertexBF, graph))
+        boost::swap(vertexAF, vertexBF);
 
-	double directionE, directionF;
+    double directionE, directionF;
 
-	if (vertexBE == vertexAF) {
-		directionE = graph[e].direction1;
-		directionF = graph[f].direction1;
+    if (vertexBE == vertexAF) {
+        directionE = graph[e].direction1;
+        directionF = graph[f].direction1;
 
-	} else if (vertexBE == vertexBF) {
-		directionE = graph[e].direction1;
-		directionF = graph[f].direction2;
+    } else if (vertexBE == vertexBF) {
+        directionE = graph[e].direction1;
+        directionF = graph[f].direction2;
 
-	} else if (vertexAE == vertexAF) {
-		directionE = graph[e].direction2;
-		directionF = graph[f].direction1;
+    } else if (vertexAE == vertexAF) {
+        directionE = graph[e].direction2;
+        directionF = graph[f].direction1;
 
-	} else if (vertexAE == vertexBF) {
-		directionE = graph[e].direction2;
-		directionF = graph[f].direction2;
-	}
+    } else if (vertexAE == vertexBF) {
+        directionE = graph[e].direction2;
+        directionF = graph[f].direction2;
+    }
 
-	return getDirectionDifference(directionE, directionF);
+    return getDirectionDifference(directionE, directionF);
 }
 
-//! Obtiene la distancia en metros de una ubicación vial hacia un vértice.
 /*!
+ * @brief Obtiene la distancia en metros de una ubicación vial hacia un vértice.
+ *
  * Para obtener la distancia, el vértice debe ser parte de la arista de la
  * ubicación vial.
  *
@@ -213,19 +217,19 @@ double veins_proj::getEdgeWeight(Edge edge, Edge sourceEdge,
  * @return
  */
 double veins_proj::getDistanceToVertex(
-		const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,
-		const Graph &graph) {
-	const Edge &edge = locationOnRoadNetwork.edge;
-	Vertex vertexA = boost::source(edge, graph);
-	Vertex vertexB = boost::target(edge, graph);
-	const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-	const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+        const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,
+        const Graph &graph) {
+    const Edge &edge = locationOnRoadNetwork.edge;
+    Vertex vertexA = boost::source(edge, graph);
+    Vertex vertexB = boost::target(edge, graph);
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
 
-	if (vertex == vertexA)
-		return distanceToVertexA;
+    if (vertex == vertexA)
+        return distanceToVertexA;
 
-	else if (vertex == vertexB)
-		return distanceToVertexB;
+    else if (vertex == vertexB)
+        return distanceToVertexB;
 
-	return std::numeric_limits<double>::infinity();
+    return std::numeric_limits<double>::infinity();
 }

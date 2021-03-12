@@ -142,7 +142,7 @@ void RoutingProtocolStaticHost::processHelloCar(
 
     // @formatter:off
     EV_INFO << "Address: " << srcAddress.str() << std::endl
-            << "Geohash location: " << geohashLocation.getGeohashString() << std::endl
+            << "Geohash location: " << geohashLocation.getGeohash() << std::endl
             << "Speed: " << speed << std::endl << "Direction: " << direction << std::endl
             << "Vertex A: " << vertexA << std::endl
             << "Vertex B: " << vertexB << std::endl
@@ -219,7 +219,7 @@ const inet::Ptr<HelloHost> RoutingProtocolStaticHost::createHelloHost(
             << hostAddress.str()
             << std::endl
             << "Geohash location: "
-            << geohashLocation.getGeohashString()
+            << geohashLocation.getGeohash()
             << std::endl;
 
     return helloHost;
