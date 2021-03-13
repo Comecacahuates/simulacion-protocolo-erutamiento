@@ -378,10 +378,11 @@ protected:
     void setTlvOption(inet::Packet *datagram,
             inet::TlvOptionBase *tlvOption) const;
     /*!
-     * @brief Obtener opción TLV constante de un datagrama.
+     * @brief Obtener opción TLV constante de la cabecera de opciones
+     * de salto por salto de un datagrama.
      *
      * @tparam T Tipo de opción TLV a obtener.
-     * @param datagram [in] Datagrama del que se obtendrá la opción TLV.
+     * @param datagram [in] Datagrama del que se obtiene la opción TLV.
      *
      * @return Opción TLV.
      */
@@ -406,7 +407,7 @@ protected:
                 tlvOption =
                         dynamic_cast<const T*>(tlvOptions.getTlvOption(i++));
 
-                if (tlvOption != nullptr)
+                if (tlvOption)
                     break;
             }
         }
@@ -414,10 +415,11 @@ protected:
         return tlvOption;
     }
     /*!
-     * @brief Obtener opción TLV de un datagrama.
+     * @brief Obtener opción TLV de la cabecera de opciones
+     * de salto por salto de un datagrama.
      *
      * @tparam T Tipo de opción TLV a obtener.
-     * @param datagram [in] Datagrama del que se obtendrá la opción TLV.
+     * @param datagram [in] Datagrama del que se obtiene la opción TLV.
      *
      * @return Opción TLV.
      */
@@ -443,12 +445,47 @@ protected:
                 tlvOption = dynamic_cast<T*>(tlvOptions.getTlvOptionForUpdate(
                         i++));
 
-                if (tlvOption != nullptr)
+                if (tlvOption)
                     break;
             }
         }
 
         return tlvOption;
+    }
+    /*!
+     * @brief Eliminar una opción TLV de la cabecera de opciones
+     * de salto por salto de un datagrama.
+     *
+     * @tparam T Tipo de opción TLV a eliminar.
+     * @param datagram [in] Datagrama del que se elimina la opción TLV.
+     */
+    template<class T> void removeTlvOption(inet::Packet *datagram) const {
+        const T *tlvOption = nullptr;
+        inet::Ptr<inet::Ipv6Header> ipv6Header = inet::dynamicPtrCast<
+                inet::Ipv6Header>(
+                inet::getNetworkProtocolHeader(datagram));
+        inet::Ipv6ExtensionHeader *extensionHeader =
+                ipv6Header->findExtensionHeaderByTypeForUpdate(
+                        inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
+        inet::Ipv6HopByHopOptionsHeader *optionsHeader =
+                omnetpp::check_and_cast_nullable<
+                        inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
+
+        if (optionsHeader) {
+            inet::TlvOptions &tlvOptions =
+                    optionsHeader->getTlvOptionsForUpdate();
+
+            int i = 0;
+            while (i < tlvOptions.getTlvOptionArraySize()) {
+                tlvOption = dynamic_cast<const T*>(tlvOptions.getTlvOption(i));
+
+                if (tlvOption) {
+                    tlvOptions.eraseTlvOption(i);
+                }
+
+                i++;
+            }
+        }
     }
     /*!
      * @brief Crear opción TLV de ubicación del destino.

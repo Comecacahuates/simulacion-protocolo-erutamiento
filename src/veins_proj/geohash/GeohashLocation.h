@@ -48,9 +48,7 @@ private:
 
 public:
 
-    /*!
-     * Tipos de adyacencia entre regiones Geohash.
-     */
+    //! Tipos de adyacencia entre regiones Geohash.
     enum Adjacency {
         //! Ninguna adyacencia.
         NONE = -1,
