@@ -208,8 +208,9 @@ double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
  * @param locationOnRoadNetwork [in] Ubicación vial cuya distancia al vértice
  * se va a obtener.
  * @param vertex [in] Vértice al que se va a obtener la distancia.
- * @param graph [in] Grafo al que pertenece el vértice.
- * @return
+ * @param graph  [in] Grafo al que pertenece el vértice.
+ * @return Distancia al vértice en metros, o infinito si no se encuentra
+ * en una arista con el vértice.
  */
 double getDistanceToVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
         Vertex vertex, const Graph &graph);

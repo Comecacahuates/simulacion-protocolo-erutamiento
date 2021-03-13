@@ -74,19 +74,6 @@ protected:
     //! Red vial en la que circula el vehículo.
     RoadNetwork *roadNetwork = nullptr;
 
-    /*
-     * Mensaje spropios.
-     */
-    //! Temporizador de actualización de la ubicación.
-    omnetpp::cMessage *locationUpdateTimer;
-
-public:
-
-    /*!
-     * @brief Destructor.
-     */
-    virtual ~CarMobility();
-
 protected:
 
     /*
@@ -111,7 +98,7 @@ protected:
      *
      * @param message [in] Mensaje a procesar.
      */
-    virtual void handleMessage(omnetpp::cMessage *message) override;
+    virtual void handleMessage(omnetpp::cMessage *message) override {};
 
 public:
 
@@ -165,20 +152,6 @@ public:
     const RoadNetwork* getRoadNetwork() const {
         return roadNetwork;
     }
-
-    /*
-     * Actualización de la ubicación.
-     */
-protected:
-    /*!
-     * @brief Programar el temporizador de actualización de la ubicación.
-     */
-    void scheduleLocationUpdateTimer();
-    /*!
-     * @brief Procesar el temporizador de actualización de la ubicacion.
-     */
-    void processLocationUpdateTimer();
-public:
     /*!
      * @brief Actualizar la ubicación.
      */
@@ -201,7 +174,7 @@ public:
      */
     bool isAtVertex(const Vertex vertex) const;
 
-private:
+protected:
 
     /*!
      * @brief Actualizar la red vial si es necesario.

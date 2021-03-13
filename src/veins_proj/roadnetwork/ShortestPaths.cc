@@ -14,30 +14,30 @@
 // 
 
 /**
- * @file ShortestPath.cc
+ * @file ShortestPaths.cc
  * @author Adrián Juárez Monroy
  */
 
-#include "ShortestPath.h"
+#include "veins_proj/roadnetwork/ShortestPaths.h"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/detail/adjacency_list.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/tuple/detail/tuple_basic.hpp>
 #include <algorithm>
-#include <limits>
 #include <utility>
 
 using namespace veins_proj;
 
-//! Calcula la ruta más corta hacia el resto de los vértices.
 /*!
- * @param [in] sourceEdge Arista de origen.
- * @param [in] graph Grafo por el que se realiza la búsqueda.
- * @param [in] visitedVertices Vértices por los que el paquete ya ha pasado.
- * @param [in] inactiveEdges Aristas inactivas.
+ * @brief Calcular la ruta más corta hacia el resto de los vértices.
+ *
+ * @param sourceEdge      [in] Arista de origen.
+ * @param graph           [in] Grafo por el que se realiza la búsqueda.
+ * @param visitedVertices [in] Vértices por los que el paquete ya ha pasado.
+ * @param inactiveEdges   [in] Aristas inactivas.
  */
-void ShortestPath::computeShortestPath(const Edge sourceEdge,
+void ShortestPaths::computeShortestPath(const Edge sourceEdge,
 		const Graph &graph, const VertexSet &visitedVertices,
 		const EdgeSet &activeEdges) {
 	this->sourceEdge = sourceEdge;
@@ -168,8 +168,9 @@ void ShortestPath::computeShortestPath(const Edge sourceEdge,
 	}
 }
 
-//! Devuelve la ruta más corta a un vértice específico.
 /*!
+ * @brief Obtener la ruta más corta a un vértice específico.
+ *
  * Una vez calculada las rutas más cortas, devuelve la ruta más corta a
  * un vértice. Se necesita calcular las rutas con el método
  * #computeShortestPath antes de llamar este método.
@@ -178,7 +179,7 @@ void ShortestPath::computeShortestPath(const Edge sourceEdge,
  * @return Vector de vértices que indican la ruta desde el vértice de la
  * arista de origen.
  */
-VertexVector ShortestPath::getShortestPathToVertex(Vertex vertex,
+VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex,
 		const Graph &graph) const {
 	Vertex a = boost::source(sourceEdge, graph);
 	Vertex b = boost::target(sourceEdge, graph);
@@ -189,12 +190,10 @@ VertexVector ShortestPath::getShortestPathToVertex(Vertex vertex,
 	do {
 		vertex = predecessors[vertex];
 		shortestPath.push_back(vertex);
-
 	} while (!(vertex == a || vertex == b));
 
 	if (vertex == a)
 		shortestPath.push_back(b);
-
 	else
 		shortestPath.push_back(a);
 

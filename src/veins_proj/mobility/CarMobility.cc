@@ -35,13 +35,6 @@ using namespace veins_proj;
 
 Define_Module(CarMobility);
 
-/*!
- * @brief Destructor.
- */
-CarMobility::~CarMobility() {
-    cancelAndDelete(locationUpdateTimer);
-}
-
 /*
  * Interfaz del módulo.
  */
@@ -54,74 +47,29 @@ CarMobility::~CarMobility() {
 void CarMobility::initialize(int stage) {
     VeinsInetMobility::initialize(stage);
 
+    /*
+     * Etapa de inicialización local.
+     */
     if (stage == inet::INITSTAGE_LOCAL) {
-        // Parameters
-        locationUpdateInterval = par("locationUpdateInterval");
+        /*
+         * Parámetros de configuración.
+         */
         vertexProximityRadius = par("vertexProximityRadius");
 
-        // Context
+        /*
+         * Contexto.
+         */
         roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase*>(
                 getModuleByPath(par("roadNetworkDatabaseModule")));
-
         if (!roadNetworkDatabase)
             throw omnetpp::cRuntimeError("No roadway database module found");
 
-        // Self messages
-        locationUpdateTimer = new omnetpp::cMessage("locationUpdateTimer");
-
+        /*
+         * Etapa de inicialización de movilidad.
+         */
     } else if (stage == inet::INITSTAGE_SINGLE_MOBILITY) {
         updateLocation();
-        scheduleLocationUpdateTimer();
     }
-}
-
-/*!
- * @brief Manejo de mensajes.
- *
- * @param message [in] Mensaje a procesar.
- */
-void CarMobility::handleMessage(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("CarMobility::handleMessage");
-
-    if (message == locationUpdateTimer)
-        processLocationUpdateTimer();
-
-    else
-        throw omnetpp::cRuntimeError("Unknown message");
-}
-
-/*
- * Actualización de la ubicación.
- */
-
-/*!
- * @brief Programar el temporizador de actualización de la ubicación.
- */
-void CarMobility::scheduleLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("CarMobility::scheduleLocationUpdateTimer");
-
-    scheduleAt(omnetpp::simTime() + locationUpdateInterval,
-            locationUpdateTimer);
-}
-/*!
- * @brief Procesar el temporizador de actualización de la ubicacion.
- */
-void CarMobility::processLocationUpdateTimer() {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl
-             << "CarMobility::scheduleLocationUpdateTimer"
-             << std::endl;
-    Enter_Method
-    ("CarMobility::scheduleLocationUpdateTimer");
-
-    updateLocation();
-    scheduleLocationUpdateTimer();
 }
 
 /*!
@@ -132,7 +80,7 @@ void CarMobility::updateLocation() {
     inet::Coord inetLocation = veins::VeinsInetMobility::getCurrentPosition();
     veins::Coord veinsLocation = veins::Coord(inetLocation.x, inetLocation.y);
 
-    // Obtener coordenadas geogr��ficas
+    // Obtener coordenadas geográficas
     double lat, lon;
     boost::tie(lon, lat) =
             veins::VeinsInetMobility::getCommandInterface()->getLonLat(
@@ -142,7 +90,7 @@ void CarMobility::updateLocation() {
     inet::Coord inetSpeed = veins::VeinsInetMobility::getCurrentVelocity();
     speed = std::sqrt(inetSpeed.x * inetSpeed.x + inetSpeed.y * inetSpeed.y);
 
-    // Obtener direcci��n
+    // Obtener dirección
     if (speed > 0)
         direction = std::fmod(
                 2.5 * 180.0

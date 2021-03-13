@@ -85,7 +85,7 @@ GeohashLocation::GeohashLocation(const std::string &geohash) {
  * @param bits          [in] Cadena de bits.
  * @param geohashLength [in] Longitud del código Geohash.
  */
-GeohashLocation::GeohashLocation(uint64_t bits, const size_t geohashLength) {
+GeohashLocation::GeohashLocation(const uint64_t bits, const size_t geohashLength) {
     GeohashLocation::decode(bits, geohashLength, geohash, location, bounds);
     this->bits = bits;
 }

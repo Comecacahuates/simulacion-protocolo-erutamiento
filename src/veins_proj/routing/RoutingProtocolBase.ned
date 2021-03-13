@@ -29,10 +29,10 @@ simple RoutingProtocolBase like IManetRouting {
         double neighbouringCarValidityTime @unit(s) = default(3s);
         double helloHostInterval @unit(s) = default(2.5s);
         double neighbouringHostValidityTime @unit(s) = default(3s);
-        double pingInterval @unit(s) = default(3s);
         double pongTimeout @unit(s) = default(1s);
-        double edgeStatusValidityTime @unit(s) = default(4.5 * pingInterval);
+        double edgeStatusValidityTime @unit(s) = default(5s);
         double routeValidityTime @unit(s) = default(3s);
+        double delayedDatagramValidityTime @unit(s) = default(2s);
         double vertexProximityRadius @unit(m) = default(10m);
 
 		string roadNetworkDatabaseModule = default("roadNetworkDatabase");

@@ -64,78 +64,45 @@ protected:
     /*
      * Parámetros de configuración.
      */
-    /*!
-     * @brief Intervalo de transmisión de mensajes HOLA_VEHIC.
-     */
+    //! Intervalo de transmisión de mensajes HOLA_VEHIC.
     omnetpp::simtime_t helloCarInterval;
-    /*!
-     * @brief Intervalo de transmisión de mensajes HOLA_HOST.
-     */
+    //! Intervalo de transmisión de mensajes HOLA_HOST.
     omnetpp::simtime_t helloHostInterval;
-    /*!
-     * @brief Tiempo de vigencia de los registros del de vehículos vecinos.
-     */
+    //! Tiempo de vigencia de los registros del de vehículos vecinos.
     omnetpp::simtime_t neighbouringCarValidityTime;
-    /*!
-     * @brief Tiempo de vigencia de los registros del directorio
-     de _hosts_ vecinos.
-     */
+    //! Tiempo de vigencia de los registros del directorio de *hosts* vecinos.
     omnetpp::simtime_t neighbouringHostValidityTime;
-    /*!
-     * @brief Intervalo de transmisión de mensajes PING.
-     */
-    omnetpp::simtime_t pingInterval;
-    /*!
-     * @brief Tiempo de espera para los mensahes PONG.
-     */
+    //! Tiempo de espera para los mensahes PONG.
     omnetpp::simtime_t pongTimeout;
-    /*!
-     * @brief Tiempo de vigencia de aristas activas.
-     */
+    //! Tiempo de vigencia de aristas activas.
     omnetpp::simtime_t edgeStatusValidityTime;
-    /*!
-     * @brief Tiempo de vigencia de las rutas.
-     */
+    //! Tiempo de vigencia de las rutas.
     omnetpp::simtime_t routeValidityTime;
-    /*!
-     * @brief Radio de proximidad a los vértices.
-     */
+    //! Tiempo de vigencia de los datagramas demorados.
+    omnetpp::simtime_t delayedDatagramValidityTime;
+    //! Radio de proximidad a los vértices.
     double vertexProximityRadius;
 
     /*
      * Contexto.
      */
-    /*!
-     * @brief Módulo del *host* o vehículo contenedor.
-     */
+    //! Módulo del vehículo o *host* o vehículo contenedor.
     omnetpp::cModule *host = nullptr;
-    /*!
-     * @brief Módulo de la tabla de interfaces.
-     */
+    //! Módulo de la tabla de interfaces.
     inet::IInterfaceTable *interfaceTable = nullptr;
-    /*!
-     * @brief Módulo de la interfaz de red.
-     */
+    //! Módulo de la interfaz de red.
     inet::NetworkInterface *networkInterface = nullptr;
-    /*!
-     * @brief Módulo de la tabla de enrutamiento IPv6.
-     */
+    //! Módulo de la tabla de enrutamiento IPv6.
     inet::Ipv6RoutingTable *routingTable = nullptr;
-    /*!
-     * @brief Módulo del protocolo de red.
-     */
+    //! Módulo del protocolo de red.
     inet::INetfilter *networkProtocol = nullptr;
-    /*!
-     * @brief Módulo de la base de datos de redes viales.
-     */
+    //! Módulo de la base de datos de redes viales.
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
 
     /*
      * Mensajes propios.
      */
-    /*!
-     * @brief Temporizador de limpieza del directorio de vehículos vecinos.
-     */
+    //! Temporizador de limpieza del directorio de vehículos vecinos.
     omnetpp::cMessage *purgeNeighbouringCarsTimer = nullptr;
 
     /*
@@ -423,17 +390,21 @@ protected:
         inet::Ptr<const inet::Ipv6Header> ipv6Header = inet::dynamicPtrCast<
                 const inet::Ipv6Header>(
                 inet::getNetworkProtocolHeader(datagram));
-        const inet::Ipv6ExtensionHeader *extensionHeader = ipv6Header->findExtensionHeaderByType(
-                inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
-        const inet::Ipv6HopByHopOptionsHeader *optionsHeader = omnetpp::check_and_cast_nullable<
-                const inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
+        const inet::Ipv6ExtensionHeader *extensionHeader =
+                ipv6Header->findExtensionHeaderByType(
+                        inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
+        const inet::Ipv6HopByHopOptionsHeader *optionsHeader =
+                omnetpp::check_and_cast_nullable<
+                        const inet::Ipv6HopByHopOptionsHeader*>(
+                        extensionHeader);
 
         if (optionsHeader) {
             const inet::TlvOptions &tlvOptions = optionsHeader->getTlvOptions();
 
             int i = 0;
             while (i < tlvOptions.getTlvOptionArraySize()) {
-                tlvOption = dynamic_cast<const T*>(tlvOptions.getTlvOption(i++));
+                tlvOption =
+                        dynamic_cast<const T*>(tlvOptions.getTlvOption(i++));
 
                 if (tlvOption != nullptr)
                     break;
@@ -456,13 +427,16 @@ protected:
                 inet::Ipv6Header>(
                 inet::dynamicPtrCast<const inet::Ipv6Header>(
                         inet::getNetworkProtocolHeader(datagram)));
-        inet::Ipv6ExtensionHeader *extensionHeader = ipv6Header->findExtensionHeaderByTypeForUpdate(
-                inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
-        inet::Ipv6HopByHopOptionsHeader *optionsHeader = omnetpp::check_and_cast_nullable<
-                inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
+        inet::Ipv6ExtensionHeader *extensionHeader =
+                ipv6Header->findExtensionHeaderByTypeForUpdate(
+                        inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
+        inet::Ipv6HopByHopOptionsHeader *optionsHeader =
+                omnetpp::check_and_cast_nullable<
+                        inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
 
         if (optionsHeader) {
-            inet::TlvOptions &tlvOptions = optionsHeader->getTlvOptionsForUpdate();
+            inet::TlvOptions &tlvOptions =
+                    optionsHeader->getTlvOptionsForUpdate();
 
             int i = 0;
             while (i < tlvOptions.getTlvOptionArraySize()) {

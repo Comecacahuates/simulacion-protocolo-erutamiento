@@ -68,10 +68,10 @@ void RoutingProtocolBase::initialize(int stage) {
         neighbouringCarValidityTime = par("neighbouringCarValidityTime");
         helloHostInterval = par("helloHostInterval");
         neighbouringHostValidityTime = par("neighbouringHostValidityTime");
-        pingInterval = par("pingInterval");
         pongTimeout = par("pongTimeout");
         edgeStatusValidityTime = par("edgeStatusValidityTime");
         routeValidityTime = par("routeValidityTime");
+        delayedDatagramValidityTime = par("delayedDatagramValidityTime");
         vertexProximityRadius = par("vertexProximityRadius");
 
         /*

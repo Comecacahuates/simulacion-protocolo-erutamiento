@@ -34,7 +34,7 @@
 #include "veins_proj/mobility/CarMobility.h"
 #include "veins_proj/roadnetwork/RoadNetworkDatabase.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
-#include "veins_proj/roadnetwork/ShortestPath.h"
+#include "veins_proj/roadnetwork/ShortestPaths.h"
 #include "veins_proj/util/ExpiringValuesMap.h"
 #include <string>
 #include <map>
@@ -59,16 +59,6 @@ protected:
     CarConfigurator *configurator = nullptr;
 
     /*
-     * Vehículos vecinos por arista.
-     * TODO Revisar si hace falta.
-     */
-    typedef std::pair<Edge, inet::Ipv6Address> NeighbouringCarByEdge;
-    typedef std::multimap<Edge, inet::Ipv6Address> NeighbouringCarsByEdgeMap;
-    typedef NeighbouringCarsByEdgeMap::iterator NeighbouringCarsByEdgeIterator;
-    typedef NeighbouringCarsByEdgeMap::const_iterator NeighbouringCarsByEdgeConstIterator;
-    NeighbouringCarsByEdgeMap neighbouringCarsByEdge;
-
-    /*
      * Mensajes propios.
      */
     //! Temporizador de transmisión de mensajes HOLA_VEHIC.
@@ -77,8 +67,6 @@ protected:
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
     //! Temporizador de limpieza de aristas activas.
     omnetpp::cMessage *purgeEdgesStatusTimer;
-    //! Temporizador de datagramas demorados.
-    omnetpp::cMessage *purgeDelayedDatagramsTimer;
     //! Temporizador de limpieza de mensajes PONG pendientes.
     omnetpp::cMessage *purgePendingPongsTimer;
 
@@ -224,43 +212,6 @@ protected:
     virtual void processPong(const inet::Ptr<Pong> &pong) override;
 
     /*
-     * Directorio de vehículos vecinos.
-     */
-    /*!
-     * @brief Obtener vehículo vecino aleatorio en la misma arista.
-     *
-     * Obtiene aleatoriamente un vehículo vecino que se encuentra en la misma
-     * arista, y que esté más cerca del vértice indicado.
-     *
-     * @param targetVertex [in] Vértice de referencia.
-     * @return Dirección IPv6 del vehículo vecino seleccionado.
-     */
-    virtual inet::Ipv6Address getRandomNeighbouringCarAddressAheadOnEdge(
-            Vertex targetVertex) const;
-    /*!
-     * @brief Buscar vehículo vecino más cercano a un vértice que se encuentra en
-     * la misma arista.
-     *
-     * Se buscan los vehículos vecinos que circulan sobre la misma arista,
-     * y se obtiene el que se encuentra a la menor distancia del vértice
-     * indicado.
-     *
-     * @param vertex [in] Vértice de referencia.
-     * @return Dirección IPv6 del vecino encontrado, o `::/128`
-     * si no se encuentra ninguno.
-     */
-    const inet::Ipv6Address& findNeighbouringCarClosestToVertex(
-            Vertex vertex) const;
-    /*!
-     * @brief Obtener la cantidad de vehículos vecinos que se encuentran
-     * en la misma arista.
-     *
-     * @return Cantidad de vehículos vecinos que se encuentran en
-     * la misma arista.
-     */
-    virtual int getNeighbouringCarsOnEdgeCount() const;
-
-    /*
      * Directorio de hosts vecinos.
      */
     /*!
@@ -357,19 +308,15 @@ protected:
      * La clave es la dirección de destino del datagrama, y el valor es
      * el datagrama.
      */
-    typedef ExpiringValuesMultimap<inet::Ipv6Address, inet::Packet*> DelayedDatagrams;
-    /*!
-     * @brief Valor.
-     */
-    typedef DelayedDatagrams::MultimapValue DelayedPacket;
+    typedef std::multimap<Edge, inet::Packet*> DelayedDatagrams;
     /*!
      * @brief Iterador para diccionario de datagramas demorados.
      */
-    typedef DelayedDatagrams::Iterator DelayedDatagramsIterator;
+    typedef DelayedDatagrams::iterator DelayedDatagramsIterator;
     /*!
      * @brief Iterador para diccionario de datagramas demorados constante.
      */
-    typedef DelayedDatagrams::ConstIterator DelayedDatagramsConstIterator;
+    typedef DelayedDatagrams::const_iterator DelayedDatagramsConstIterator;
     /*!
      * @brief Paquetes demorados.
      */
@@ -377,15 +324,12 @@ protected:
     /*!
      * @brief Imprimir los datagramas demorados.
      */
-    void showDelayedDatagrams();
+    void showDelayedDatagrams() const;
     /*!
-     * @brief Programar el temporizador de limpieza de datagramas demorados.
+     * @brief Eliminar los datagramas demorados cuyo mensaje PONG no llegó,
+     * o no existe una ruta para enviarlos.
      */
-    void schedulePurgeDelayedDatagramsTimer();
-    /*!
-     * @brief Procesar el temporizador de limpieza de datagramas demorados.
-     */
-    void processPurgeDelayedDatagramsTimer();
+    void removeStuckDelayedDatagrams();
 
     /*
      * Operación ping-pong
@@ -399,8 +343,9 @@ protected:
      *
      * @param pingVertex [in] Vértice de origen.
      * @param pongVertex [in] Vértice de destino.
+     * @return `true` si se pudo iniciar la operación ping-pong.
      */
-    void startPingPong(const Vertex pingVertex, const Vertex pongVertex);
+    bool startPingPong(const Vertex pingVertex, const Vertex pongVertex);
 
     /*
      * Mensajes PONG pendientes.
@@ -484,32 +429,21 @@ protected:
      */
     virtual bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
     /*!
-     * @brief Obtener el vértice de destino local.
-     *
-     * @param datagram [in] Datagrama a enrutar.
-     * @param shortestPath [in] Rutas más cortas.
-     * @return Vértice de destino local.
-     */
-    virtual Vertex getLocalDestVertex(inet::Packet *datagram,
-            const ShortestPath &shortestPath) const;
-    /*!
      * @brief Se obtiene el conjunto de vértices visitados.
      *
      * @param visitedVerticesOption [in] Opción de vértices visitados.
      * @return Conjunto de vértices visitados.
      */
-    virtual VertexSet getVisitedVertices(
-            TlvVisitedVerticesOption *visitedVerticesOption) const;
+    virtual VertexSet getVisitedVertices(inet::Packet *datagram) const;
     /*!
-     * @brief Obtener el vértice de destino.
+     * @brief Obtener el vértice de destino local.
      *
-     * @param destGeohashLocation [in] Ubicación Geohash del destino.
-     * @param destEdge [in] Arista de la ubicación del destno.
+     * @param datagram [in] Datagrama a enrutar.
      * @param shortestPath [in] Rutas más cortas.
-     * @return Vértice de destino.
+     * @return Vértice de destino local y bandera que indica si sí se encontró.
      */
-    virtual Vertex getDestVertex(const GeohashLocation &destGeohashLocation,
-            Edge destEdge, const ShortestPath &shortestPath) const;
+    virtual std::pair<Vertex, bool> getLocalDestVertex(inet::Packet *datagram,
+            const ShortestPaths &shortestPath) const;
     /*!
      * @brief Obtener aristas en la ruta más corta que forman un tramo recto.
      *
@@ -520,31 +454,54 @@ protected:
      * de destino.
      * @param shortestPath [in] Rutas más cortas.
      * @return Aristas que forman un
+     *
+     * TODO Eliminar.
      */
     virtual EdgeVector getReachableEdges(
             const VertexVector &shortestPathToDestVertex,
-            const ShortestPath &shortestPath) const;
-    /*!
-     * @brief Encontrar siguiente salto.
-     *
-     * Se obtiene el siguiente salto en la ruta.
-     *
-     * @param shortestPathToDestVertex [in] Ruta más corta al vértice
-     * de destino.
-     * @param shortestPath [in] Rutas más cortas.
-     * @return Dirección IPv6 del siguiente salto.
-     */
-    virtual inet::Ipv6Address findNextHop(
-            const VertexVector &shortestPathToDestVertex,
-            const ShortestPath &shortestPath) const;
+            const ShortestPaths &shortestPath) const;
     /*!
      * @brief Obtener vehículo vecino en la región Geohash adyacente.
      *
      * @param neighbouringGeohashRegion [in] Región Geohash adyacente.
-     * @return Dirección IPv6 del vehículo vecino en la región Geohash indicada.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`.
+     * si no se encuentra ninguno.
      */
-    inet::Ipv6Address findNeighbourCarInAdjacentdRegion(
-            const GeohashLocation &neighbouringGeohashRegion) const;
+    const inet::Ipv6Address& findNextHopInAdjacentNetwork(
+            const GeohashLocation::Adjacency adjacencyDirection) const;
+    /*!
+     * @brief Encontrar siguiente salto más cercano a una ubicación.
+     *
+     * @return Dirección IPv6 del siguiente salto, o `::/128`.
+     * si no se encuentra ninguno.
+     */
+    const inet::Ipv6Address& findNextHopClosestToLocation(
+            const GeohashLocation &geohashLocation) const;
+    /*!
+     * @brief Encontrar siguiente salto más lejano en el tramo más recto
+     * de la ruta vial.
+     *
+     * @param shortestPath  [in] Ruta vial a un vértice.
+     * @param shortestPsths [in] Rutas viales más cortas
+     * @return Dirección IPv6 del siguiente salto, o `::/128`.
+     * si no se encuentra ninguno.
+     */
+    const inet::Ipv6Address& findNextHopFurthestInStraightPath(
+            const VertexVector &shortestPath,
+            const ShortestPaths &shortestPaths) const;
+    /*!
+     * @brief Buscar vehículo vecino más cercano a un vértice que
+     * se encuentra en la misma arista.
+     *
+     * Se buscan los vehículos vecinos que circulan sobre la misma arista,
+     * y se obtiene el que se encuentra a la menor distancia del vértice
+     * indicado.
+     *
+     * @param vertex [in] Vértice de referencia.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`.
+     * si no se encuentra ninguno.
+     */
+    const inet::Ipv6Address& findNextHopClosestToVertex(Vertex vertex) const;
 
     /*
      * Estatus del vehículo.

@@ -111,7 +111,7 @@ public:
      * @param bits          [in] Cadena de bits.
      * @param geohashLength [in] Longitud del código Geohash.
      */
-    GeohashLocation(uint64_t bits, const size_t geohashLength);
+    GeohashLocation(const uint64_t bits, const size_t geohashLength);
 
     /*
      * Sobrecarga de operadores.
