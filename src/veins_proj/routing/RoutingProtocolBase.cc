@@ -529,8 +529,10 @@ void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t expiryTime) {
         route = routingTable->getRoute(i);
 
         if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
-            if (route->getExpiryTime() <= expiryTime)
+            if (route->getExpiryTime() <= expiryTime) {
+                delete route->getProtocolData();
                 routingTable->deleteRoute(route);
+            }
     }
 }
 

@@ -34,6 +34,7 @@
 #include "inet/transportlayer/udp/UdpHeader_m.h"
 #include "inet/networklayer/common/L3Tools.h"
 #include "veins_proj/routing/Routing_m.h"
+#include "veins_proj/routing/RouteData.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "veins_proj/roadnetwork/RoadNetwork.h"
 #include "veins_proj/mobility/CarMobility.h"
@@ -42,6 +43,7 @@
 #include <vector>
 #include <limits>
 #include <iterator>
+#include <algorithm>
 #include <boost/stacktrace.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -472,8 +474,10 @@ const inet::Ptr<Ping> RoutingProtocolCar::createPing(
  * @param ping [in] Mensaje a procesar.
  */
 void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl
+             << "RoutingProtocolCar::processPing"
+             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::processPing");
 
@@ -491,7 +495,7 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
     EV_INFO << "Target vertex: " << pongVertex << std::endl;
 
     /*
-     * Si se encuentra en el vértice de destino se guarda el estatus
+     * Si se encuentra en el vértice de destino, se guarda el estatus
      * de la arista y se responde con un mensaje PONG.
      */
     const inet::Ipv6Address &primaryUnicastAddress =
@@ -504,7 +508,6 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         edgesStatus.getMap()[edge].expiryTime = omnetpp::simTime()
                 + edgeStatusValidityTime;
         edgesStatus.getMap()[edge].value = true;
-
         /*
          * Se busca el vecino más cercano al vértice de origen y se le envía
          * el mensaje PONG de respuesta.
@@ -517,10 +520,9 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
             sendRoutingMessage(pong, "PONG", primaryMulticastAddress,
                     pongNextHopAddress);
         }
-
         /*
          * Se crea el mensaje HOLA_VEHIC y se transmite a la dirección
-         * _multicast_ para indicar a los vecinos que la arista está activa.
+         * *multicast* para indicar a los vecinos que la arista está activa.
          */
         const inet::Ptr<HelloCar> helloCar = createHelloCar(
                 primaryUnicastAddress);
@@ -528,9 +530,8 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         helloCar->setPingPongError(false);
         helloCar->setPingVertex(pingVertex);
         helloCar->setPongVertex(pongVertex);
-        sendRoutingMessage(helloCar, "HOLA_VEHIC", primaryUnicastAddress,
+        sendRoutingMessage(helloCar, "HOLA_VEHIC_PING", primaryUnicastAddress,
                 primaryMulticastAddress);
-
         /*
          * Si no se encuentra en el vértice de destino, se busca el vecino
          * más cercano a este y se usa como siguiente salto.
@@ -541,7 +542,6 @@ void RoutingProtocolCar::processPing(const inet::Ptr<Ping> &ping) {
         if (!pingNextHopAddress.isUnspecified())
             sendRoutingMessage(ping, "PING", primaryMulticastAddress,
                     pingNextHopAddress);
-
         /*
          * Si no se encuentra un vehículo vecino más cercano al
          * vértice de destino, se busca el vecino más cercano
@@ -617,8 +617,10 @@ const inet::Ptr<Pong> RoutingProtocolCar::createPong(
  * @param pong [in] Mensaje a procesar.
  */
 void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl
+             << "RoutingProtocolCar::processPong"
+             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::processPong");
 
@@ -639,7 +641,8 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
 
     /*
      * Se revisa si la dirección de destino es una dirección local,
-     * y si es un mensaje PONG pendiente, se guarda el estatus de la arista,
+     * en cuyo caso, si es un mensaje PONG pendiente,
+     * se guarda el estatus de la arista,
      * y se transmite un mensaje HOLA_VEHIC para anunciarlo.
      */
     const inet::Ipv6Address &primaryUnicastAddress =
@@ -662,19 +665,27 @@ void RoutingProtocolCar::processPong(const inet::Ptr<Pong> &pong) {
             helloCar->setPongVertex(pongVertex);
             sendRoutingMessage(helloCar, "ANC_VEHIC", primaryUnicastAddress,
                     primaryMulticastAddress);
-
             schedulePurgeEdgesStatusTimer();
+            /*
+             * Se procesan los datagramas que demorados que esperaban
+             * el resultado de la operación ping-pong en la arista.
+             */
+            DelayedDatagramsIterator it = delayedDatagrams.lower_bound(edge);
+            DelayedDatagramsIterator endIt = delayedDatagrams.upper_bound(edge);
+            while (it != endIt) {
+                inet::Packet *datagram = it->second;
+                routeDatagram(datagram);
+                it = delayedDatagrams.erase(it);
+            }
         }
-
         /*
-         * Si no es una dirección local, y el destinatario es un vecino,
+         * Si existe una ruta hacia el destinatario,
          * se retransmite el mensaje directamente hacia este.
          */
     } else {
-        if (neighbouringCars.getMap().count(destAddress)) {
+        if (routingTable->doLongestPrefixMatch(destAddress)) {
             sendRoutingMessage(pong, "PONG", primaryUnicastAddress,
                     destAddress);
-
             /*
              * En otro caso, se selecciona como siguiente salto
              * un vehículo vecino más cercano al vértice de origen.
@@ -1054,9 +1065,12 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
     removeOldRoutes(omnetpp::simTime());
-    // TODO Agregar nuevos vértices visidatos del siguiente salto al datagrama.
-    if (routingTable->doLongestPrefixMatch(destAddress))
+    const inet::Ipv6Route *route = routingTable->doLongestPrefixMatch(
+            destAddress);
+    if (route) {
+        updateTlvVisitedVerticesOption(datagram, route);
         return inet::INetfilter::IHook::ACCEPT;
+    }
     /*
      * Se obtienen los datos de la cabecera del datagrama y el conjunto
      * de aristas activas para poder calcular las rutas más cortas.
@@ -1113,14 +1127,14 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
                     findNextHopInAdjacentNetwork(
                             graph[localDestVertex].adjacency);
             if (!nextHopAddress.isUnspecified()) {
-                inet::Ipv6Route *route = new inet::Ipv6Route(destAddress, 128,
-                        inet::IRoute::SourceType::MANET);
-                route->setNextHop(nextHopAddress);
-                route->setInterface(networkInterface);
-                route->setMetric(1);
-                route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
-                routingTable->addRoute(route);
-                // TODO Eliminar opción de vértices visitados.
+                inet::Ipv6Route *newRoute = new inet::Ipv6Route(destAddress,
+                        128, inet::IRoute::SourceType::MANET);
+                newRoute->setNextHop(nextHopAddress);
+                newRoute->setInterface(networkInterface);
+                newRoute->setMetric(1);
+                newRoute->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+                routingTable->addRoute(newRoute);
+                removeTlvOption<TlvVisitedVerticesOption>(datagram);
                 return inet::INetfilter::IHook::ACCEPT;
             } else {
                 // TODO Seleccionar vehículo más cercano a la ubicación del destino.
@@ -1166,14 +1180,15 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
                 }
             }
         } else {
-            inet::Ipv6Route *route = new inet::Ipv6Route(destAddress, 128,
+            inet::Ipv6Route *newRoute = new inet::Ipv6Route(destAddress, 128,
                     inet::IRoute::SourceType::MANET);
-            route->setNextHop(nextHopAddress);
-            route->setInterface(networkInterface);
-            route->setMetric(1);
-            route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
-            routingTable->addRoute(route);
-            // TODO Agregar nuevos vértices visitados a la ruta y al datagrama.
+            newRoute->setNextHop(nextHopAddress);
+            newRoute->setInterface(networkInterface);
+            newRoute->setMetric(1);
+            newRoute->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+            routingTable->addRoute(newRoute);
+            setNewRouteData(newRoute, shortestPath);
+            updateTlvVisitedVerticesOption(datagram, newRoute);
             return inet::INetfilter::IHook::ACCEPT;
         }
     }
@@ -1188,14 +1203,15 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
     const inet::Ipv6Address &nextHopAddress = findNextHopFurthestInStraightPath(
             shortestPath, shortestPaths);
     if (!nextHopAddress.isUnspecified()) {
-        inet::Ipv6Route *route = new inet::Ipv6Route(destAddress, 128,
+        inet::Ipv6Route *newRoute = new inet::Ipv6Route(destAddress, 128,
                 inet::IRoute::SourceType::MANET);
-        route->setNextHop(nextHopAddress);
-        route->setInterface(networkInterface);
-        route->setMetric(1);
-        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
-        routingTable->addRoute(route);
-        // TODO Agregar nuevos vértices visitados a la ruta y al datagrama.
+        newRoute->setNextHop(nextHopAddress);
+        newRoute->setInterface(networkInterface);
+        newRoute->setMetric(1);
+        newRoute->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+        routingTable->addRoute(newRoute);
+        setNewRouteData(newRoute, shortestPath);
+        updateTlvVisitedVerticesOption(datagram, newRoute);
         return inet::INetfilter::IHook::ACCEPT;
     } else {
         // TODO Seleccionar vehículo más cercano a la ubicación del destino.
@@ -1686,6 +1702,94 @@ const inet::Ipv6Address& RoutingProtocolCar::findNextHopClosestToVertex(
     return chosenIt->first;
 }
 
+/*!
+ * @brief Agrega los siguientes vértices visitados a la ruta.
+ *
+ * @param route        [in] Ruta a la que se le agregan los datos de ruta.
+ * @param shortestPath [in] Ruta vial.
+ */
+void RoutingProtocolCar::setNewRouteData(inet::Ipv6Route *route,
+        const VertexVector &shortestPath) const {
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl
+             << "RoutingProtocolCar::setNewRouteData"
+             << std::endl;
+    Enter_Method
+    ("RoutingProtocolCar::setNewRouteData");
+
+    /*
+     * Se recorren las aristas de la ruta vial hasta encontrar
+     * la arista por la que circula el vehículo.
+     */
+    const Graph &graph = mobility->getRoadNetwork()->getGraph();
+    VertexVectorConstIterator endIt = std::next(shortestPath.begin());
+    const inet::Ipv6Address &nextHopAddress = route->getNextHop();
+    const Edge &neighbouringCarEdge = neighbouringCars.getMap().find(
+            nextHopAddress)->second.value.locationOnRoadNetwork.edge;
+    int i = 1;
+    int n = shortestPath.size() - 1;
+    while (i < n) {
+        const Vertex vertexA = shortestPath[i];
+        const Vertex vertexB = shortestPath[i + 1];
+        const Edge edge = boost::edge(vertexA, vertexB, graph).first;
+        if (neighbouringCarEdge == edge)
+            break;
+        endIt++;
+        i++;
+    }
+    /*
+     * Se obtienen los vértices de la ruta vial hasta donde se encuentra
+     * el siguiente salto, y se agregan a los datos de la ruta.
+     */
+    VertexVector nextVisitedVertices(++shortestPath.begin(), ++endIt);
+    RouteData *routeData = new RouteData(nextVisitedVertices);
+    route->setProtocolData(routeData);
+}
+
+/*!
+ * @brief Agrega los siguientes vértices visitados de la ruta a la opción
+ * de vértices visitados del datagrama.
+ *
+ * @param datagram [in] Datagrama cuya opción de
+ * vértices visitados se actualiza.
+ * @param route    [in] Ruta que tomará el datagrama.
+ */
+void RoutingProtocolCar::updateTlvVisitedVerticesOption(inet::Packet *datagram,
+        const inet::Ipv6Route *route) const {
+    EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl
+            << "RoutingProtocolCar::updateTlvVisitedVerticesOption"
+            << std::endl;
+    Enter_Method
+    ("RoutingProtocolCar::updateTlvVisitedVerticesOption");
+
+    /*
+     * Se obtiene la opción de vértices visitados del datagrama
+     * y los siguientes vértices visitados de la ruta.
+     */
+    TlvVisitedVerticesOption *visitedVerticesOption = findTlvOptionForUpdate<
+            TlvVisitedVerticesOption>(datagram);
+    RouteData *routeData = check_and_cast<RouteData*>(route->getProtocolData());
+    const VertexVector &nextVisitedVertices =
+            routeData->getNextVisitedVertices();
+    /*
+     * Se recorren los siguientes vértices visitados de la ruta y para cada uno
+     * se verifica si ya existe en la opción de vértices visitados.
+     */
+    VertexVectorConstIterator it = nextVisitedVertices.begin();
+    VertexVectorConstIterator endIt = nextVisitedVertices.end();
+    while (it != endIt) {
+        int i = 0;
+        int n = visitedVerticesOption->getVisitedVerticesArraySize();
+        while (i < n) {
+            if (visitedVerticesOption->getVisitedVertices(i) == *it)
+                break;
+        }
+        if (i == n)
+            visitedVerticesOption->insertVisitedVertices(*it);
+    }
+}
+
 /*
  * Estatus del vehículo.
  */
@@ -1695,9 +1799,11 @@ const inet::Ipv6Address& RoutingProtocolCar::findNextHopClosestToVertex(
  */
 void RoutingProtocolCar::showStatus() const {
     EV_INFO << "******************************************************************************************************************************************************************"
+            << std::endl
+            << "RoutingProtocolCar::showStatus"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::show");
+    ("RoutingProtocolCar::showStatus");
 
     const LocationOnRoadNetwork &locationOnRoadNetwork =
             mobility->getLocationOnRoadNetwork();

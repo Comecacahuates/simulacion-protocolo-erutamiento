@@ -423,7 +423,7 @@ protected:
      *
      * @return Opción TLV.
      */
-    template<class T> T* findTlvOptionForUpdate(inet::Packet *datagram) {
+    template<class T> T* findTlvOptionForUpdate(inet::Packet *datagram) const {
         T *tlvOption = nullptr;
         inet::Ptr<inet::Ipv6Header> ipv6Header = inet::constPtrCast<
                 inet::Ipv6Header>(
@@ -460,10 +460,11 @@ protected:
      * @param datagram [in] Datagrama del que se elimina la opción TLV.
      */
     template<class T> void removeTlvOption(inet::Packet *datagram) const {
-        const T *tlvOption = nullptr;
-        inet::Ptr<inet::Ipv6Header> ipv6Header = inet::dynamicPtrCast<
+        T *tlvOption = nullptr;
+        inet::Ptr<inet::Ipv6Header> ipv6Header = inet::constPtrCast<
                 inet::Ipv6Header>(
-                inet::getNetworkProtocolHeader(datagram));
+                inet::dynamicPtrCast<const inet::Ipv6Header>(
+                        inet::getNetworkProtocolHeader(datagram)));
         inet::Ipv6ExtensionHeader *extensionHeader =
                 ipv6Header->findExtensionHeaderByTypeForUpdate(
                         inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
@@ -477,7 +478,8 @@ protected:
 
             int i = 0;
             while (i < tlvOptions.getTlvOptionArraySize()) {
-                tlvOption = dynamic_cast<const T*>(tlvOptions.getTlvOption(i));
+                tlvOption = dynamic_cast<T*>(tlvOptions.getTlvOptionForUpdate(
+                        i));
 
                 if (tlvOption) {
                     tlvOptions.eraseTlvOption(i);

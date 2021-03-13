@@ -502,6 +502,24 @@ protected:
      * si no se encuentra ninguno.
      */
     const inet::Ipv6Address& findNextHopClosestToVertex(Vertex vertex) const;
+    /*!
+     * @brief Agrega los siguientes vértices visitados a la ruta.
+     *
+     * @param route        [in] Ruta a la que se le agregan los datos de ruta.
+     * @param shortestPath [in] Ruta vial.
+     */
+    void setNewRouteData(inet::Ipv6Route *route,
+            const VertexVector &shortestPath) const;
+    /*!
+     * @brief Agrega los siguientes vértices visitados de la ruta a la opción
+     * de vértices visitados del datagrama.
+     *
+     * @param datagram [in] Datagrama cuya opción de
+     * vértices visitados se actualiza.
+     * @param route    [in] Ruta que tomará el datagrama.
+     */
+    void updateTlvVisitedVerticesOption(inet::Packet *datagram,
+            const inet::Ipv6Route *route) const;
 
     /*
      * Estatus del vehículo.
