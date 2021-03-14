@@ -79,6 +79,9 @@ void StaticHostConfigurator::handleStartOperation(
             networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
     ipv6Data->setAdvSendAdvertisements(false);
     joinNetwork(mobility->getGeohashLocation(), NetworkType::PRIMARY);
+    hostsLocationTable->registerHostLocation(
+            unicastAddresses[NetworkType::PRIMARY],
+            mobility->getGeohashLocation());
 }
 
 void StaticHostConfigurator::handleStopOperation(

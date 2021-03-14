@@ -24,33 +24,32 @@
 
 namespace veins_proj {
 
-
-class HostsLocationTable : public omnetpp::cSimpleModule {
+class HostsLocationTable: public omnetpp::cSimpleModule {
 
 public:
-    struct HostLocationEntry {
-        GeohashLocation geohashLocation;
-        LocationOnRoadNetwork locationOnRoadNetwork;
-    };
+    GeohashLocation geohashLocation;
 
 protected:
-    typedef std::pair<inet::Ipv6Address, HostLocationEntry> HostLocation;
-    typedef std::map<inet::Ipv6Address, HostLocationEntry> HostsLocationMap;
+    typedef std::pair<inet::Ipv6Address, GeohashLocation> HostLocation;
+    typedef std::map<inet::Ipv6Address, GeohashLocation> HostsLocationMap;
     typedef HostsLocationMap::iterator HostsLocationIterator;
     typedef HostsLocationMap::const_iterator HostsLocationConstIterator;
     HostsLocationMap hostsLocation;
 
 protected:
-    virtual void initialize() override {}
-    virtual void handleMessage(omnetpp::cMessage *message) override {}
+    virtual void initialize() override {
+    }
+    virtual void handleMessage(omnetpp::cMessage *message) override {
+    }
 
 public:
-    void registerHostLocation(const inet::Ipv6Address &address, const GeohashLocation &geohashLocation, const LocationOnRoadNetwork &locationOnRoadNetwork);
-    const HostLocationEntry &getHostLocation(const inet::Ipv6Address &address) { return hostsLocation[address]; }
-    const std::vector<inet::Ipv6Address> getAddresses() const;
-    int getNumHosts() const { return hostsLocation.size(); }
-    bool hasAddress(const inet::Ipv6Address &address) const { return hostsLocation.find(address) != hostsLocation.end(); }
+    void registerHostLocation(const inet::Ipv6Address &address,
+            const GeohashLocation &geohashLocation) {
+        hostsLocation[address] = geohashLocation;
+    }
+    const GeohashLocation& getHostLocation(const inet::Ipv6Address &address) {
+        return hostsLocation[address];
+    }
 };
 
-
-} // namespace veins_proj
+}    // namespace veins_proj

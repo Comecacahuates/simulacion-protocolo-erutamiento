@@ -151,7 +151,7 @@ void RoutingProtocolStaticHost::processHelloCar(
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-            // @formatter:on
+                    // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -258,16 +258,27 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
             inet::getNetworkProtocolHeader(datagram);
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
+    omnetpp::simtime_t now = omnetpp::simTime();
     removeOldRoutes(omnetpp::simTime());
+    const inet::Ipv6Route *routex = routingTable->doLongestPrefixMatch(destAddress);
     if (routingTable->doLongestPrefixMatch(destAddress))
         return inet::INetfilter::IHook::ACCEPT;
 
+    /*
+     * Si el destino es un vehículo vecino,
+     * se usa su dirección como siguiente salto.
+     * TODO: vERIFICAR SI ES CORRECTO.
+     */
+    inet::Ipv6Address nextHopAddress;
+    if (neighbouringCars.getMap().count(destAddress))
+        nextHopAddress = destAddress;
     /*
      * Si no existe una ruta, se busca el vehículo vecino más cercano
      * y se usa como siguiente salto para crear una ruta.
      * Si este no se encuentra, se descarta el datagrama.
      */
-    inet::Ipv6Address nextHopAddress = findClosestNeighbouringCar(
+    else
+        nextHopAddress = findClosestNeighbouringCar(
             mobility->getGeohashLocation());
     if (nextHopAddress.isUnspecified()) {
         if (hasGUI())
@@ -323,7 +334,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-        // @formatter:on
+                // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -370,10 +381,10 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-        // @formatter:on
+                // @formatter:on
 
     /*
-     * Si la dirección de destino es una dirección local o si es _multicast_,
+     * Si la dirección de destino es una dirección local o si es *multicast*,
      * se acepta el datagrama..
      */
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
@@ -384,11 +395,12 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
      * Si el datagrama se tiene que enrutar,
      * se agrega la opción TLV de ubicación del destino.
      */
-    GeohashLocation destGeohashLocation = hostsLocationTable->getHostLocation(
-            destAddress).geohashLocation;
+    const GeohashLocation &destGeohashLocation =
+            hostsLocationTable->getHostLocation(destAddress);
     TlvDestGeohashLocationOption *destGeohashLocationOption =
             createTlvDestGeohashLocationOption(destGeohashLocation.getBits());
-    setTlvOption(datagram, destGeohashLocationOption);
+    setTlvOption<TlvDestGeohashLocationOption>(datagram,
+            destGeohashLocationOption);
 
     /*
      * Se busca una ruta para el datagrama.

@@ -25,6 +25,7 @@
 
 namespace veins_proj {
 
+// TODO: Cambiar herencia de MovingMobilityBase.
 class StaticHostMobility: public inet::MovingMobilityBase {
 
 protected:
@@ -34,7 +35,6 @@ protected:
 
     // Internal
     GeohashLocation geohashLocation;
-    LocationOnRoadNetwork locationOnRoadNetwork;
     RoadNetwork *roadNetwork = nullptr;
 
 public:
@@ -48,9 +48,6 @@ public:
 
     const GeohashLocation& getGeohashLocation() const {
         return geohashLocation;
-    }
-    const LocationOnRoadNetwork& getLocationOnRoadNetwork() const {
-        return locationOnRoadNetwork;
     }
 
     virtual void move() override {

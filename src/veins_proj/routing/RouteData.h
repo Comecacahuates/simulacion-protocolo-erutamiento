@@ -33,15 +33,15 @@ protected:
      * Atributos.
      */
     //! Siguientes vértices visitados en la ruta.
-    VertexVector nextVisitedVertices;
+    VertexSet nextHopVisitedVertices;
 
 public:
 
     /*
      * Constructor.
      */
-    RouteData(const VertexVector nextVisitedVertices) :
-            nextVisitedVertices(nextVisitedVertices) {
+    RouteData(const VertexSet nextHopVisitedVertices) :
+            nextHopVisitedVertices(nextHopVisitedVertices) {
     }
 
     /*
@@ -51,8 +51,8 @@ public:
      * @brief Acceso a los siguientes vértices visitados de la ruta
      * @return
      */
-    const VertexVector& getNextVisitedVertices() const {
-        return nextVisitedVertices;
+    const VertexSet& getNextHopVisitedVertices() const {
+        return nextHopVisitedVertices;
     }
 };
 

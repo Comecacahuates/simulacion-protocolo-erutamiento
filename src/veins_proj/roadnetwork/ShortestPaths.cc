@@ -61,6 +61,8 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
 			std::numeric_limits<double>::infinity());
 	routeDistances[a] = 0;
 	routeDistances[b] = 0;
+    if (activeEdges.empty())
+        return;
 
 	/*
 	 * Se inicializa el conjunto de vértices que restan por procesar para que
@@ -187,10 +189,10 @@ VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex,
 
 	shortestPath.push_back(vertex);
 
-	do {
+	while (!(vertex == a || vertex == b)) {
 		vertex = predecessors[vertex];
 		shortestPath.push_back(vertex);
-	} while (!(vertex == a || vertex == b));
+	}
 
 	if (vertex == a)
 		shortestPath.push_back(b);

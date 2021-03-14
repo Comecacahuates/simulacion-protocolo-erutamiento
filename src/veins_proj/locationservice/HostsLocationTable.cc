@@ -18,20 +18,5 @@
 
 using namespace veins_proj;
 
-
 Define_Module(HostsLocationTable);
 
-
-
-void HostsLocationTable::registerHostLocation(const inet::Ipv6Address &address, const GeohashLocation &geohashLocation, const LocationOnRoadNetwork &locationOnRoadNetwork) {
-    hostsLocation[address] = { geohashLocation, locationOnRoadNetwork };
-}
-
-const std::vector<inet::Ipv6Address> HostsLocationTable::getAddresses() const {
-    std::vector<inet::Ipv6Address> addresses;
-
-    for (auto const &entry: hostsLocation)
-        addresses.push_back(entry.first);
-
-    return addresses;
-}

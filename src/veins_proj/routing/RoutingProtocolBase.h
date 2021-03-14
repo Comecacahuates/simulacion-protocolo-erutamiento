@@ -21,6 +21,7 @@
 #pragma once
 
 #include <omnetpp.h>
+#include "inet/common/INETUtils.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Ptr.h"
 #include "inet/common/TlvOptions_m.h"
@@ -249,51 +250,28 @@ protected:
     /*
      * Directorio de vehículos vecinos.
      */
-    /*!
-     * @brief Registro de vehículo vecino.
-     */
+    //! Registro de vehículo vecino.
     struct NeighbouringCarValue {
-        /*!
-         * @brief Ubicación Geohash del vehículo.
-         */
+        //! Ubicación Geohash del vehículo.
         GeohashLocation geohashLocation;
-        /*!
-         * @brief Velocidad de movimiento del vehículo en metros por segundo.
-         */
+        //! Velocidad de movimiento del vehículo en metros por segundo.
         double speed;
-        /*!
-         * @brief Dirección acimutal del movimiento del vehículo en grados.
-         */
+        //! Dirección acimutal del movimiento del vehículo en grados.
         double direction;
-        /*!
-         * @brief Ubicación vial del vehículo.
-         */
+        //! Ubicación vial del vehículo.
         LocationOnRoadNetwork locationOnRoadNetwork;
     };
-    /*!
-     * @brief Diccionario de directorio de vehículos vecinos.
-     *
-     * La clave es la dirección del vehículo vecino, y el valor es el
-     * registro de vehículo vecino.
-     * */
+    //! Diccionario de directorio de vehículos vecinos.
     typedef ExpiringValuesMap<inet::Ipv6Address, NeighbouringCarValue> NeighbouringCars;
-    /*!
-     * @brief Valor.
-     */
+    //! Valor en el directorio de vehículos vecinos..
     typedef NeighbouringCars::MapValue NeighbouringCar;
-    /*!
-     * @brief Iterador de registros para diccionario del directorio de
-     * vehículos vecinos.
-     */
+    //! Iterador de registros para diccionario del directorio
+    //! de vehículos vecinos.
     typedef NeighbouringCars::Iterator NeighbouringCarsIterator;
-    /*!
-     * @brief Iterador de registros para diccionario de directorio de vehículos
-     * vecinos constante.
-     */
+    //! Iterador de registros para diccionario de directorio
+    //! de vehículos vecinos constante.
     typedef NeighbouringCars::ConstIterator NeighbouringCarsConstIterator;
-    /*!
-     * @brief Directorio de vehículos vecinos.
-     */
+    //! Directorio de vehículos vecinos.
     NeighbouringCars neighbouringCars;
     /*!
      * @brief Imprimir el directorio de vehículos vecinos.
@@ -375,8 +353,70 @@ protected:
      * @param datagram [in] Datagrama al que se le agregará la opción TLV.
      * @param tlvOption [in] Opción TLV a agregar al datagrama.
      */
-    void setTlvOption(inet::Packet *datagram,
-            inet::TlvOptionBase *tlvOption) const;
+    template<class T> void setTlvOption(inet::Packet *datagram,
+            T *tlvOption) const {
+
+        /*
+         * Se obtiene la cabecera de opciones de salto por salto
+         * de la cabecera IPv6.
+         */
+        datagram->trimFront();
+
+        inet::Ptr<inet::Ipv6Header> ipv6Header =
+                inet::removeNetworkProtocolHeader<inet::Ipv6Header>(datagram);
+        inet::B oldHeaderLength = ipv6Header->calculateHeaderByteLength();
+        inet::Ipv6ExtensionHeader *extensionHeader =
+                ipv6Header->findExtensionHeaderByTypeForUpdate(
+                        inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
+        inet::Ipv6HopByHopOptionsHeader *optionsHeader =
+                omnetpp::check_and_cast_nullable<
+                        inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
+        /*
+         * Si no existe la cabecera de opciones de salto por salto,
+         * se agrega una nueva.
+         */
+        if (!optionsHeader) {
+            optionsHeader = new inet::Ipv6HopByHopOptionsHeader();
+            optionsHeader->setByteLength(inet::B(8));
+            ipv6Header->addExtensionHeader(optionsHeader);
+        }
+        /*
+         * Se verifica si ya existe una opción TLV en la cabecera
+         * de la misma clase de la opción TLV que se quiere agregar.
+         */
+        inet::TlvOptions &tlvOptions = optionsHeader->getTlvOptionsForUpdate();
+        size_t i = 0;
+        size_t n = tlvOptions.getTlvOptionArraySize();
+        while (i < n) {
+            if (dynamic_cast<T*>(tlvOptions.getTlvOptionForUpdate(i)))
+                break;
+            i++;
+        }
+        /*
+         * Si se encontró la opción de la misma clase,
+         * se elimina esta y se cambia por la nueva.
+         */
+        if (i < n) {
+            delete tlvOptions.dropTlvOption(i);
+            tlvOptions.setTlvOption(i, tlvOption);
+            /*
+             * Si no se encontró la opción de la misma clase,
+             * únicamente se agrega la nueva.
+             */
+        } else
+            tlvOptions.insertTlvOption(tlvOption);
+        /*
+         * Se actualiza la longitud de la cabecera y se reinserta en el datagrama.
+         */
+        optionsHeader->setByteLength(
+                inet::B(
+                        inet::utils::roundUp(
+                                2 + inet::B(tlvOptions.getLength()).get(), 8)));
+        inet::B newHeaderLength = ipv6Header->calculateHeaderByteLength();
+        ipv6Header->addChunkLength(newHeaderLength - oldHeaderLength);
+        inet::insertNetworkProtocolHeader(datagram, inet::Protocol::ipv6,
+                ipv6Header);
+    }
     /*!
      * @brief Obtener opción TLV constante de la cabecera de opciones
      * de salto por salto de un datagrama.
@@ -387,7 +427,10 @@ protected:
      * @return Opción TLV.
      */
     template<class T> const T* findTlvOption(inet::Packet *datagram) const {
-        const T *tlvOption = nullptr;
+        /*
+         * Se obtiene la cabecera de opciones de salto por salto
+         * de la cabecera IPv6.
+         */
         inet::Ptr<const inet::Ipv6Header> ipv6Header = inet::dynamicPtrCast<
                 const inet::Ipv6Header>(
                 inet::getNetworkProtocolHeader(datagram));
@@ -398,53 +441,17 @@ protected:
                 omnetpp::check_and_cast_nullable<
                         const inet::Ipv6HopByHopOptionsHeader*>(
                         extensionHeader);
-
+        /*
+         * Si se encuentra la cabecera de opciones de salto por salto,
+         * se busca la opción TLV de la clase `T`.
+         */
+        const T *tlvOption = nullptr;
         if (optionsHeader) {
             const inet::TlvOptions &tlvOptions = optionsHeader->getTlvOptions();
-
-            int i = 0;
+            size_t i = 0;
             while (i < tlvOptions.getTlvOptionArraySize()) {
                 tlvOption =
                         dynamic_cast<const T*>(tlvOptions.getTlvOption(i++));
-
-                if (tlvOption)
-                    break;
-            }
-        }
-
-        return tlvOption;
-    }
-    /*!
-     * @brief Obtener opción TLV de la cabecera de opciones
-     * de salto por salto de un datagrama.
-     *
-     * @tparam T Tipo de opción TLV a obtener.
-     * @param datagram [in] Datagrama del que se obtiene la opción TLV.
-     *
-     * @return Opción TLV.
-     */
-    template<class T> T* findTlvOptionForUpdate(inet::Packet *datagram) const {
-        T *tlvOption = nullptr;
-        inet::Ptr<inet::Ipv6Header> ipv6Header = inet::constPtrCast<
-                inet::Ipv6Header>(
-                inet::dynamicPtrCast<const inet::Ipv6Header>(
-                        inet::getNetworkProtocolHeader(datagram)));
-        inet::Ipv6ExtensionHeader *extensionHeader =
-                ipv6Header->findExtensionHeaderByTypeForUpdate(
-                        inet::IpProtocolId::IP_PROT_IPv6EXT_HOP);
-        inet::Ipv6HopByHopOptionsHeader *optionsHeader =
-                omnetpp::check_and_cast_nullable<
-                        inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
-
-        if (optionsHeader) {
-            inet::TlvOptions &tlvOptions =
-                    optionsHeader->getTlvOptionsForUpdate();
-
-            int i = 0;
-            while (i < tlvOptions.getTlvOptionArraySize()) {
-                tlvOption = dynamic_cast<T*>(tlvOptions.getTlvOptionForUpdate(
-                        i++));
-
                 if (tlvOption)
                     break;
             }
@@ -460,7 +467,10 @@ protected:
      * @param datagram [in] Datagrama del que se elimina la opción TLV.
      */
     template<class T> void removeTlvOption(inet::Packet *datagram) const {
-        T *tlvOption = nullptr;
+        /*
+         * Se obtiene la cabecera de opciones de salto por salto
+         * de la cabecera IPv6.
+         */
         inet::Ptr<inet::Ipv6Header> ipv6Header = inet::constPtrCast<
                 inet::Ipv6Header>(
                 inet::dynamicPtrCast<const inet::Ipv6Header>(
@@ -471,20 +481,19 @@ protected:
         inet::Ipv6HopByHopOptionsHeader *optionsHeader =
                 omnetpp::check_and_cast_nullable<
                         inet::Ipv6HopByHopOptionsHeader*>(extensionHeader);
-
+        /*
+         * Si se encuentra la cabecera de opciones de salto por salto,
+         * se busca la opción TLV de la clase `T`.
+         */
         if (optionsHeader) {
             inet::TlvOptions &tlvOptions =
                     optionsHeader->getTlvOptionsForUpdate();
-
             int i = 0;
             while (i < tlvOptions.getTlvOptionArraySize()) {
-                tlvOption = dynamic_cast<T*>(tlvOptions.getTlvOptionForUpdate(
-                        i));
-
-                if (tlvOption) {
+                if (dynamic_cast<T*>(tlvOptions.getTlvOptionForUpdate(i))) {
                     tlvOptions.eraseTlvOption(i);
+                    break;
                 }
-
                 i++;
             }
         }
@@ -517,14 +526,6 @@ protected:
      * @return Opción TLV de ubicación vial del destino.
      */
     TlvDestLocationOnRoadNetworkOption* createTlvDestLocationOnRoadNetworkOption(
-            Vertex vertexA, Vertex vertexB, double distanceToVertexA) const;
-    /*!
-     * @brief Agregar opción TLV de ubicación vial del destino a un datagrama.
-     *
-     * @param datagram [inout] Datagrama al que se le agregará la opción TLV.
-     * destGeohashLocation tlvOption [in] Ubicación Geohash del destino.
-     */
-    void setTlvDestLocationOnRoadNetworkOption(inet::Packet *datagram,
             const GeohashLocation &destGeohashLocation) const;
     /*!
      * @brief Calcular la longitud en octetos de una opción TLV de
@@ -539,9 +540,11 @@ protected:
     /*!
      * @brief Crear opción TLV de vértices visitados vacía.
      *
+     *@param visitedVertices [in] Conjunto de vértices visitados.
      * @return Opción TLV de vértices visitados.
      */
-    TlvVisitedVerticesOption* createTlvVisitedVerticesOption() const;
+    TlvVisitedVerticesOption* createTlvVisitedVerticesOption(
+            const VertexSet &visitedVertices = { }) const;
     /*!
      * @brief Calcular la longitud en octetos de una opción TLV de
      * vértices visitados.
