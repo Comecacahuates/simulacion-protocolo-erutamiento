@@ -34,6 +34,7 @@
 #include "inet/networklayer/nexthop/NextHopForwardingHeader_m.h"
 #include "inet/transportlayer/udp/UdpHeader_m.h"
 #include "veins_proj/routing/Routing_m.h"
+#include "veins_proj/routing/RouteData.h"
 #include "veins_proj/roadnetwork/RoadNetwork.h"
 #include <cmath>
 #include <vector>
@@ -71,6 +72,7 @@ void RoutingProtocolBase::initialize(int stage) {
         edgeStatusValidityTime = par("edgeStatusValidityTime");
         routeValidityTime = par("routeValidityTime");
         delayedDatagramValidityTime = par("delayedDatagramValidityTime");
+        udpPacketDelayTime = par("udpPacketDelayTime");
         vertexProximityRadius = par("vertexProximityRadius");
 
         /*
@@ -189,14 +191,20 @@ void RoutingProtocolBase::processSelfMessage(omnetpp::cMessage *message) {
  * Envía un paquete UDP hacia la compuerta que se conecta con el
  * protocolo IP.
  *
- * @param packet [in] Paque a enviar.
+ * @param packet  [in] Paque a enviar.
+ * @param delayed [in] Indica si la transmisión del paquete se va a demorar.
+ * Se utiliza si se tienen que enviar dos paquetes consecutivamente.
  */
-void RoutingProtocolBase::sendUdpPacket(inet::Packet *packet) {
+void RoutingProtocolBase::sendUdpPacket(inet::Packet *packet, bool delayed) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolBase::sendUdpPacket");
-    send(packet, "ipOut");
+
+    if (delayed)
+        sendDelayed(packet, udpPacketDelayTime, "ipOut");
+    else
+        send(packet, "ipOut");
 }
 
 /*!
@@ -271,14 +279,17 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
  * y se envía a la dirección indicada.
  *
  * @param routingMessage [in] Mensaje a enviar.
- * @param name [in] Nombre del mensaje.
- * @param srcAddress [in] Dirección de origen del mensaje.
- * @param destAddress [in] Dirección de destino del mensaje.
+ * @param name           [in] Nombre del mensaje.
+ * @param srcAddress     [in] Dirección de origen del mensaje.
+ * @param destAddress    [in] Dirección de destino del mensaje.
+ * @param delayed        [in] Indica si la transmisión del paquete
+ * se va a demorar. Se utiliza si se tienen que enviar
+ * dos mensajes consecutivamente.
  */
 void RoutingProtocolBase::sendRoutingMessage(
         const inet::Ptr<RoutingPacket> routingMessage, const char *name,
         const inet::Ipv6Address &srcAddress,
-        const inet::Ipv6Address &destAddress) {
+        const inet::Ipv6Address &destAddress, bool delayed) {
 
     inet::Packet *udpPacket = new inet::Packet(name);
     udpPacket->insertAtBack(routingMessage);
@@ -305,7 +316,7 @@ void RoutingProtocolBase::sendRoutingMessage(
             udpPacket->addTagIfAbsent<inet::DispatchProtocolReq>();
     dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
 
-    sendUdpPacket(udpPacket);
+    sendUdpPacket(udpPacket, delayed);
 }
 
 /*
@@ -420,7 +431,6 @@ void RoutingProtocolBase::processPurgeNeighbouringCarsTimer() {
     ("RoutingProtocolBase::processPurgeNeighbouringCarsTimer");
 
     neighbouringCars.removeOldValues(omnetpp::simTime());
-    removeOldRoutes(omnetpp::simTime());
     schedulePurgeNeighbouringCarsTimer();
 }
 
@@ -482,59 +492,27 @@ void RoutingProtocolBase::showRoutes() const {
 }
 
 /*!
- * @brief Eliminar rutas por dirección IPv6 de siguiente salto.
- *
- * Elimina las rutas de la tabla de enrutamiento cuya dirección IPv6
- * de siguiente salto sea igual a la dirección indicada.
- *
- * @param nextHopAddress [in] Dirección IPv6 de siguiente salto de las
- * rutas a eliminar.
- */
-void RoutingProtocolBase::purgeNextHopRoutes(
-        const inet::Ipv6Address &nextHopAddress) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::purgeNextHopRoutes");
-
-    inet::Ipv6Route *route;
-
-    for (int i = routingTable->getNumRoutes() - 1; i >= 0; i--) {
-        route = routingTable->getRoute(i);
-
-        if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
-            if (nextHopAddress == route->getNextHop()) {
-                delete route->getProtocolData();
-                routingTable->deleteRoute(route);
-            }
-    }
-    routingTable->purgeDestCache();
-}
-
-/*!
- * @brief Eliminar rutas viejas.
- *
- * Elimina las rutas de la tabla de enrutamiento cuya hora de expiración
- * sea anterior a la hora indicada.
+ * @brief Eliminar rutas expiradas de la tabla de enrutamiento.
  *
  * @param expiryTime [in] Hora de expiración máxima para eliminar las rutas.
  */
-void RoutingProtocolBase::removeOldRoutes(omnetpp::simtime_t expiryTime) {
+void RoutingProtocolBase::removeExpiredRoutes(omnetpp::simtime_t expiryTime) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("RoutingProtocolBase::removeOldRoutes");
+    ("RoutingProtocolBase::removeExpiredRoutes");
 
     inet::Ipv6Route *route;
 
     for (int i = routingTable->getNumRoutes() - 1; i >= 0; i--) {
         route = routingTable->getRoute(i);
 
-        if (route != nullptr && route->getSourceType() == inet::IRoute::MANET)
-            if (route->getExpiryTime() <= expiryTime) {
-                delete route->getProtocolData();
+        if (route != nullptr && route->getSourceType() == inet::IRoute::MANET) {
+            RouteData *routeData = check_and_cast<RouteData*>(
+                    route->getProtocolData());
+            if (routeData->getExpiryTime() <= expiryTime)
                 routingTable->deleteRoute(route);
-            }
+        }
     }
     routingTable->purgeDestCache();
 }

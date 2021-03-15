@@ -81,6 +81,8 @@ protected:
     omnetpp::simtime_t routeValidityTime;
     //! Tiempo de vigencia de los datagramas demorados.
     omnetpp::simtime_t delayedDatagramValidityTime;
+    //! Tiempo de demora opcional de transmisión de paquetes UDP.
+    omnetpp::simtime_t udpPacketDelayTime;
     //! Radio de proximidad a los vértices.
     double vertexProximityRadius;
 
@@ -155,9 +157,11 @@ protected:
      * Envía un paquete UDP hacia la compuerta que se conecta con el
      * protocolo IP.
      *
-     * @param packet [in] Paque a enviar.
+     * @param packet  [in] Paque a enviar.
+     * @param delayed [in] Indica si la transmisión del paquete se va a demorar.
+     * Se utiliza si se tienen que enviar dos paquetes consecutivamente.
      */
-    void sendUdpPacket(inet::Packet *packet);
+    void sendUdpPacket(inet::Packet *packet, bool delayed = false);
     /*!
      * @brief Procesar paquete UDP.
      *
@@ -176,13 +180,16 @@ protected:
      * y se envía a la dirección indicada.
      *
      * @param routingMessage [in] Mensaje a enviar.
-     * @param name [in] Nombre del mensaje.
-     * @param srcAddress [in] Dirección de origen del mensaje.
-     * @param destAddress [in] Dirección de destino del mensaje.
+     * @param name           [in] Nombre del mensaje.
+     * @param srcAddress     [in] Dirección de origen del mensaje.
+     * @param destAddress    [in] Dirección de destino del mensaje.
+     * @param delayed        [in] Indica si la transmisión del paquete
+     * se va a demorar. Se utiliza si se tienen que enviar
+     * dos mensajes consecutivamente.
      */
     void sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
             const char *name, const inet::Ipv6Address &srcAddress,
-            const inet::Ipv6Address &destAddress);
+            const inet::Ipv6Address &destAddress, bool delayed = false);
 
     /*
      * Mensajes ACK.
@@ -308,24 +315,11 @@ protected:
      */
     void showRoutes() const;
     /*!
-     * @brief Eliminar rutas por dirección IPv6 de siguiente salto.
-     *
-     * Elimina las rutas de la tabla de enrutamiento cuya dirección IPv6
-     * de siguiente salto sea igual a la dirección indicada.
-     *
-     * @param nextHopAddress [in] Dirección IPv6 de siguiente salto de las
-     * rutas a eliminar.
-     */
-    void purgeNextHopRoutes(const inet::Ipv6Address &nextHopAddress);
-    /*!
-     * @brief Eliminar rutas viejas.
-     *
-     * Elimina las rutas de la tabla de enrutamiento cuya hora de expiración
-     * sea anterior a la hora indicada.
+     * @brief Eliminar rutas expiradas de la tabla de enrutamiento.
      *
      * @param expiryTime [in] Hora de expiración máxima para eliminar las rutas.
      */
-    void removeOldRoutes(omnetpp::simtime_t expiryTime);
+    void removeExpiredRoutes(omnetpp::simtime_t expiryTime);
 
     /*
      * Enrutamiento

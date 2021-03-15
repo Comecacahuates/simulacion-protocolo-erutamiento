@@ -32,6 +32,8 @@ protected:
     /*
      * Atributos.
      */
+    //! Hora de expiración.
+    omnetpp::simtime_t expiryTime;
     //! Siguientes vértices visitados en la ruta.
     VertexSet nextHopVisitedVertices;
 
@@ -40,19 +42,37 @@ public:
     /*
      * Constructor.
      */
-    RouteData(const VertexSet nextHopVisitedVertices) :
-            nextHopVisitedVertices(nextHopVisitedVertices) {
+    RouteData(const omnetpp::simtime_t expiryTime,
+            const VertexSet nextHopVisitedVertices = {}) :
+                    expiryTime(expiryTime),
+                    nextHopVisitedVertices(nextHopVisitedVertices) {
     }
 
     /*
      * Acceso a los atributos.
      */
     /*!
+     * @brief Acceso a la hora de expiración.
+     *
+     * @return Hora de expiración.
+     */
+    omnetpp::simtime_t getExpiryTime() const {
+        return expiryTime;
+    }
+    /*!
      * @brief Acceso a los siguientes vértices visitados de la ruta
+     *
      * @return
      */
     const VertexSet& getNextHopVisitedVertices() const {
         return nextHopVisitedVertices;
+    }
+
+    /*
+     * Modificación de los atributos.
+     */
+    void setExpiryTime(const omnetpp::simtime_t expiryTime) {
+        this->expiryTime = expiryTime;
     }
 };
 

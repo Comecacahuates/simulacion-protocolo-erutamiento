@@ -158,96 +158,99 @@ void CarConfigurator::processLocationUpdateTimer() {
             mobility->getGatewayRegionAdjacency();
 
     /*
-     * Si la ubicación es la misma, no se hace ningún cambio en la
+     * Si la ubicación cambió, se hace ningún cambio en la
      * configuración de la interfaz.
      */
-    if (geohashLocation == newGeohashLocation)
-        return;
-
-    /*
-     * Si la ubicación cambió, se hace una transición del FSM.
-     */
-    FSM_Switch(fsm)
-    {
-        case FSM_Exit(INIT): {
-            /*
-             * Si el vehículo no está en una región *gateway*,
-             * se hace una transición al estado NO_GATEWAY.
-             */
-            if (gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE)
-                FSM_Goto(fsm, NO_GATEWAY);
-            /*
-             * Si el vehículo está en una región *gateway*,
-             * se hace una transición al estado GATEWAY.
-             */
-            else
-                FSM_Goto(fsm, GATEWAY);
-            break;
-        }
-        case FSM_Enter(NO_GATEWAY): {
-            /*
-             * Cuando se entra al estado NO_GATEWAY,
-             * se sale de la subred secundaria.
-             */
-            ASSERT(gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE);
-            leaveNetwork(NetworkType::SECONDARY);
-            break;
-        }
-        case FSM_Exit(NO_GATEWAY): {
-            /*
-             * Si el vehículo no está en una región *gateway*,
-             * se hace una transición al estado NO_GATEWAY.
-             */
-            if (gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE)
-                FSM_Goto(fsm, NO_GATEWAY);
-            /*
-             * Si el vehículo está en una región *gateway*,
-             * se hace una transición al estado GATEWAY.
-             */
-            else
-                FSM_Goto(fsm, GATEWAY);
-            break;
-        }
-        case FSM_Enter(GATEWAY): {
-            /*
-             * Cuando se entra al estado GATEWAY,
-             * se une a la subred adyacente como subred secundaria.
-             */
-            ASSERT(gatewayRegionAdjacency != GeohashLocation::Adjacency::NONE);
-            GeohashLocation geohashRegion(
-                    geohashLocation.getGeohash().substr(0, 6));
-            GeohashLocation adjacentGeohashRegion =
-                    geohashRegion.getAdjacentGeohashRegion(
-                            gatewayRegionAdjacency);
-            joinNetwork(adjacentGeohashRegion, NetworkType::SECONDARY);
-            break;
-        }
-        case FSM_Exit(GATEWAY): {
-            /*
-             * Si el vehículo cambió a otra región Geohash,
-             * se intercambia la subred primaria con la secundaria
-             * y se hace una transición al estado GATEWAY.
-             */
-            if (roadNetwork != newRoadNetwork) {
-                ASSERT(
-                        gatewayRegionAdjacency
-                                != GeohashLocation::Adjacency::NONE);
-                swapNetworks();
-                FSM_Goto(fsm, GATEWAY);
+    if (geohashLocation != newGeohashLocation) {
+        /*
+         * Si la ubicación cambió, se hace una transición del FSM.
+         */
+        FSM_Switch(fsm)
+        {
+            case FSM_Exit(INIT): {
                 /*
                  * Si el vehículo no está en una región *gateway*,
                  * se hace una transición al estado NO_GATEWAY.
                  */
-            } else if (gatewayRegionAdjacency
-                    == GeohashLocation::Adjacency::NONE)
-                FSM_Goto(fsm, NO_GATEWAY);
-            /*
-             * Si el vehículo está en una región *gateway*,
-             * se hace una transición al estado GATEWAY.
-             */
-            else
-                FSM_Goto(fsm, GATEWAY);
-            break;
+                if (gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE)
+                    FSM_Goto(fsm, NO_GATEWAY);
+                /*
+                 * Si el vehículo está en una región *gateway*,
+                 * se hace una transición al estado GATEWAY.
+                 */
+                else
+                    FSM_Goto(fsm, GATEWAY);
+                break;
+            }
+            case FSM_Enter(NO_GATEWAY): {
+                /*
+                 * Cuando se entra al estado NO_GATEWAY,
+                 * se sale de la subred secundaria.
+                 */
+                ASSERT(
+                        gatewayRegionAdjacency
+                                == GeohashLocation::Adjacency::NONE);
+                leaveNetwork(NetworkType::SECONDARY);
+                break;
+            }
+            case FSM_Exit(NO_GATEWAY): {
+                /*
+                 * Si el vehículo no está en una región *gateway*,
+                 * se hace una transición al estado NO_GATEWAY.
+                 */
+                if (gatewayRegionAdjacency == GeohashLocation::Adjacency::NONE)
+                    FSM_Goto(fsm, NO_GATEWAY);
+                /*
+                 * Si el vehículo está en una región *gateway*,
+                 * se hace una transición al estado GATEWAY.
+                 */
+                else
+                    FSM_Goto(fsm, GATEWAY);
+                break;
+            }
+            case FSM_Enter(GATEWAY): {
+                /*
+                 * Cuando se entra al estado GATEWAY,
+                 * se une a la subred adyacente como subred secundaria.
+                 */
+                ASSERT(
+                        gatewayRegionAdjacency
+                                != GeohashLocation::Adjacency::NONE);
+                GeohashLocation geohashRegion(
+                        geohashLocation.getGeohash().substr(0, 6));
+                GeohashLocation adjacentGeohashRegion =
+                        geohashRegion.getAdjacentGeohashRegion(
+                                gatewayRegionAdjacency);
+                joinNetwork(adjacentGeohashRegion, NetworkType::SECONDARY);
+                break;
+            }
+            case FSM_Exit(GATEWAY): {
+                /*
+                 * Si el vehículo cambió a otra región Geohash,
+                 * se intercambia la subred primaria con la secundaria
+                 * y se hace una transición al estado GATEWAY.
+                 */
+                if (roadNetwork != newRoadNetwork) {
+                    ASSERT(
+                            gatewayRegionAdjacency
+                                    != GeohashLocation::Adjacency::NONE);
+                    swapNetworks();
+                    FSM_Goto(fsm, GATEWAY);
+                    /*
+                     * Si el vehículo no está en una región *gateway*,
+                     * se hace una transición al estado NO_GATEWAY.
+                     */
+                } else if (gatewayRegionAdjacency
+                        == GeohashLocation::Adjacency::NONE)
+                    FSM_Goto(fsm, NO_GATEWAY);
+                /*
+                 * Si el vehículo está en una región *gateway*,
+                 * se hace una transición al estado GATEWAY.
+                 */
+                else
+                    FSM_Goto(fsm, GATEWAY);
+                break;
+            }
         }
     }
 

@@ -30,6 +30,7 @@
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
+#include "veins_proj/routing/RouteData.h"
 
 using namespace veins_proj;
 
@@ -151,7 +152,7 @@ void RoutingProtocolStaticHost::processHelloCar(
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-                    // @formatter:on
+                        // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -259,8 +260,9 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
     omnetpp::simtime_t now = omnetpp::simTime();
-    removeOldRoutes(omnetpp::simTime());
-    const inet::Ipv6Route *routex = routingTable->doLongestPrefixMatch(destAddress);
+    removeExpiredRoutes(omnetpp::simTime());
+    const inet::Ipv6Route *routex = routingTable->doLongestPrefixMatch(
+            destAddress);
     if (routingTable->doLongestPrefixMatch(destAddress))
         return inet::INetfilter::IHook::ACCEPT;
 
@@ -279,7 +281,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
      */
     else
         nextHopAddress = findClosestNeighbouringCar(
-            mobility->getGeohashLocation());
+                mobility->getGeohashLocation());
     if (nextHopAddress.isUnspecified()) {
         if (hasGUI())
             inet::getContainingNode(host)->bubble(
@@ -290,14 +292,15 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
     /*
      * Si sí se encuentra el siguiente salto, se crea una ruta hacia el destino.
      */
-    inet::Ipv6Route *route = new inet::Ipv6Route(destAddress, 128,
+    inet::Ipv6Route *newRoute = new inet::Ipv6Route(destAddress, 128,
             inet::IRoute::SourceType::MANET);
-    route->setNextHop(nextHopAddress);
-    route->setInterface(networkInterface);
-    route->setMetric(1);
-    route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
-    routingTable->addRoute(route);
-
+    newRoute->setNextHop(nextHopAddress);
+    newRoute->setInterface(networkInterface);
+    newRoute->setMetric(1);
+    RouteData *routeData = new RouteData(
+            omnetpp::simTime() + routeValidityTime);
+    newRoute->setProtocolData(routeData);
+    routingTable->addRoute(newRoute);
     return inet::INetfilter::IHook::ACCEPT;
 }
 
@@ -334,7 +337,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-                // @formatter:on
+                    // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -381,7 +384,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-                // @formatter:on
+                    // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es *multicast*,

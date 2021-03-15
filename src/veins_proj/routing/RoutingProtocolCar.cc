@@ -166,26 +166,24 @@ void RoutingProtocolCar::processHelloCarTimer() {
     const inet::Ipv6InterfaceData *ipv6Data =
             networkInterface->findProtocolData<inet::Ipv6InterfaceData>();
 
-    if (ipv6Data->hasAddress(primaryUnicastAddress)) {
+    if (!primaryUnicastAddress.isUnspecified()
+            && ipv6Data->hasAddress(primaryUnicastAddress)) {
         const inet::Ptr<HelloCar> helloCar = createHelloCar(
                 primaryUnicastAddress);
         sendRoutingMessage(helloCar, "ANC_VEHIC", primaryUnicastAddress,
                 primaryMulticastAddress);
     }
 
-    if (ipv6Data->hasAddress(secondaryUnicastAddress)) {
+    if (secondaryUnicastAddress.isUnspecified()
+            && ipv6Data->hasAddress(secondaryUnicastAddress)) {
         const inet::Ptr<HelloCar> helloCar = createHelloCar(
                 secondaryUnicastAddress);
         sendRoutingMessage(helloCar, "ANC_VEHIC", secondaryUnicastAddress,
-                secondaryMulticastAddress);
+                secondaryMulticastAddress, true);
     }
 
     scheduleHelloCarTimer();
 }
-
-/*
- * Mensajes HOLA_VEHIC.
- */
 
 /*!
  * @brief Crear mensaje HOLA_VEHIC.
@@ -195,8 +193,10 @@ void RoutingProtocolCar::processHelloCarTimer() {
  */
 const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
         const inet::Ipv6Address &srcAddress) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
+    EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl
+             << "RoutingProtocolCar::createHelloCar"
+             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::createHelloCar");
 
@@ -261,6 +261,8 @@ const inet::Ptr<HelloCar> RoutingProtocolCar::createHelloCar(
  */
 void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
     EV_DEBUG << "******************************************************************************************************************************************************************"
+             << std::endl
+             << "RoutingProtocolCar::processHelloHost"
              << std::endl;
     Enter_Method
     ("RoutingProtocolCar::processHelloHost");
@@ -307,7 +309,8 @@ void RoutingProtocolCar::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
 //        route->setNextHop(srcAddress);
 //        route->setInterface(networkInterface);
 //        route->setMetric(1);
-//        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+//        RouteData *routeData = new RouteData();
+//        route->setProtocolData(routeData);
 //        routingTable->addRoute(route);
 //    }
     /*
@@ -392,27 +395,28 @@ void RoutingProtocolCar::processHelloHost(
      */
     neighbouringHosts.getMap()[srcAddress] = { omnetpp::simTime()
             + neighbouringHostValidityTime, geohashLocation };
-    removeOldRoutes(omnetpp::simTime());
-    inet::Ipv6Route *route =
-            const_cast<inet::Ipv6Route*>(routingTable->doLongestPrefixMatch(
-                    srcAddress));
-    if (route != nullptr)
-        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
-    else {
-        route = new inet::Ipv6Route(srcAddress, 128,
-                inet::IRoute::SourceType::MANET);
-        route->setNextHop(srcAddress);
-        route->setInterface(networkInterface);
-        route->setMetric(1);
-        route->setExpiryTime(omnetpp::simTime() + routeValidityTime);
-        routingTable->addRoute(route);
-    }
+//    inet::Ipv6Route *newRoute =
+//            const_cast<inet::Ipv6Route*>(routingTable->doLongestPrefixMatch(
+//                    srcAddress));
+//    if (newRoute != nullptr) {
+//        RouteData *routeData = check_and_cast<RouteData*>(
+//                newRoute->getProtocolData());
+//        routeData->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+//    } else {
+//        newRoute = new inet::Ipv6Route(srcAddress, 128,
+//                inet::IRoute::SourceType::MANET);
+//        newRoute->setNextHop(srcAddress);
+//        newRoute->setInterface(networkInterface);
+//        newRoute->setMetric(1);
+//        RouteData *routeData = new RouteData(
+//                omnetpp::simTime() + routeValidityTime);
+//        newRoute->setProtocolData(routeData);
+//        routingTable->addRoute(newRoute);
+//    }
 
     EV_INFO << "Number of host neighbours: "
             << neighbouringHosts.getMap().size()
             << std::endl;
-
-    showRoutes();
 
     schedulePurgeNeighbouringHostsTimer();
 }
@@ -781,7 +785,7 @@ void RoutingProtocolCar::processPurgeNeighbouringHostsTimer() {
     ("RoutingProtocolCar::processPurgeNeighbouringHostsTimer");
 
     neighbouringHosts.removeOldValues(omnetpp::simTime());
-    removeOldRoutes(omnetpp::simTime());
+    removeExpiredRoutes(omnetpp::simTime());
     schedulePurgeNeighbouringHostsTimer();
 }
 
@@ -1077,11 +1081,27 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
      */
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
-    removeOldRoutes(omnetpp::simTime());
+    removeExpiredRoutes(omnetpp::simTime());
     const inet::Ipv6Route *route = routingTable->doLongestPrefixMatch(
             destAddress);
     if (route) {
         updateTlvVisitedVerticesOption(datagram, route);
+        return inet::INetfilter::IHook::ACCEPT;
+    }
+    /*
+     * Si la dirección de destino es de un *host* vecino,
+     * se selecciona su dirección como siguiente salto.
+     */
+    if (neighbouringHosts.getMap().count(destAddress)) {
+        inet::Ipv6Route *newRoute = new inet::Ipv6Route(destAddress, 128,
+                inet::IRoute::SourceType::MANET);
+        newRoute->setNextHop(destAddress);
+        newRoute->setInterface(networkInterface);
+        newRoute->setMetric(1);
+        RouteData *routeData = new RouteData(
+                omnetpp::simTime() + routeValidityTime);
+        newRoute->setProtocolData(routeData);
+        routingTable->addRoute(newRoute);
         return inet::INetfilter::IHook::ACCEPT;
     }
     /*
@@ -1145,7 +1165,9 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
                 newRoute->setNextHop(nextHopAddress);
                 newRoute->setInterface(networkInterface);
                 newRoute->setMetric(1);
-                newRoute->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+                RouteData *routeData = new RouteData(
+                        omnetpp::simTime() + routeValidityTime);
+                newRoute->setProtocolData(routeData);
                 routingTable->addRoute(newRoute);
                 removeTlvOption<TlvVisitedVerticesOption>(datagram);
                 return inet::INetfilter::IHook::ACCEPT;
@@ -1199,9 +1221,13 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
                 newRoute->setNextHop(nextHopAddress);
                 newRoute->setInterface(networkInterface);
                 newRoute->setMetric(1);
-                newRoute->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+                VertexSet nextHopVisitedVertices = getNextHopVisitedVertices(
+                        nextHopAddress, shortestPath);
+                RouteData *routeData = new RouteData(
+                        omnetpp::simTime() + routeValidityTime,
+                        nextHopVisitedVertices);
+                newRoute->setProtocolData(routeData);
                 routingTable->addRoute(newRoute);
-                setNewRouteData(newRoute, shortestPath);
                 updateTlvVisitedVerticesOption(datagram, newRoute);
                 return inet::INetfilter::IHook::ACCEPT;
             }
@@ -1223,9 +1249,12 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
         newRoute->setNextHop(nextHopAddress);
         newRoute->setInterface(networkInterface);
         newRoute->setMetric(1);
-        newRoute->setExpiryTime(omnetpp::simTime() + routeValidityTime);
+        VertexSet nextHopVisitedVertices = getNextHopVisitedVertices(
+                nextHopAddress, shortestPath);
+        RouteData *routeData = new RouteData(
+                omnetpp::simTime() + routeValidityTime, nextHopVisitedVertices);
+        newRoute->setProtocolData(routeData);
         routingTable->addRoute(newRoute);
-        setNewRouteData(newRoute, shortestPath);
         updateTlvVisitedVerticesOption(datagram, newRoute);
         return inet::INetfilter::IHook::ACCEPT;
     } else {
@@ -1728,19 +1757,21 @@ const inet::Ipv6Address& RoutingProtocolCar::findNextHopClosestToVertex(
 }
 
 /*!
- * @brief Agrega los siguientes vértices visitados a la ruta.
+ * @brief Agrega los vértices visitados del siguiente salto.
  *
- * @param route        [in] Ruta a la que se le agregan los datos de ruta.
+ * @param route        [in] Ruta a la que se agregan los vértices visitados
+ * del siguiente salto.
  * @param shortestPath [in] Ruta vial.
  */
-void RoutingProtocolCar::setNewRouteData(inet::Ipv6Route *route,
+VertexSet RoutingProtocolCar::getNextHopVisitedVertices(
+        const inet::Ipv6Address &nextHopAddress,
         const VertexVector &shortestPath) const {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl
-             << "RoutingProtocolCar::setNewRouteData"
+             << "RoutingProtocolCar::getNextHopVisitedVertices"
              << std::endl;
     Enter_Method
-    ("RoutingProtocolCar::setNewRouteData");
+    ("RoutingProtocolCar::getNextHopVisitedVertices");
 
     /*
      * Se recorren las aristas de la ruta vial hasta encontrar
@@ -1748,7 +1779,6 @@ void RoutingProtocolCar::setNewRouteData(inet::Ipv6Route *route,
      */
     const Graph &graph = mobility->getRoadNetwork()->getGraph();
     VertexVectorConstIterator endIt = std::next(shortestPath.begin());
-    const inet::Ipv6Address &nextHopAddress = route->getNextHop();
     const Edge &neighbouringCarEdge = neighbouringCars.getMap().find(
             nextHopAddress)->second.value.locationOnRoadNetwork.edge;
     int i = 1;
@@ -1767,8 +1797,7 @@ void RoutingProtocolCar::setNewRouteData(inet::Ipv6Route *route,
      * el siguiente salto, y se agregan a los datos de la ruta.
      */
     VertexSet nextHopVisitedVertices(++shortestPath.begin(), ++endIt);
-    RouteData *routeData = new RouteData(nextHopVisitedVertices);
-    route->setProtocolData(routeData);
+    return nextHopVisitedVertices;
 }
 
 /*!

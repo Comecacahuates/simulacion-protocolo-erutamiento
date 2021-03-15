@@ -22,5 +22,5 @@ simple CarConfigurator {
         @display("i=block/cogwheel");
         
         string interface = default("wlan0");
-		double locationUpdateInterval @unit(s) = default(0.5s);
+		double locationUpdateInterval @unit(s) = default(1s);
 }

@@ -503,12 +503,13 @@ protected:
      */
     const inet::Ipv6Address& findNextHopClosestToVertex(Vertex vertex) const;
     /*!
-     * @brief Agrega los siguientes vértices visitados a la ruta.
+     * @brief Agrega los vértices visitados del siguiente salto.
      *
-     * @param route        [in] Ruta a la que se le agregan los datos de ruta.
+     * @param route        [in] Ruta a la que se agregan los vértices visitados
+     * del siguiente salto.
      * @param shortestPath [in] Ruta vial.
      */
-    void setNewRouteData(inet::Ipv6Route *route,
+    VertexSet getNextHopVisitedVertices(const inet::Ipv6Address &nextHopAddress,
             const VertexVector &shortestPath) const;
     /*!
      * @brief Agrega los siguientes vértices visitados de la ruta a la opción

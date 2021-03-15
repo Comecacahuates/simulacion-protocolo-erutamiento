@@ -9,6 +9,7 @@ cuatro números enteros.
 """
 
 import sys
+import re
 import ipaddress
 
 
@@ -29,6 +30,6 @@ if __name__ == '__main__':
     if len(sys.argv) != 5:
         raise ValueError("Proporciona cuatro números.")
     
-    d = list(map(int, sys.argv[1:5]))
+    d = list(map(lambda x: int(re.sub("[^\d\.]", "", x)), sys.argv[1:5]))
     ipv6_address = d_to_ipv6_address(d)
     print(ipv6_address)

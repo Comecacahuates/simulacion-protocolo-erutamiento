@@ -137,7 +137,6 @@ public:
      */
     const inet::Ipv6Address& getUnicastAddress(
             const NetworkType networktype) const {
-        showAddresses();
         return unicastAddresses[networktype];
     }
     /*!
@@ -149,7 +148,6 @@ public:
      */
     const inet::Ipv6Address& getMulticastAddress(
             const NetworkType networktype) const {
-        showAddresses();
         return multicastAddresses[networktype];
     }
 
