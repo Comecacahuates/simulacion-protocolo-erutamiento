@@ -12,20 +12,17 @@ import sys
 import ipaddress
 
 
-def d_to_ipv6(d):
+def d_to_ipv6_address(d):
     """!
-    @brief Convertir un alista de cuatro enteros de 32 bits
+    Convertir un alista de cuatro enteros de 32 bits
     en una dirección IPv6.
     
     @param d: Lista de cuatro números.
     @return: Dirección IPv6
     """
     bits = ''.join(map(lambda x: '{0:032b}'.format(x), d))
-    octetos = []
-    for i in range(len(bits) // 16):
-        octetos.append('{0:0>4x}'.format(int(bits[i:i + 16], 2)))
-    ipv6 = ipaddress.IPv6Address(int(''.join(octetos), 16))
-    return ipv6
+    ipv6_address = ipaddress.IPv6Address(int(bits, 2))
+    return ipv6_address
 
 
 if __name__ == '__main__':
@@ -33,5 +30,5 @@ if __name__ == '__main__':
         raise ValueError("Proporciona cuatro números.")
     
     d = list(map(int, sys.argv[1:5]))
-    ipv6 = d_to_ipv6(d)
-    print(ipv6)
+    ipv6_address = d_to_ipv6_address(d)
+    print(ipv6_address)
