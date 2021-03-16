@@ -103,8 +103,11 @@ protected:
      */
     /*!
      * @brief Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
+     *
+     * @param start [in] Indica si se va a programar el temporizador
+     * a la hora de inicio.
      */
-    virtual void scheduleHelloCarTimer();
+    virtual void scheduleHelloCarTimer(bool start = false);
     /*!
      * @brief Procesar el temporizador de transmisión de mensajes HOLA_VEIC.
      */

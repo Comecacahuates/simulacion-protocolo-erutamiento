@@ -152,7 +152,7 @@ void RoutingProtocolStaticHost::processHelloCar(
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-                        // @formatter:on
+                            // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -164,15 +164,20 @@ void RoutingProtocolStaticHost::processHelloCar(
 
 /*!
  * @brief Programar el temporizador de transmisión de mensajes HOLA_HOST.
+ *
+ * @param start [in] Indica si se va a programar el temporizador
+ * a la hora de inicio.
  */
-void RoutingProtocolStaticHost::scheduleHelloHostTimer() {
+void RoutingProtocolStaticHost::scheduleHelloHostTimer(bool start) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolBase::scheduleHelloHostTimer");
 
-    scheduleAt(omnetpp::simTime() + helloHostInterval + uniform(0, 1),
-            helloHostTimer);
+    if (start && omnetpp::simTime() < startTime)
+        scheduleAt(startTime, helloHostTimer);
+    else
+        scheduleAt(omnetpp::simTime() + helloHostInterval, helloHostTimer);
 }
 
 /*!
@@ -337,7 +342,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-                    // @formatter:on
+                        // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -384,7 +389,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-                    // @formatter:on
+                        // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es *multicast*,
@@ -422,8 +427,7 @@ void RoutingProtocolStaticHost::handleStartOperation(
     Enter_Method
     ("RoutingProtocolStaticHost::handleStartOperation");
 
-    RoutingProtocolBase::handleStartOperation(operation);
-    scheduleHelloHostTimer();
+    scheduleHelloHostTimer(true);
 }
 
 void RoutingProtocolStaticHost::handleStopOperation(

@@ -64,6 +64,7 @@ void RoutingProtocolBase::initialize(int stage) {
         /*
          * Parámetros de enrutamiento.
          */
+        startTime = par("startTime");
         helloCarInterval = par("helloCarInterval");
         neighbouringCarValidityTime = par("neighbouringCarValidityTime");
         helloHostInterval = par("helloHostInterval");
@@ -663,14 +664,6 @@ int RoutingProtocolBase::computeTlvOptionLength(
 /*
  * Lifecycle
  */
-
-void RoutingProtocolBase::handleStartOperation(
-        inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::handleStartOperation");
-}
 
 void RoutingProtocolBase::handleStopOperation(
         inet::LifecycleOperation *operation) {

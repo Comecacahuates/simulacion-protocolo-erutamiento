@@ -106,8 +106,11 @@ protected:
      */
     /*!
      * @brief Programar el temporizador de transmisión de mensajes HOLA_HOST.
+     *
+     * @param start [in] Indica si se va a programar el temporizador
+     * a la hora de inicio.
      */
-    virtual void scheduleHelloHostTimer();
+    virtual void scheduleHelloHostTimer(bool start = false);
     /*!
      * @brief Procesar el temporizador de transmisión de mensajes HOLA_HOST.
      */

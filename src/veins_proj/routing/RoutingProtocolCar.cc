@@ -130,15 +130,20 @@ void RoutingProtocolCar::processSelfMessage(omnetpp::cMessage *message) {
 
 /*!
  * @brief Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
+ *
+ * @param start [in] Indica si se va a programar el temporizador
+ * a la hora de inicio.
  */
-void RoutingProtocolCar::scheduleHelloCarTimer() {
+void RoutingProtocolCar::scheduleHelloCarTimer(bool start) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
     ("RoutingProtocolCar::scheduleHelloCarTimer");
 
-    scheduleAt(omnetpp::simTime() + helloCarInterval + uniform(0, 1),
-            helloCarTimer);
+    if (start && omnetpp::simTime() < startTime)
+        scheduleAt(startTime, helloCarTimer);
+    else
+        scheduleAt(omnetpp::simTime() + helloCarInterval, helloCarTimer);
 }
 
 /*!
@@ -1986,8 +1991,7 @@ void RoutingProtocolCar::handleStartOperation(
     Enter_Method
     ("RoutingProtocolCar::handleStartOperation");
 
-    RoutingProtocolBase::handleStartOperation(operation);
-    scheduleHelloCarTimer();
+    scheduleHelloCarTimer(true);
 }
 
 void RoutingProtocolCar::handleStopOperation(

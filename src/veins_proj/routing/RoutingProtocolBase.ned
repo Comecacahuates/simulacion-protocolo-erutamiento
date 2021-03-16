@@ -25,9 +25,10 @@ simple RoutingProtocolBase like IManetRouting {
         @display("i=block/routing");
 
 		// Parámetros de enrutamiento
-        double helloCarInterval @unit(s) = default(3s);
+		double startTime @unit(s) = default(10s + uniform(0.0s, 3s));
+        volatile double helloCarInterval @unit(s) = default(3s + uniform(0.5s, 1.0s));
         double neighbouringCarValidityTime @unit(s) = default(5s);
-        double helloHostInterval @unit(s) = default(3s);
+        volatile double helloHostInterval @unit(s) = default(3s + uniform(0.5s, 1.0s));
         double neighbouringHostValidityTime @unit(s) = default(5s);
         double pongTimeout @unit(s) = default(1s);
         double edgeStatusValidityTime @unit(s) = default(5s);

@@ -116,14 +116,20 @@ void CarConfigurator::processSelfMessage(omnetpp::cMessage *message) {
 
 /*!
  * @brief Programar el temporizador de actualización de la ubicación.
+ *
+ * @param start [in] Indica si se va a programar el temporizador
+ * a la hora de inicio.
  */
-void CarConfigurator::scheduleLocationUpdateTimer() {
+void CarConfigurator::scheduleLocationUpdateTimer(bool start) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     EV_INFO << "CarConfigurator::scheduleLocationUpdateTimer" << std::endl;
 
-    scheduleAt(omnetpp::simTime() + locationUpdateInterval,
-            locationUpdateTimer);
+    if (start && omnetpp::simTime() < startTime)
+        scheduleAt(startTime, locationUpdateTimer);
+    else
+        scheduleAt(omnetpp::simTime() + locationUpdateInterval,
+                locationUpdateTimer);
 }
 
 /*!
@@ -273,7 +279,7 @@ void CarConfigurator::handleStartOperation(
     ipv6Data->setAdvSendAdvertisements(false);
     joinNetwork(mobility->getGeohashLocation(), NetworkType::PRIMARY);
 
-    scheduleLocationUpdateTimer();
+    scheduleLocationUpdateTimer(true);
 }
 
 void CarConfigurator::handleStopOperation(inet::LifecycleOperation *operation) {

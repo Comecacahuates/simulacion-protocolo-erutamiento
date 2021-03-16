@@ -65,6 +65,8 @@ protected:
     /*
      * Parámetros de configuración.
      */
+    //! Hora de inicio.
+    omnetpp::simtime_t startTime;
     //! Intervalo de transmisión de mensajes HOLA_VEHIC.
     omnetpp::simtime_t helloCarInterval;
     //! Intervalo de transmisión de mensajes HOLA_HOST.
@@ -593,7 +595,7 @@ protected:
      * Lifecycle.
      */
     virtual void handleStartOperation(inet::LifecycleOperation *operation)
-            override;
+            override = 0;
     virtual void handleStopOperation(inet::LifecycleOperation *operation)
             override;
     virtual void handleCrashOperation(inet::LifecycleOperation *operation)

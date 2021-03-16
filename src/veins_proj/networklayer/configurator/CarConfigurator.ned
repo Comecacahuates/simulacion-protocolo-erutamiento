@@ -21,6 +21,7 @@ simple CarConfigurator {
         @class(veins_proj::CarConfigurator);
         @display("i=block/cogwheel");
         
+		double startTime @unit(s) = default(5s);
         string interface = default("wlan0");
 		double locationUpdateInterval @unit(s) = default(1s);
 }

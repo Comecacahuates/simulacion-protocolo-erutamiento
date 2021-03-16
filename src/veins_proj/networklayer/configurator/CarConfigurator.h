@@ -50,6 +50,9 @@ protected:
     /*
      * Parámetros de configuración.
      */
+    //! Hora de inicio.
+    omnetpp::simtime_t startTime;
+    //! Intervalo de actualización de la ubicación.
     omnetpp::simtime_t locationUpdateInterval;
 
     /*
@@ -118,12 +121,15 @@ protected:
      */
     /*!
      * @brief Programar el temporizador de actualización de la ubicación.
+     *
+     * @param start [in] Indica si se va a programar el temporizador
+     * a la hora de inicio.
      */
-    void processLocationUpdateTimer();
+    void scheduleLocationUpdateTimer(bool start = false);
     /*!
      * @brief Procesar el temporizador de actualización de la ubicación.
      */
-    void scheduleLocationUpdateTimer();
+    void processLocationUpdateTimer();
 
     /*
      * Lifecycle.
