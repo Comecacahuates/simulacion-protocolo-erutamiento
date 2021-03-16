@@ -20,7 +20,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-package veins_proj.examples.test;
+package veins_proj.sim.sim9g3qxs;
 
 import org.car2x.veins.subprojects.veins_proj.roadnetwork.RoadNetworkDatabase;
 import org.car2x.veins.subprojects.veins_inet.VeinsInetManager;

@@ -13,4 +13,4 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-package veins_proj.examples.test;
+package veins_proj.sim;

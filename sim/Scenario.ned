@@ -20,26 +20,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-package veins_proj.examples.test;
+package veins_proj.sim;
 
 import inet.physicallayer.wireless.common.contract.packetlevel.IRadioMedium;
 import inet.visualizer.common.IntegratedMultiVisualizer;
 import inet.visualizer.common.IntegratedVisualizer;
+import inet.node.inet.INetworkNode;
 import org.car2x.veins.subprojects.veins_inet.VeinsInetManager;
-import org.car2x.veins.subprojects.veins_proj.node.StaticHost;
 import org.car2x.veins.subprojects.veins_proj.roadnetwork.RoadNetworkDatabase;
 import org.car2x.veins.subprojects.veins_proj.locationservice.HostsLocationTable;
-import org.car2x.veins.modules.obstacle.ObstacleControl;
 import inet.common.geometry.common.SimpleGeographicCoordinateSystem;
 import org.car2x.veins.base.modules.BaseWorldUtility;
 
 
-network Scenario {
+network Scenario
+{
     parameters:
         @statistic[numRcvdPk](source=count(host[0].app[0].pingRxSeq); record=figure; targetFigure=numRcvdPkCounter; checkSignals=false);
         @figure[numRcvdPkCounter](type=indicatorText; pos=150,30; anchor=w; font=,12; textFormat="Received ping replies: %g"; initialValue=0);
         @statistic[numLost](source=count(host[0].app[0].numLost); record=figure; targetFigure=numLostPkCounter; checkSignals=false);
         @figure[numLostPkCounter](type=indicatorText; pos=150,70; anchor=w; font=,12; textFormat="Pings lost: %g"; initialValue=0);
+        
+        int numHosts;
 
     submodules:
         coordinateSystem: SimpleGeographicCoordinateSystem {
@@ -57,18 +59,11 @@ network Scenario {
         hostsLocationTable: HostsLocationTable {
             @display("p=69,401");
         }
-        obstacles: ObstacleControl {
-            @display("p=69,330");
-        }
-        host[2]: StaticHost;
+        host[numHosts]: <> like INetworkNode;
         roadNetworkDatabase: RoadNetworkDatabase {
             @display("p=69,103");
         }
         baseWorldUtility: BaseWorldUtility {
-            playgroundSizeX = 1154m;
-            playgroundSizeY = 609m;
-            playgroundSizeZ = 10m;
-            use2D = true;
-            @display("p=69,553");
+            @display("p=69,325");
         }
 }
