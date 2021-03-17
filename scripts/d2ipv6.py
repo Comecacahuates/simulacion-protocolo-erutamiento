@@ -1,11 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """!
-Convierte una seciencua de cuatro enteros de 32 bits
+Convierte una secuencua de cuatro enteros de 32 bits
 a una dirección IPv6, y muestra el resultado.
 
 Se utiliza para hacer legibles las direcciones IPv6,
 ya que en la depuración se muestran como un arreglo de
 cuatro números enteros.
+
+@file: d2ipv6.py
+@author: Adrián Juárez Monroy
 """
 
 import sys
