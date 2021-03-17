@@ -1,0 +1,180 @@
+<?xml version="1.0" ?>
+<roadnetwork>
+    <vertices count="72">
+        <vertex adjacency="-1" lat="19.446649274" lon="-99.150305430" n="0"/>
+        <vertex adjacency="2" lat="19.445839357" lon="-99.150459607" n="1"/>
+        <vertex adjacency="3" lat="19.446040373" lon="-99.151599345" n="2"/>
+        <vertex adjacency="-1" lat="19.447587997" lon="-99.150128484" n="3"/>
+        <vertex adjacency="-1" lat="19.448585918" lon="-99.149967152" n="4"/>
+        <vertex adjacency="-1" lat="19.449561721" lon="-99.149555363" n="5"/>
+        <vertex adjacency="-1" lat="19.450321221" lon="-99.148505398" n="6"/>
+        <vertex adjacency="-1" lat="19.451042340" lon="-99.147529595" n="7"/>
+        <vertex adjacency="0" lat="19.451289396" lon="-99.146034319" n="8"/>
+        <vertex adjacency="-1" lat="19.450186408" lon="-99.147757476" n="9"/>
+        <vertex adjacency="-1" lat="19.449218991" lon="-99.147988467" n="10"/>
+        <vertex adjacency="-1" lat="19.448274444" lon="-99.148205735" n="11"/>
+        <vertex adjacency="-1" lat="19.447311600" lon="-99.148423004" n="12"/>
+        <vertex adjacency="-1" lat="19.446360192" lon="-99.148640273" n="13"/>
+        <vertex adjacency="2" lat="19.445804442" lon="-99.148766060" n="14"/>
+        <vertex adjacency="0" lat="19.451288761" lon="-99.147505902" n="15"/>
+        <vertex adjacency="-1" lat="19.450842153" lon="-99.146141048" n="16"/>
+        <vertex adjacency="-1" lat="19.449935469" lon="-99.146338241" n="17"/>
+        <vertex adjacency="-1" lat="19.448990160" lon="-99.146567962" n="18"/>
+        <vertex adjacency="-1" lat="19.448026554" lon="-99.146783451" n="19"/>
+        <vertex adjacency="-1" lat="19.447073113" lon="-99.146986744" n="20"/>
+        <vertex adjacency="-1" lat="19.446117639" lon="-99.147200201" n="21"/>
+        <vertex adjacency="2" lat="19.445808635" lon="-99.147261188" n="22"/>
+        <vertex adjacency="0" lat="19.451292107" lon="-99.144514031" n="23"/>
+        <vertex adjacency="-1" lat="19.450580414" lon="-99.144699536" n="24"/>
+        <vertex adjacency="-1" lat="19.449692252" lon="-99.144899214" n="25"/>
+        <vertex adjacency="-1" lat="19.448730906" lon="-99.145105217" n="26"/>
+        <vertex adjacency="-1" lat="19.447796664" lon="-99.145331097" n="27"/>
+        <vertex adjacency="-1" lat="19.446837125" lon="-99.145543726" n="28"/>
+        <vertex adjacency="2" lat="19.445875778" lon="-99.145765390" n="29"/>
+        <vertex adjacency="0" lat="19.451286867" lon="-99.144120178" n="30"/>
+        <vertex adjacency="-1" lat="19.450519075" lon="-99.144275985" n="31"/>
+        <vertex adjacency="0" lat="19.451288474" lon="-99.143718613" n="32"/>
+        <vertex adjacency="-1" lat="19.450464462" lon="-99.143922608" n="33"/>
+        <vertex adjacency="-1" lat="19.449863721" lon="-99.144046290" n="34"/>
+        <vertex adjacency="-1" lat="19.449558531" lon="-99.144115359" n="35"/>
+        <vertex adjacency="-1" lat="19.448623688" lon="-99.144317748" n="36"/>
+        <vertex adjacency="-1" lat="19.448138597" lon="-99.144422155" n="37"/>
+        <vertex adjacency="-1" lat="19.447669569" lon="-99.144539412" n="38"/>
+        <vertex adjacency="-1" lat="19.446700994" lon="-99.144767501" n="39"/>
+        <vertex adjacency="2" lat="19.445804701" lon="-99.144958646" n="40"/>
+        <vertex adjacency="0" lat="19.451142304" lon="-99.141281916" n="41"/>
+        <vertex adjacency="-1" lat="19.450491769" lon="-99.141394354" n="42"/>
+        <vertex adjacency="-1" lat="19.449532831" lon="-99.141587105" n="43"/>
+        <vertex adjacency="-1" lat="19.448556626" lon="-99.141776242" n="44"/>
+        <vertex adjacency="-1" lat="19.447678805" lon="-99.141966584" n="45"/>
+        <vertex adjacency="-1" lat="19.447058789" lon="-99.142093479" n="46"/>
+        <vertex adjacency="-1" lat="19.446284571" lon="-99.142242861" n="47"/>
+        <vertex adjacency="2" lat="19.445804299" lon="-99.142324780" n="48"/>
+        <vertex adjacency="-1" lat="19.450060889" lon="-99.147049461" n="49"/>
+        <vertex adjacency="-1" lat="19.449097133" lon="-99.147276479" n="50"/>
+        <vertex adjacency="2" lat="19.445806307" lon="-99.143498689" n="51"/>
+        <vertex adjacency="-1" lat="19.446475716" lon="-99.143362558" n="52"/>
+        <vertex adjacency="-1" lat="19.447514967" lon="-99.143062187" n="53"/>
+        <vertex adjacency="-1" lat="19.447833006" lon="-99.142922443" n="54"/>
+        <vertex adjacency="-1" lat="19.448383953" lon="-99.142766636" n="55"/>
+        <vertex adjacency="-1" lat="19.448711631" lon="-99.142713629" n="56"/>
+        <vertex adjacency="-1" lat="19.449663340" lon="-99.142559428" n="57"/>
+        <vertex adjacency="-1" lat="19.446192312" lon="-99.141680000" n="58"/>
+        <vertex adjacency="-1" lat="19.446028473" lon="-99.140745157" n="59"/>
+        <vertex adjacency="2" lat="19.445806407" lon="-99.141744251" n="60"/>
+        <vertex adjacency="2" lat="19.445804801" lon="-99.140788526" n="61"/>
+        <vertex adjacency="1" lat="19.446659332" lon="-99.140629506" n="62"/>
+        <vertex adjacency="1" lat="19.446893846" lon="-99.140629707" n="63"/>
+        <vertex adjacency="-1" lat="19.447309466" lon="-99.142047633" n="64"/>
+        <vertex adjacency="-1" lat="19.447952171" lon="-99.143525192" n="65"/>
+        <vertex adjacency="-1" lat="19.448479827" lon="-99.143445682" n="66"/>
+        <vertex adjacency="-1" lat="19.448821961" lon="-99.143397494" n="67"/>
+        <vertex adjacency="-1" lat="19.449130363" lon="-99.143356535" n="68"/>
+        <vertex adjacency="-1" lat="19.449058884" lon="-99.142658615" n="69"/>
+        <vertex adjacency="1" lat="19.448324020" lon="-99.140628301" n="70"/>
+        <vertex adjacency="1" lat="19.450314533" lon="-99.140629818" n="71"/>
+    </vertices>
+    <edges count="101">
+        <edge vertex-a="8" vertex-b="7"/>
+        <edge vertex-a="7" vertex-b="6"/>
+        <edge vertex-a="6" vertex-b="5"/>
+        <edge vertex-a="5" vertex-b="4"/>
+        <edge vertex-a="4" vertex-b="3"/>
+        <edge vertex-a="3" vertex-b="0"/>
+        <edge vertex-a="0" vertex-b="1"/>
+        <edge vertex-a="15" vertex-b="7"/>
+        <edge vertex-a="7" vertex-b="9"/>
+        <edge vertex-a="9" vertex-b="10"/>
+        <edge vertex-a="10" vertex-b="11"/>
+        <edge vertex-a="11" vertex-b="12"/>
+        <edge vertex-a="12" vertex-b="13"/>
+        <edge vertex-a="13" vertex-b="14"/>
+        <edge vertex-a="8" vertex-b="16"/>
+        <edge vertex-a="16" vertex-b="17"/>
+        <edge vertex-a="17" vertex-b="18"/>
+        <edge vertex-a="18" vertex-b="19"/>
+        <edge vertex-a="19" vertex-b="20"/>
+        <edge vertex-a="20" vertex-b="21"/>
+        <edge vertex-a="21" vertex-b="22"/>
+        <edge vertex-a="23" vertex-b="24"/>
+        <edge vertex-a="24" vertex-b="25"/>
+        <edge vertex-a="25" vertex-b="26"/>
+        <edge vertex-a="26" vertex-b="27"/>
+        <edge vertex-a="27" vertex-b="28"/>
+        <edge vertex-a="28" vertex-b="29"/>
+        <edge vertex-a="30" vertex-b="31"/>
+        <edge vertex-a="32" vertex-b="33"/>
+        <edge vertex-a="33" vertex-b="34"/>
+        <edge vertex-a="34" vertex-b="35"/>
+        <edge vertex-a="35" vertex-b="36"/>
+        <edge vertex-a="36" vertex-b="37"/>
+        <edge vertex-a="37" vertex-b="38"/>
+        <edge vertex-a="38" vertex-b="39"/>
+        <edge vertex-a="39" vertex-b="40"/>
+        <edge vertex-a="41" vertex-b="42"/>
+        <edge vertex-a="42" vertex-b="43"/>
+        <edge vertex-a="44" vertex-b="45"/>
+        <edge vertex-a="45" vertex-b="64"/>
+        <edge vertex-a="64" vertex-b="46"/>
+        <edge vertex-a="46" vertex-b="47"/>
+        <edge vertex-a="47" vertex-b="48"/>
+        <edge vertex-a="7" vertex-b="16"/>
+        <edge vertex-a="16" vertex-b="24"/>
+        <edge vertex-a="24" vertex-b="31"/>
+        <edge vertex-a="31" vertex-b="33"/>
+        <edge vertex-a="6" vertex-b="9"/>
+        <edge vertex-a="9" vertex-b="49"/>
+        <edge vertex-a="49" vertex-b="17"/>
+        <edge vertex-a="17" vertex-b="25"/>
+        <edge vertex-a="25" vertex-b="35"/>
+        <edge vertex-a="49" vertex-b="50"/>
+        <edge vertex-a="5" vertex-b="10"/>
+        <edge vertex-a="10" vertex-b="50"/>
+        <edge vertex-a="50" vertex-b="18"/>
+        <edge vertex-a="18" vertex-b="26"/>
+        <edge vertex-a="26" vertex-b="36"/>
+        <edge vertex-a="57" vertex-b="69"/>
+        <edge vertex-a="69" vertex-b="56"/>
+        <edge vertex-a="56" vertex-b="55"/>
+        <edge vertex-a="55" vertex-b="54"/>
+        <edge vertex-a="54" vertex-b="53"/>
+        <edge vertex-a="53" vertex-b="52"/>
+        <edge vertex-a="52" vertex-b="51"/>
+        <edge vertex-a="0" vertex-b="13"/>
+        <edge vertex-a="13" vertex-b="21"/>
+        <edge vertex-a="21" vertex-b="29"/>
+        <edge vertex-a="3" vertex-b="12"/>
+        <edge vertex-a="12" vertex-b="20"/>
+        <edge vertex-a="20" vertex-b="28"/>
+        <edge vertex-a="28" vertex-b="39"/>
+        <edge vertex-a="39" vertex-b="52"/>
+        <edge vertex-a="52" vertex-b="47"/>
+        <edge vertex-a="47" vertex-b="58"/>
+        <edge vertex-a="58" vertex-b="59"/>
+        <edge vertex-a="58" vertex-b="60"/>
+        <edge vertex-a="62" vertex-b="59"/>
+        <edge vertex-a="59" vertex-b="61"/>
+        <edge vertex-a="46" vertex-b="63"/>
+        <edge vertex-a="4" vertex-b="11"/>
+        <edge vertex-a="11" vertex-b="19"/>
+        <edge vertex-a="19" vertex-b="27"/>
+        <edge vertex-a="27" vertex-b="38"/>
+        <edge vertex-a="38" vertex-b="53"/>
+        <edge vertex-a="53" vertex-b="64"/>
+        <edge vertex-a="37" vertex-b="65"/>
+        <edge vertex-a="65" vertex-b="54"/>
+        <edge vertex-a="54" vertex-b="45"/>
+        <edge vertex-a="65" vertex-b="66"/>
+        <edge vertex-a="66" vertex-b="67"/>
+        <edge vertex-a="67" vertex-b="68"/>
+        <edge vertex-a="68" vertex-b="69"/>
+        <edge vertex-a="34" vertex-b="57"/>
+        <edge vertex-a="57" vertex-b="43"/>
+        <edge vertex-a="67" vertex-b="56"/>
+        <edge vertex-a="56" vertex-b="44"/>
+        <edge vertex-a="44" vertex-b="70"/>
+        <edge vertex-a="66" vertex-b="55"/>
+        <edge vertex-a="2" vertex-b="1"/>
+        <edge vertex-a="42" vertex-b="71"/>
+    </edges>
+</roadnetwork>

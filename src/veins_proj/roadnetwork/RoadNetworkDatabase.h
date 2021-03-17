@@ -21,26 +21,28 @@
 #include "veins_proj/roadnetwork/RoadNetwork.h"
 #include "veins_proj/geohash/GeohashLocation.h"
 
-#define DATABASE_DIRECTORY "/home/adrian/src/roadnetwork-database/"
-
 namespace veins_proj {
 
-
-class RoadNetworkDatabase : public omnetpp::cSimpleModule {
+class RoadNetworkDatabase: public omnetpp::cSimpleModule {
 
 private:
-    std::map<std::string, RoadNetwork *> roadNetworksMap;
+    /*
+     * Parámetros.
+     */
+    std::string databaseDirectory;
+
+    std::map<std::string, RoadNetwork*> roadNetworksMap;
 
 public:
     virtual ~RoadNetworkDatabase();
 
 protected:
     virtual void initialize() override;
-    virtual void handleMessage(omnetpp::cMessage *message) override {}
+    virtual void handleMessage(omnetpp::cMessage *message) override {
+    }
 
 public:
-    RoadNetwork *getRoadNetwork(const GeohashLocation &geohashLocation);
+    RoadNetwork* getRoadNetwork(const GeohashLocation &geohashLocation);
 };
 
-
-} // namespace veins_proj
+}    // namespace veins_proj

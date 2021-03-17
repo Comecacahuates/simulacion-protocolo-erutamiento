@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package org.car2x.veins.subprojects.veins_proj.node;
+package veins_proj.node;
 
 import inet.node.inet.AdhocHost;
-import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.StaticHostConfigurator;
-import org.car2x.veins.subprojects.veins_proj.mobility.StaticHostMobility;
-import org.car2x.veins.subprojects.veins_proj.routing.RoutingProtocolStaticHost;
+import veins_proj.networklayer.configurator.StaticHostConfigurator;
+import veins_proj.mobility.StaticHostMobility;
+import veins_proj.routing.RoutingProtocolStaticHost;
 
 
 module StaticHost extends AdhocHost
@@ -29,7 +29,7 @@ module StaticHost extends AdhocHost
         hasIpv4 = false;
         hasIpv6 = true;
         **.isRouter = false;
-        mobility.typename = "org.car2x.veins.subprojects.veins_proj.mobility.StaticHostMobility";
+        mobility.typename = "veins_proj.mobility.StaticHostMobility";
 
     submodules:
         configurator: StaticHostConfigurator {

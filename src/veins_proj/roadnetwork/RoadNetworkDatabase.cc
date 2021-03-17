@@ -15,33 +15,39 @@
 
 #include <vector>
 #include "veins_proj/roadnetwork/RoadNetworkDatabase.h"
+#define BOOST_NO_CXX11_SCOPED_ENUMS
+#include <boost/filesystem.hpp>
+#undef BOOST_NO_CXX11_SCOPED_ENUMS
 
 using namespace veins_proj;
 
-
 Define_Module(RoadNetworkDatabase);
-
 
 RoadNetworkDatabase::~RoadNetworkDatabase() {
     for (auto it = roadNetworksMap.begin(); it != roadNetworksMap.end(); it++)
         delete it->second;
 }
 
-
 void RoadNetworkDatabase::initialize() {
-    std::vector<std::string> keys = { "9g3qxk", "9g3qxs" };
-    std::string directory = DATABASE_DIRECTORY;
+    databaseDirectory = std::string(par("databaseDirectory").stringValue());
 
-    RoadNetwork *roadNetwork;
+    boost::filesystem::path databaseDirectoryPath(databaseDirectory);
+    ASSERT(
+            boost::filesystem::exists(databaseDirectoryPath)
+                    && boost::filesystem::is_directory(databaseDirectoryPath));
+    boost::filesystem::directory_iterator it(databaseDirectoryPath);
+    boost::filesystem::directory_iterator endIt;
 
-    for (auto it = std::begin(keys); it != std::end(keys); it++) {
-        roadNetwork = new RoadNetwork(*it, directory + *it + ".xml");
-        roadNetworksMap.insert(std::pair<std::string, RoadNetwork *>(*it, roadNetwork));
+    while (it != endIt) {
+        const std::string &filePath = it->path().string();
+        const std::string &geohash = it->path().stem().string();
+        roadNetworksMap[geohash] = new RoadNetwork(geohash, filePath);
+        it++;
     }
 }
 
-
-RoadNetwork *RoadNetworkDatabase::getRoadNetwork(const GeohashLocation &geohashLocation) {
+RoadNetwork* RoadNetworkDatabase::getRoadNetwork(
+        const GeohashLocation &geohashLocation) {
     if (geohashLocation.getGeohashLength() < 6)
         return nullptr;
 

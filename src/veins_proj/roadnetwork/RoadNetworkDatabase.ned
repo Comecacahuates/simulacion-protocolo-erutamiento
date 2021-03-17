@@ -13,11 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package org.car2x.veins.subprojects.veins_proj.roadnetwork;
+package veins_proj.roadnetwork;
 
 //
 // TODO auto-generated module
 //
 simple RoadNetworkDatabase {
-    @class(veins_proj::RoadNetworkDatabase);
+    
+    parameters:
+        @class(veins_proj::RoadNetworkDatabase);
+        
+        string databaseDirectory;
 }

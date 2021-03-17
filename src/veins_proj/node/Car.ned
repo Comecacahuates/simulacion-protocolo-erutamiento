@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package org.car2x.veins.subprojects.veins_proj.node;
+package veins_proj.node;
 
 import inet.node.inet.AdhocHost;
-import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.CarConfigurator;
-import org.car2x.veins.subprojects.veins_proj.mobility.CarMobility;
-import org.car2x.veins.subprojects.veins_proj.routing.RoutingProtocolCar;
+import veins_proj.networklayer.configurator.CarConfigurator;
+import veins_proj.mobility.CarMobility;
+import veins_proj.routing.RoutingProtocolCar;
 
 
 module Car extends AdhocHost {
@@ -27,7 +27,7 @@ module Car extends AdhocHost {
         hasIpv4 = false;
         hasIpv6 = true;
         **.isRouter = true;
-        mobility.typename = "org.car2x.veins.subprojects.veins_proj.mobility.CarMobility";
+        mobility.typename = "veins_proj.mobility.CarMobility";
 
         @display("bgb=1253.47,916.05994");
     submodules:

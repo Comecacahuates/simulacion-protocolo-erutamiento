@@ -13,9 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package org.car2x.veins.subprojects.veins_proj.routing;
+package veins_proj.routing;
 
-import org.car2x.veins.subprojects.veins_proj.routing.RoutingProtocolBase;
+import veins_proj.routing.RoutingProtocolBase;
 
 
 simple RoutingProtocolCar extends RoutingProtocolBase {

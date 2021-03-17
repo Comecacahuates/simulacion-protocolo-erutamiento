@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package org.car2x.veins.subprojects.veins_proj.mobility;
+package veins_proj.mobility;
 
 import org.car2x.veins.subprojects.veins_inet.VeinsInetMobility;
 

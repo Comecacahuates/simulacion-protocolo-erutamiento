@@ -22,7 +22,7 @@
 
 package veins_proj.sim.sim9g3qxs;
 
-import org.car2x.veins.subprojects.veins_proj.roadnetwork.RoadNetworkDatabase;
+import veins_proj.roadnetwork.RoadNetworkDatabase;
 import org.car2x.veins.subprojects.veins_inet.VeinsInetManager;
 import inet.physicallayer.wireless.ieee80211.packetlevel.Ieee80211ScalarRadioMedium;
 

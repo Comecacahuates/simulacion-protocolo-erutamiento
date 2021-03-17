@@ -32,4 +32,4 @@ ifeq ($(PLATFORM),win32.x86_64)
   LDFLAGS := $(filter-out $(ENABLE_AUTO_IMPORT), $(LDFLAGS))
 endif
 
-LIBS += -L/usr/local/lib -lGeographic
+LIBS += -L/usr/local/lib -lGeographic -L/usr/lib/x86_64-linux-gnu -lboost_filesystem -lboost_system

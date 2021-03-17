@@ -27,8 +27,8 @@ import inet.visualizer.common.IntegratedMultiVisualizer;
 import inet.visualizer.common.IntegratedVisualizer;
 import inet.node.inet.INetworkNode;
 import org.car2x.veins.subprojects.veins_inet.VeinsInetManager;
-import org.car2x.veins.subprojects.veins_proj.roadnetwork.RoadNetworkDatabase;
-import org.car2x.veins.subprojects.veins_proj.locationservice.HostsLocationTable;
+import veins_proj.roadnetwork.RoadNetworkDatabase;
+import veins_proj.locationservice.HostsLocationTable;
 import inet.common.geometry.common.SimpleGeographicCoordinateSystem;
 import org.car2x.veins.base.modules.BaseWorldUtility;
 

@@ -13,9 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package org.car2x.veins.subprojects.veins_proj.networklayer.configurator;
+package veins_proj.networklayer.configurator;
 
-import org.car2x.veins.subprojects.veins_proj.networklayer.configurator.ConfiguratorBase;
+import veins_proj.networklayer.configurator.ConfiguratorBase;
 
 simple StaticHostConfigurator extends ConfiguratorBase {
     

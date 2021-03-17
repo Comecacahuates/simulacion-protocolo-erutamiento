@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<roadnetwork>
+    <vertices count="25">
+        <vertex adjacency="2" lat="19.451299158" lon="-99.141849190" n="0"/>
+        <vertex adjacency="2" lat="19.451299158" lon="-99.141259622" n="1"/>
+        <vertex adjacency="-1" lat="19.452969298" lon="-99.141102647" n="2"/>
+        <vertex adjacency="1" lat="19.454212320" lon="-99.140629897" n="3"/>
+        <vertex adjacency="1" lat="19.455347650" lon="-99.140629897" n="4"/>
+        <vertex adjacency="-1" lat="19.456008404" lon="-99.143484650" n="5"/>
+        <vertex adjacency="-1" lat="19.456347908" lon="-99.144893773" n="6"/>
+        <vertex adjacency="0" lat="19.456778676" lon="-99.146755568" n="7"/>
+        <vertex adjacency="0" lat="19.456767725" lon="-99.144802508" n="8"/>
+        <vertex adjacency="0" lat="19.456784152" lon="-99.143300600" n="9"/>
+        <vertex adjacency="-1" lat="19.452451524" lon="-99.145763523" n="10"/>
+        <vertex adjacency="-1" lat="19.451694637" lon="-99.145933884" n="11"/>
+        <vertex adjacency="2" lat="19.451296724" lon="-99.146022714" n="12"/>
+        <vertex adjacency="2" lat="19.451296724" lon="-99.147502111" n="13"/>
+        <vertex adjacency="-1" lat="19.451953828" lon="-99.147364302" n="14"/>
+        <vertex adjacency="-1" lat="19.452896590" lon="-99.147130665" n="15"/>
+        <vertex adjacency="0" lat="19.456780806" lon="-99.149370295" n="16"/>
+        <vertex adjacency="3" lat="19.454802192" lon="-99.151595323" n="17"/>
+        <vertex adjacency="-1" lat="19.454026444" lon="-99.151257644" n="18"/>
+        <vertex adjacency="2" lat="19.451434533" lon="-99.144482170" n="19"/>
+        <vertex adjacency="-1" lat="19.452038704" lon="-99.144356225" n="20"/>
+        <vertex adjacency="2" lat="19.451301287" lon="-99.144117112" n="21"/>
+        <vertex adjacency="-1" lat="19.451920060" lon="-99.143992993" n="22"/>
+        <vertex adjacency="-1" lat="19.451810543" lon="-99.143606031" n="23"/>
+        <vertex adjacency="2" lat="19.451304938" lon="-99.143715549" n="24"/>
+    </vertices>
+    <edges count="25">
+        <edge vertex-a="17" vertex-b="18"/>
+        <edge vertex-a="18" vertex-b="15"/>
+        <edge vertex-a="15" vertex-b="10"/>
+        <edge vertex-a="10" vertex-b="20"/>
+        <edge vertex-a="20" vertex-b="22"/>
+        <edge vertex-a="22" vertex-b="23"/>
+        <edge vertex-a="23" vertex-b="0"/>
+        <edge vertex-a="8" vertex-b="6"/>
+        <edge vertex-a="6" vertex-b="10"/>
+        <edge vertex-a="10" vertex-b="11"/>
+        <edge vertex-a="11" vertex-b="12"/>
+        <edge vertex-a="9" vertex-b="5"/>
+        <edge vertex-a="7" vertex-b="6"/>
+        <edge vertex-a="6" vertex-b="5"/>
+        <edge vertex-a="5" vertex-b="4"/>
+        <edge vertex-a="16" vertex-b="17"/>
+        <edge vertex-a="15" vertex-b="14"/>
+        <edge vertex-a="14" vertex-b="13"/>
+        <edge vertex-a="20" vertex-b="19"/>
+        <edge vertex-a="14" vertex-b="11"/>
+        <edge vertex-a="11" vertex-b="19"/>
+        <edge vertex-a="22" vertex-b="21"/>
+        <edge vertex-a="23" vertex-b="24"/>
+        <edge vertex-a="1" vertex-b="2"/>
+        <edge vertex-a="2" vertex-b="3"/>
+    </edges>
+</roadnetwork>

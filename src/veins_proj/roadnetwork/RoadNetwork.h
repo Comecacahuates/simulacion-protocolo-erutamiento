@@ -18,7 +18,6 @@
 
 namespace veins_proj {
 
-
 class RoadNetwork: public omnetpp::cObject {
 
 protected:
@@ -29,18 +28,31 @@ protected:
 public:
     RoadNetwork(std::string geohash, std::string fileName);
 
-    const Graph &getGraph() const { return graph; }
+    const Graph& getGraph() const {
+        return graph;
+    }
 
-    const GeohashLocation &getGeohashRegion() const { return geohashRegion; }
+    const GeohashLocation& getGeohashRegion() const {
+        return geohashRegion;
+    }
 
-    const VertexVector &getGatewayVertices(GeohashLocation::Adjacency adjacency) const { return gatewayVertices[adjacency]; }
+    const VertexVector& getGatewayVertices(
+            GeohashLocation::Adjacency adjacency) const {
+        return gatewayVertices[adjacency];
+    }
 
-    bool getLocationOnRoadNetwork(const GeographicLib::GeoCoords &location, const double speed, const double direction, LocationOnRoadNetwork &locationOnRoadNetwork) const;
+    bool getLocationOnRoadNetwork(const GeographicLib::GeoCoords &location,
+            const double speed, const double direction,
+            LocationOnRoadNetwork &locationOnRoadNetwork) const;
 
-    bool getLocationOnRoadNetworkFromVertex(const Vertex vertex, const GeographicLib::GeoCoords &location, const double speed, const double direction, LocationOnRoadNetwork &locationOnRoadNetwork) const;
+    bool getLocationOnRoadNetworkFromVertex(const Vertex vertex,
+            const GeographicLib::GeoCoords &location, const double speed,
+            const double direction,
+            LocationOnRoadNetwork &locationOnRoadNetwork) const;
 
-    void getOnEdgePosition(const Edge edge, const GeographicLib::GeoCoords &location, LocationOnRoadNetwork &locationOnRoadNetwork) const;
+    void getOnEdgePosition(const Edge edge,
+            const GeographicLib::GeoCoords &location,
+            LocationOnRoadNetwork &locationOnRoadNetwork) const;
 };
 
-
-} // namespace veins_proj
+}    // namespace veins_proj

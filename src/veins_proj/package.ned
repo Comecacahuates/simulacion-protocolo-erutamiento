@@ -18,4 +18,4 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-package org.car2x.veins.subprojects.veins_proj;
+package veins_proj;
