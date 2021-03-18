@@ -13,6 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+/*!
+ * @file RoadNetworkDatabase.h
+ * @author Adrián Juárez Monroy
+ */
+
 #pragma once
 
 #include <omnetpp.h>
@@ -23,25 +28,66 @@
 
 namespace veins_proj {
 
+/*!
+ * @brief Módulo global que contiene todas las redes viales
+ * de la base de datos.
+ */
 class RoadNetworkDatabase: public omnetpp::cSimpleModule {
 
 private:
+
     /*
-     * Parámetros.
+     * Parámetros de configuración.
      */
+    //! Directorio de la base de datos de archivos XML.
     std::string databaseDirectory;
 
+    /*
+     * Atributos.
+     */
+    //! Diccionario de redes viales.
     std::map<std::string, RoadNetwork*> roadNetworksMap;
 
 public:
+
+    /*
+     * Destructor.
+     */
+    /*!
+     * @brief Eliminar todas las redes viales almacenadas en el diccionario.
+     */
     virtual ~RoadNetworkDatabase();
 
 protected:
+
+    /*
+     * Interfaz del módulo.
+     */
+    /*!
+     * @brief Inicialización.
+     */
     virtual void initialize() override;
+    /*!
+     * @brief Manejo de mensajes.
+     *
+     * Este módulo no recibe ningún mensaje.
+     *
+     * @param message [in] Mensaje a procesar.
+     */
     virtual void handleMessage(omnetpp::cMessage *message) override {
     }
 
 public:
+
+    /*
+     * Acceso a los atributos.
+     */
+    /*!
+     * @brief Acceso a una red vial.
+     *
+     * @param geohashLocation [in] Región Geohash cuya red vial se obtiene.
+     * @return Red vial.
+     */
     RoadNetwork* getRoadNetwork(const GeohashLocation &geohashLocation);
 };
 

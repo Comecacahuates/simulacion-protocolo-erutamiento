@@ -1431,7 +1431,7 @@ std::pair<Vertex, bool> RoutingProtocolCar::getLocalDestVertex(
          * con adyacencia al norte.
          */
         if (destLocation.Latitude() > localRegionBounds.getNorth()) {
-            const VertexVector &northGatewayVertices =
+            const VertexSet &northGatewayVertices =
                     roadNetwork->getGatewayVertices(
                             GeohashLocation::Adjacency::NORTH);
             tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
@@ -1442,7 +1442,7 @@ std::pair<Vertex, bool> RoutingProtocolCar::getLocalDestVertex(
              * con adyacencia al sur.
              */
         } else if (destLocation.Longitude() < localRegionBounds.getSouth()) {
-            const VertexVector &southGatewayVertices =
+            const VertexSet &southGatewayVertices =
                     roadNetwork->getGatewayVertices(
                             GeohashLocation::Adjacency::SOUTH);
             tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
@@ -1454,7 +1454,7 @@ std::pair<Vertex, bool> RoutingProtocolCar::getLocalDestVertex(
          * con adyacencia al este.
          */
         if (destLocation.Longitude() > localRegionBounds.getEast()) {
-            const VertexVector &eastGatewayVertices =
+            const VertexSet &eastGatewayVertices =
                     roadNetwork->getGatewayVertices(
                             GeohashLocation::Adjacency::EAST);
             tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
@@ -1465,7 +1465,7 @@ std::pair<Vertex, bool> RoutingProtocolCar::getLocalDestVertex(
              * con adyacencia al oeste.
              */
         } else if (destLocation.Latitude() < localRegionBounds.getWest()) {
-            const VertexVector &westGatewayVertices =
+            const VertexSet &westGatewayVertices =
                     roadNetwork->getGatewayVertices(
                             GeohashLocation::Adjacency::WEST);
             tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
