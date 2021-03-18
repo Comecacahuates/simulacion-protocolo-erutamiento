@@ -100,8 +100,7 @@ void CarMobility::updateLocation() {
     GeographicLib::GeoCoords location(lat, lon);
 
     // Se verifica si la ubicación cambió
-    if (geohashLocation.isNull()
-            || !geohashLocation.contains(location)) {
+    if (geohashLocation.isNull() || !geohashLocation.contains(location)) {
         geohashLocation.setLocation(location);
 
         // Se actualiza la red vial
@@ -151,7 +150,8 @@ GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
  * @return `true` si el vehículo se encuentra en el vértice.
  */
 bool CarMobility::isAtVertex(const Vertex vertex) const {
-    return veins_proj::isAtVertex(locationOnRoadNetwork, vertex, roadNetwork->getGraph());
+    return veins_proj::isAtVertex(locationOnRoadNetwork, vertex,
+            roadNetwork->getGraph());
 }
 
 /*!

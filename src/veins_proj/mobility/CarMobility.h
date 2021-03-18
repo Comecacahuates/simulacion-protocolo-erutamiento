@@ -72,7 +72,7 @@ protected:
     //! Ángulo acimutal de la dirección del movimiento en grados.
     double direction;
     //! Red vial en la que circula el vehículo.
-    RoadNetwork *roadNetwork = nullptr;
+    const RoadNetwork *roadNetwork = nullptr;
 
 protected:
 

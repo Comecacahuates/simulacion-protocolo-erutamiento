@@ -579,7 +579,7 @@ TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOn
     Enter_Method
     ("RoutingProtocolBase::createTlvDestLocationOnRoadNetworkOption");
 
-    RoadNetwork *roadNetwork = roadNetworkDatabase->getRoadNetwork(
+    const RoadNetwork *roadNetwork = roadNetworkDatabase->getRoadNetwork(
             destGeohashLocation);
     LocationOnRoadNetwork locationOnRoadNetwork;
     roadNetwork->getLocationOnRoadNetwork(destGeohashLocation.getLocation(), 0,

@@ -46,7 +46,7 @@ private:
      * Atributos.
      */
     //! Diccionario de redes viales.
-    std::map<std::string, RoadNetwork*> roadNetworksMap;
+    std::map<std::string, const RoadNetwork*> roadNetworksMap;
 
 public:
 
@@ -88,7 +88,7 @@ public:
      * @param geohashLocation [in] Región Geohash cuya red vial se obtiene.
      * @return Red vial.
      */
-    RoadNetwork* getRoadNetwork(const GeohashLocation &geohashLocation);
+    const RoadNetwork* getRoadNetwork(const GeohashLocation &geohashLocation);
 };
 
 }    // namespace veins_proj

@@ -80,7 +80,7 @@ void RoadNetworkDatabase::initialize() {
  * @param geohashLocation [in] Región Geohash cuya red vial se obtiene.
  * @return Red vial.
  */
-RoadNetwork* RoadNetworkDatabase::getRoadNetwork(
+const RoadNetwork* RoadNetworkDatabase::getRoadNetwork(
         const GeohashLocation &geohashLocation) {
     /*
      * Si la longitud del código Geohash es menor a 6, este no es

@@ -35,7 +35,7 @@ protected:
 
     // Internal
     GeohashLocation geohashLocation;
-    RoadNetwork *roadNetwork = nullptr;
+    const RoadNetwork *roadNetwork = nullptr;
 
 public:
     StaticHostMobility();
