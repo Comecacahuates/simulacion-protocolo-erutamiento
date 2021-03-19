@@ -1,31 +1,31 @@
 <?xml version="1.0" ?>
 <roadnetwork>
     <vertices count="25">
-        <vertex adjacency="2" lat="19.451299158" lon="-99.141849190" n="0"/>
-        <vertex adjacency="2" lat="19.451299158" lon="-99.141259622" n="1"/>
-        <vertex adjacency="-1" lat="19.452969298" lon="-99.141102647" n="2"/>
-        <vertex adjacency="1" lat="19.454212320" lon="-99.140629897" n="3"/>
-        <vertex adjacency="1" lat="19.455347650" lon="-99.140629897" n="4"/>
-        <vertex adjacency="-1" lat="19.456008404" lon="-99.143484650" n="5"/>
-        <vertex adjacency="-1" lat="19.456347908" lon="-99.144893773" n="6"/>
-        <vertex adjacency="0" lat="19.456778676" lon="-99.146755568" n="7"/>
-        <vertex adjacency="0" lat="19.456767725" lon="-99.144802508" n="8"/>
-        <vertex adjacency="0" lat="19.456784152" lon="-99.143300600" n="9"/>
-        <vertex adjacency="-1" lat="19.452451524" lon="-99.145763523" n="10"/>
-        <vertex adjacency="-1" lat="19.451694637" lon="-99.145933884" n="11"/>
-        <vertex adjacency="2" lat="19.451296724" lon="-99.146022714" n="12"/>
-        <vertex adjacency="2" lat="19.451296724" lon="-99.147502111" n="13"/>
-        <vertex adjacency="-1" lat="19.451953828" lon="-99.147364302" n="14"/>
-        <vertex adjacency="-1" lat="19.452896590" lon="-99.147130665" n="15"/>
-        <vertex adjacency="0" lat="19.456780806" lon="-99.149370295" n="16"/>
-        <vertex adjacency="3" lat="19.454802192" lon="-99.151595323" n="17"/>
-        <vertex adjacency="-1" lat="19.454026444" lon="-99.151257644" n="18"/>
-        <vertex adjacency="2" lat="19.451434533" lon="-99.144482170" n="19"/>
-        <vertex adjacency="-1" lat="19.452038704" lon="-99.144356225" n="20"/>
-        <vertex adjacency="2" lat="19.451301287" lon="-99.144117112" n="21"/>
-        <vertex adjacency="-1" lat="19.451920060" lon="-99.143992993" n="22"/>
-        <vertex adjacency="-1" lat="19.451810543" lon="-99.143606031" n="23"/>
-        <vertex adjacency="2" lat="19.451304938" lon="-99.143715549" n="24"/>
+        <vertex adjacency="2" id="0" lat="19.451299158" lon="-99.141849190"/>
+        <vertex adjacency="2" id="1" lat="19.451299158" lon="-99.141259622"/>
+        <vertex adjacency="-1" id="2" lat="19.452969298" lon="-99.141102647"/>
+        <vertex adjacency="1" id="3" lat="19.454212320" lon="-99.140629897"/>
+        <vertex adjacency="1" id="4" lat="19.455347650" lon="-99.140629897"/>
+        <vertex adjacency="-1" id="5" lat="19.456008404" lon="-99.143484650"/>
+        <vertex adjacency="-1" id="6" lat="19.456347908" lon="-99.144893773"/>
+        <vertex adjacency="0" id="7" lat="19.456778676" lon="-99.146755568"/>
+        <vertex adjacency="0" id="8" lat="19.456767725" lon="-99.144802508"/>
+        <vertex adjacency="0" id="9" lat="19.456784152" lon="-99.143300600"/>
+        <vertex adjacency="-1" id="10" lat="19.452451524" lon="-99.145763523"/>
+        <vertex adjacency="-1" id="11" lat="19.451694637" lon="-99.145933884"/>
+        <vertex adjacency="2" id="12" lat="19.451296724" lon="-99.146022714"/>
+        <vertex adjacency="2" id="13" lat="19.451296724" lon="-99.147502111"/>
+        <vertex adjacency="-1" id="14" lat="19.451953828" lon="-99.147364302"/>
+        <vertex adjacency="-1" id="15" lat="19.452896590" lon="-99.147130665"/>
+        <vertex adjacency="0" id="16" lat="19.456780806" lon="-99.149370295"/>
+        <vertex adjacency="3" id="17" lat="19.454802192" lon="-99.151595323"/>
+        <vertex adjacency="-1" id="18" lat="19.454026444" lon="-99.151257644"/>
+        <vertex adjacency="2" id="19" lat="19.451434533" lon="-99.144482170"/>
+        <vertex adjacency="-1" id="20" lat="19.452038704" lon="-99.144356225"/>
+        <vertex adjacency="2" id="21" lat="19.451301287" lon="-99.144117112"/>
+        <vertex adjacency="-1" id="22" lat="19.451920060" lon="-99.143992993"/>
+        <vertex adjacency="-1" id="23" lat="19.451810543" lon="-99.143606031"/>
+        <vertex adjacency="2" id="24" lat="19.451304938" lon="-99.143715549"/>
     </vertices>
     <edges count="25">
         <edge vertex-a="17" vertex-b="18"/>

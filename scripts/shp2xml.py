@@ -7,13 +7,15 @@ que se utilizan en la simulación para la base de datos de redes viales.
 @author: Adrián Juárez Monroy
 """
 
-import sys
-import os
 import math
-import shapefile as shp
+import os
+import sys
 from xml.dom import minidom
+
 from numpy import shape
 from numpy.core.fromnumeric import _amin_dispatcher
+
+import shapefile as shp
 
 
 class Vertex:
@@ -21,16 +23,16 @@ class Vertex:
     Clase que representa un vértice de la red vial.
     """
 
-    def __init__(self, n, lat, lon, adjacency):
+    def __init__(self, id, lat, lon, adjacency):
         """!
         Constructor.
 
-        @param n: Número de vértice.
+        @param id: Identificador.
         @param lat: Latitud de la ubicación.
         @param lon: Longitud de la ubicación.
         @param adjacency: Tipo de adyacencia.
         """
-        self.n = n
+        self.id = id
         self.lat = lat
         self.lon = lon
         self.adjacency = adjacency
@@ -65,11 +67,11 @@ def read_vertices(shapefile):
     for shape_record in shapefile_reader.shapeRecords():
         if len(shape_record.shape.points) > 0:
             lon, lat = shape_record.shape.points[0]
-            adjacency = shape_record.record[0]
-            vertices.append(Vertex(len(vertices), lat, lon, adjacency))
+            id, adjacency = shape_record.record
+            vertices.append(Vertex(id, lat, lon, adjacency))
 
     shapefile_reader.close()
-    return vertices
+    return sorted(vertices, key=lambda v: v.id)
 
 
 def read_edges(shapefile, vertices):
@@ -138,7 +140,7 @@ def save_xml(xml_file, vertices, edges):
     """ Se crea un nodo para cada vértice. """
     for vertex in vertices:
         vertex_node = xml_doc.createElement('vertex')
-        vertex_node.setAttribute('n', str(vertex.n))
+        vertex_node.setAttribute('id', str(vertex.id))
         vertex_node.setAttribute('lat', '{0:.9f}'.format(vertex.lat))
         vertex_node.setAttribute('lon', '{0:.9f}'.format(vertex.lon))
         vertex_node.setAttribute('adjacency', str(vertex.adjacency))
@@ -152,8 +154,8 @@ def save_xml(xml_file, vertices, edges):
     """ Se crea un nodo para cada arista. """
     for edge in edges:
         edge_node = xml_doc.createElement('edge')
-        edge_node.setAttribute('vertex-a', str(edge.vertex_a.n))
-        edge_node.setAttribute('vertex-b', str(edge.vertex_b.n))
+        edge_node.setAttribute('vertex-a', str(edge.vertex_a.id))
+        edge_node.setAttribute('vertex-b', str(edge.vertex_b.id))
         edges_node.appendChild(edge_node)
 
     with open(xml_file, 'w') as file:
