@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- Tipos de vehículos -->
+    <vType id="type1" length="5" maxSpeed="70" carFollowModel="Krauss" accel="2.6" decel="4.5" sigma="0.5" />
+    <!-- Rutas -->
+    <route id="route0" color="1,1,0" edges="616665186#0 616665186#1 616665186#2 616665186#3 616665186#4 616665186#5 616665186#6 616665186#7 616665186#8" />
+    <!-- Flujos -->
+    <flow id="flow0" route="route0" color="yellow" begin="0" end="20" period="1" />
+    <!-- Vehículos -->
+    <!--<vehicle id="0" type="type1" route="route0" depart="0" color="1,0,0" />
+    <vehicle id="1" type="type1" route="route0" depart="0" color="0,1,0" />-->
+</routes>

@@ -34,8 +34,8 @@
 <!-- debug config -->
 <launch>
     <copy file="9g3qxs.net.xml" />
-    <copy file="9g3qxs.rou.xml" />
-    <copy file="9g3qxs.poly.xml" />
-    <copy file="9g3qxs.sumocfg" type="config" />
+    <copy file="9g3qxs-routes.rou.xml" />
+    <!-- <copy file="../../sumo/9g3qxs/9g3qxs.poly.xml" /> -->
+    <copy file="9g3qxs.sumocfg.xml" type="config" />
 </launch>
 

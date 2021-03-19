@@ -14,6 +14,8 @@ doc/neddoc
 
 sim/**/results
 
+**/*.osm
+
 examples/**/results
 examples/**/.tkenvrc
 examples/**/.qtenvrc
