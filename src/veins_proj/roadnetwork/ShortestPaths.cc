@@ -41,15 +41,12 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
         const Graph &graph, const VertexSet &visitedVertices,
         const EdgeSet &activeEdges) {
     this->sourceEdge = sourceEdge;
-
     int n = boost::num_vertices(graph);    // Número de vértices del grafo.
-
     const Edge &ab = sourceEdge;    // Arista de origen.
     Vertex a = boost::source(sourceEdge, graph);    // Primer vértice de la arista de origen.
     Vertex b = boost::target(sourceEdge, graph);    // Segundo vértice de la arista de origen.
     const VertexSet &VV = visitedVertices;
     const EdgeSet &AE = activeEdges;
-
     /*
      * Se inicializan los vectores de distancias y predecesores para que cada
      * vértice tenga su propio índice. Las distancias de los vértices de la
@@ -63,94 +60,88 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
     routeDistances[b] = 0;
     if (activeEdges.empty())
         return;
-
     /*
      * Se inicializa el conjunto de vértices que restan por procesar para que
      * contenga todos los vértices, excepto los vértices de la arista de origen.
      */
-    VertexIterator vertexIt, endVertexIt;
-    boost::tie(vertexIt, endVertexIt) = boost::vertices(graph);
-    VertexSet S(vertexIt, endVertexIt);
+    VertexSet S;
+    {
+        VertexIterator it, endIt;
+        boost::tie(it, endIt) = boost::vertices(graph);
+        while (it != endIt)
+            S.insert(*it++);
+    }
     S.erase(a);
     S.erase(b);
-
     /*
-     * Se establece el vértice _a_ como predecesor de sus nodos adyacentes
+     * Se establece el vértice *a* como predecesor de sus vértices adyacentes
      * y se calcula la distancia de ruta de estos, excepto los vértices
      * visitados o que sean parte de una arista inactiva.
      */
-    OutEdgeIterator outEdgeIt, endOutEdgeIt;
-    boost::tie(outEdgeIt, endOutEdgeIt) = boost::out_edges(a, graph);
-    while (outEdgeIt != endOutEdgeIt) {
-        Edge av = *outEdgeIt++;
+    OutEdgeIterator it, endIt;
+    boost::tie(it, endIt) = boost::out_edges(a, graph);
+    while (it != endIt) {
+        Edge av = *it++;
         Vertex v = boost::target(av, graph);
-
         if (v != b) {
             if (!VV.count(v) && AE.count(av)) {
                 routeDistances[v] = getEdgeWeight(av, ab, graph);
                 predecessors[v] = a;
-
             } else
                 S.erase(v);
         }
     }
-
     /*
-     * Se establece el vértice _b_ como predecesor de sus nodos adyacentes
+     * Se establece el vértice *b* como predecesor de sus nodos adyacentes
      * y se calcula la distancia de ruta de estos, excepto los vértices
      * visitados o que sean parte de una arista inactiva.
      */
-    boost::tie(outEdgeIt, endOutEdgeIt) = boost::out_edges(b, graph);
-    while (outEdgeIt != endOutEdgeIt) {
-        Edge bv = *outEdgeIt++;
+    boost::tie(it, endIt) = boost::out_edges(b, graph);
+    while (it != endIt) {
+        Edge bv = *it++;
         Vertex v = boost::target(bv, graph);
-
         if (v != a) {
             if (!VV.count(v) && AE.count(bv)) {
                 double weight = getEdgeWeight(bv, ab, graph);
-
                 if (routeDistances[v] > weight) {
                     routeDistances[v] = weight;
                     predecessors[v] = b;
                 }
-
             } else
                 S.erase(v);
         }
     }
-
     /*
-     * Se obtiene la distancia de cada uno de los vértices restantes de _S_.
+     * Se obtiene la distancia de cada uno de los vértices restantes de *S*.
      */
-    VertexSetIterator vertexSetIt, endVertexSetIt;
     while (!S.empty()) {
         /*
-         * Se busca el vértice en _S_ con la menor distancia y se guarda
-         * en _v_.
+         * Se busca el vértice en *S* con la menor distancia y se guarda
+         * en *v*.
          */
         Vertex v;
-        vertexSetIt = S.begin();
-        endVertexSetIt = S.end();
-        double minDistance = std::numeric_limits<double>::infinity();
-        while (vertexSetIt != endVertexSetIt) {
-            double distance = routeDistances[*vertexSetIt];
-            if (minDistance > distance) {
-                minDistance = distance;
-                v = *vertexSetIt;
+        {
+            VertexSetConstIterator it = S.begin();
+            VertexSetConstIterator endIt = S.end();
+            double minDistance = std::numeric_limits<double>::infinity();
+            while (it != endIt) {
+                double distance = routeDistances[*it];
+                if (minDistance > distance) {
+                    minDistance = distance;
+                    v = *it;
+                }
+                it++;
             }
-            vertexSetIt++;
         }
-
         /*
-         * Se calcula la distancia a cada vértice _w_ adyacentes a _v_.
+         * Se calcula la distancia a cada vértice *w* adyacentes a *v*.
          */
-        boost::tie(outEdgeIt, endOutEdgeIt) = boost::out_edges(v, graph);
-        while (outEdgeIt != endOutEdgeIt) {
-            Edge vw = *outEdgeIt;    // Arista cuyo peso se va a calcular.
-            Vertex w = boost::target(vw, graph);    // Vértice adyacente a _v_.
-            Vertex u = predecessors[v];    // Vértice predecesor de _v_.
+        boost::tie(it, endIt) = boost::out_edges(v, graph);
+        while (it != endIt) {
+            Edge vw = *it;    // Arista cuyo peso se va a calcular.
+            Vertex w = boost::target(vw, graph);    // Vértice adyacente a *v*.
+            Vertex u = predecessors[v];    // Vértice predecesor de *v*.
             Edge uv = boost::edge(u, v, graph).first;    // Arista desde la que se va a calcular el peso.
-
             if (w != u) {
                 if (!VV.count(w)) {
                     double weight = getEdgeWeight(vw, uv, graph);
@@ -158,14 +149,11 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
                         routeDistances[w] = routeDistances[v] + weight;
                         predecessors[w] = v;
                     }
-
                 } else
                     S.erase(w);
             }
-
-            outEdgeIt++;
+            it++;
         }
-
         S.erase(v);
     }
 }
@@ -185,21 +173,66 @@ VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex,
         const Graph &graph) const {
     Vertex a = boost::source(sourceEdge, graph);
     Vertex b = boost::target(sourceEdge, graph);
-    VertexVector shortestPath;
-
-    shortestPath.push_back(vertex);
-
+    VertexVector shortestPath = { vertex };
     while (!(vertex == a || vertex == b)) {
         vertex = predecessors[vertex];
         shortestPath.push_back(vertex);
     }
-
     if (vertex == a)
         shortestPath.push_back(b);
     else
         shortestPath.push_back(a);
-
     std::reverse(shortestPath.begin(), shortestPath.end());
-
     return shortestPath;
 }
+
+/*!
+ * @brief Calcula el peso de una arista a partir de otra.
+ *
+ * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
+ * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
+ * y la dirección de la arista _B_ hacia el vértice _v_.
+ *
+ * Para calcular el peso, ambas aristas deben ser adyacentes.
+ *
+ * @param edge [in] Arista cuyo peso se va a calcular.
+ * @param sourceEdge [in] Arista desde la que se calcula el peso.
+ * @param graph [in] Grafo al que pertenecen ambas aristas.
+ * @return Peso de la arista
+ */
+double ShortestPaths::getEdgeWeight(Edge edge, Edge sourceEdge,
+        const Graph &graph) {
+    Edge &e1 = sourceEdge;
+    Edge &e2 = edge;
+    Vertex vertexA1 = boost::source(e1, graph);
+    Vertex vertexB1 = boost::target(e1, graph);
+    if (!sortedVertices(vertexA1, vertexB1, graph))
+        boost::swap(vertexA1, vertexB1);
+
+    Vertex vertexA2 = boost::source(e2, graph);
+    Vertex vertexB2 = boost::target(e2, graph);
+    if (!sortedVertices(vertexA2, vertexB2, graph))
+        boost::swap(vertexA2, vertexB2);
+
+    double directionE1, directionE2;
+
+    if (vertexB1 == vertexA2) {
+        directionE1 = graph[e1].direction1;
+        directionE2 = graph[e2].direction1;
+
+    } else if (vertexB1 == vertexB2) {
+        directionE1 = graph[e1].direction1;
+        directionE2 = graph[e2].direction2;
+
+    } else if (vertexA1 == vertexA2) {
+        directionE1 = graph[e1].direction2;
+        directionE2 = graph[e2].direction1;
+
+    } else /* if (vertexA1 == vertexB2) */{
+        directionE1 = graph[e1].direction2;
+        directionE2 = graph[e2].direction2;
+    }
+
+    return getDirectionDifference(directionE1, directionE2);
+}
+

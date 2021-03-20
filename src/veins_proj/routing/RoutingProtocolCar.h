@@ -3,15 +3,15 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
  * @file RoutingProtocolCar.h
@@ -408,6 +408,18 @@ protected:
      * Enrutamiento.
      */
     /*!
+     * @brief Verificar la cabecera de opciones de salto por salto.
+     *
+     * Verifica si la cabecera tiene la opción de ubicación del destino.
+     *
+     * Si el destino se encuentra en la misma subred, se verifica si
+     * la cabecera contiene la opción de ubicación vial del destino. Si no
+     * la tiene, la agrega.
+     *
+     * Si la cabecera no contiene la opción de vértices visitados, la agrega.
+     */
+    bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
+    /*!
      * @brief Enrutar datagrama.
      *
      * Revisa si existe en la tabla de enrutamiento una ruta hacia la
@@ -420,24 +432,22 @@ protected:
     virtual inet::INetfilter::IHook::Result routeDatagram(
             inet::Packet *datagram) override;
     /*!
-     * @brief Verificar la cabecera de opciones de salto por salto.
+     * @brief Enrutar datagrama hacia una subred vecina.
      *
-     * Verifica si la cabecera tiene la opción de ubicación del destino.
-     *
-     * Si el destino se encuentra en la misma subred, se verifica si
-     * la cabecera contiene la opción de ubicación vial del destino. Si no
-     * la tiene, la agrega.
-     *
-     * Si la cabecera no contiene la opción de vértices visitados, la agrega.
+     * @param datagram  [in] Datagrama a enrutar.
+     * @param adjacency [in] Adyacencia de la subred a la que se va
+     * a enrutar el paquete.
+     * @return Resultado del enrutamiento.
      */
-    virtual bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
+    inet::INetfilter::IHook::Result routeDatagramToAdjacentNetwork(
+            inet::Packet *datagram, GeohashLocation::Adjacency adjacency);
     /*!
      * @brief Se obtiene el conjunto de vértices visitados.
      *
      * @param visitedVerticesOption [in] Opción de vértices visitados.
      * @return Conjunto de vértices visitados.
      */
-    virtual VertexSet getVisitedVertices(inet::Packet *datagram) const;
+    VertexSet getVisitedVertices(inet::Packet *datagram) const;
     /*!
      * @brief Obtener el vértice de destino local.
      *
@@ -445,7 +455,7 @@ protected:
      * @param shortestPath [in] Rutas más cortas.
      * @return Vértice de destino local y bandera que indica si sí se encontró.
      */
-    virtual std::pair<Vertex, bool> getLocalDestVertex(inet::Packet *datagram,
+    std::pair<Vertex, bool> getLocalDestVertex(inet::Packet *datagram,
             const ShortestPaths &shortestPath) const;
     /*!
      * @brief Obtener aristas en la ruta más corta que forman un tramo recto.
@@ -460,8 +470,7 @@ protected:
      *
      * TODO Eliminar.
      */
-    virtual EdgeVector getReachableEdges(
-            const VertexVector &shortestPathToDestVertex,
+    EdgeVector getReachableEdges(const VertexVector &shortestPathToDestVertex,
             const ShortestPaths &shortestPath) const;
     /*!
      * @brief Obtener vehículo vecino en la región Geohash adyacente.

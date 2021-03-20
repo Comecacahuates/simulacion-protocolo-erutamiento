@@ -87,6 +87,8 @@ bool veins_proj::directionMatches(double direction1, double direction2) {
  * @param direction1 [in] Primera dirección en grados.
  * @param direction2 [in] Segunda dirección en grados.
  * @return Valor absoluto de la diferencia de las dos direcciones.
+ *
+ * TODO: Cambiar a la clase ShortestPaths.
  */
 double veins_proj::getDirectionDifference(double direction1,
         double direction2) {
@@ -123,89 +125,7 @@ bool veins_proj::inEdgeDomain(
 }
 
 /*!
- * @brief Verifica si una ubicación vial se encuentra dentro del radio de
- * proximidad de un vértice.
- *
- * La ubicación se encuentra dentro del radio de proximidad del vértice si
- * su distancia a este es menor a 10 metros.
- *
- * @param locationOnRoadNetwork [in] Ubicación vial a verificar.
- * @param vertex [in] Vértice de referencia.
- * @param graph [in] Grafo al que pertenece el vértice.
- * @return `true` si la ubicación se encuentra dentro del radio de proximidad
- * del vértice.
- */
-bool veins_proj::isAtVertex(const LocationOnRoadNetwork &locationOnRoadNetwork,
-        Vertex vertex, const Graph &graph) {
-    const Edge &edge = locationOnRoadNetwork.edge;
-    Vertex vertexA = boost::source(edge, graph);
-    Vertex vertexB = boost::target(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
-
-    double distanceToVertex;
-    if (vertex == vertexA)
-        return distanceToVertexA < 10;
-
-    else if (vertex == vertexB)
-        return distanceToVertexB < 10;
-
-    else
-        return false;
-}
-
-/*!
- * @brief Calcula el peso de una arista a partir de otra.
- *
- * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
- * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
- * y la dirección de la arista _B_ hacia el vértice _v_.
- *
- * Para calcular el peso, ambas aristas deben ser adyacentes.
- *
- * @param edge [in] Arista cuyo peso se va a calcular.
- * @param sourceEdge [in] Arista desde la que se calcula el peso.
- * @param graph [in] Grafo al que pertenecen ambas aristas.
- * @return Peso de la arista
- */
-double veins_proj::getEdgeWeight(Edge edge, Edge sourceEdge,
-        const Graph &graph) {
-    Edge &f = edge;
-    Edge &e = sourceEdge;
-    Vertex vertexAE = boost::source(e, graph);
-    Vertex vertexBE = boost::target(e, graph);
-    if (sortedVertices(vertexAE, vertexBE, graph))
-        boost::swap(vertexAE, vertexBE);
-
-    Vertex vertexAF = boost::source(f, graph);
-    Vertex vertexBF = boost::target(f, graph);
-    if (sortedVertices(vertexAF, vertexBF, graph))
-        boost::swap(vertexAF, vertexBF);
-
-    double directionE, directionF;
-
-    if (vertexBE == vertexAF) {
-        directionE = graph[e].direction1;
-        directionF = graph[f].direction1;
-
-    } else if (vertexBE == vertexBF) {
-        directionE = graph[e].direction1;
-        directionF = graph[f].direction2;
-
-    } else if (vertexAE == vertexAF) {
-        directionE = graph[e].direction2;
-        directionF = graph[f].direction1;
-
-    } else if (vertexAE == vertexBF) {
-        directionE = graph[e].direction2;
-        directionF = graph[f].direction2;
-    }
-
-    return getDirectionDifference(directionE, directionF);
-}
-
-/*!
- * @brief Obtiene la distancia en metros de una ubicación vial hacia un vértice.
+ * @brief Obtener la distancia en metros de una ubicación vial hacia un vértice.
  *
  * Para obtener la distancia, el vértice debe ser parte de la arista de la
  * ubicación vial.
@@ -213,8 +133,8 @@ double veins_proj::getEdgeWeight(Edge edge, Edge sourceEdge,
  * @param locationOnRoadNetwork [in] Ubicación vial cuya distancia al vértice
  * se va a obtener.
  * @param vertex [in] Vértice al que se va a obtener la distancia.
- * @param graph [in] Grafo al que pertenece el vértice.
- * @return
+ * @param graph  [in] Grafo al que pertenece el vértice.
+ * @return Diatancia del vehículo al vértice.
  */
 double veins_proj::getDistanceToVertex(
         const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,

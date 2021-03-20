@@ -122,7 +122,6 @@ struct LocationOnRoadNetwork {
  * segundo.
  */
 bool sortedVertices(Vertex vertexA, Vertex vertexB, const Graph &graph);
-
 /*!
  * @brief Determina si un vértice es *gateway*.
  *
@@ -131,7 +130,6 @@ bool sortedVertices(Vertex vertexA, Vertex vertexB, const Graph &graph);
  * @return `true` en caso de que el vértice sea _gateway_.
  */
 bool isGateway(Vertex vertex, const Graph &graph);
-
 /*!
  * @brief Verifica si dos direcciones acimutales coinciden.
  *
@@ -143,7 +141,6 @@ bool isGateway(Vertex vertex, const Graph &graph);
  * @return `true` si las dos direcciones coinciden.
  */
 bool directionMatches(double direction1, double direction2);
-
 /*!
  *  @brief Calcula la diferencia de dos direcciones acimutales.
  *
@@ -154,7 +151,6 @@ bool directionMatches(double direction1, double direction2);
  * @return Valor absoluto de la diferencia de las dos direcciones.
  */
 double getDirectionDifference(double direction1, double direction2);
-
 /*!
  * @brief Verifica si una ubicación vial se encuentra dentro
  * del dominio de la arista.
@@ -166,39 +162,6 @@ double getDirectionDifference(double direction1, double direction2);
  * @return `true` si la distancia a la arista es menor que 20.
  */
 bool inEdgeDomain(const LocationOnRoadNetwork &locationOnRoadNetwork);
-
-/*!
- * @brief Verifica si una ubicación vial se encuentra dentro del radio de
- * proximidad de un vértice.
- *
- * La ubicación se encuentra dentro del radio de proximidad del vértice si
- * su distancia a este es menor a 10 metros.
- *
- * @param locationOnRoadNetwork [in] Ubicación vial a verificar.
- * @param vertex [in] Vértice de referencia.
- * @param graph [in] Grafo al que pertenece el vértice.
- * @return `true` si la ubicación se encuentra dentro del radio de proximidad
- * del vértice.
- */
-bool isAtVertex(const LocationOnRoadNetwork &locationOnRoadNetwork, Vertex vertex,
-        const Graph &graph);
-
-/*!
- * @brief Calcula el peso de una arista a partir de otra.
- *
- * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
- * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
- * y la dirección de la arista _B_ hacia el vértice _v_.
- *
- * Para calcular el peso, ambas aristas deben ser adyacentes.
- *
- * @param edge [in] Arista cuyo peso se va a calcular.
- * @param sourceEdge [in] Arista desde la que se calcula el peso.
- * @param graph [in] Grafo al que pertenecen ambas aristas.
- * @return Peso de la arista
- */
-double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
-
 /*!
  * @brief Obtiene la distancia en metros de una ubicación vial hacia un vértice.
  *

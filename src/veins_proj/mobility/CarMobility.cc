@@ -150,8 +150,18 @@ GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
  * @return `true` si el vehículo se encuentra en el vértice.
  */
 bool CarMobility::isAtVertex(const Vertex vertex) const {
-    return veins_proj::isAtVertex(locationOnRoadNetwork, vertex,
-            roadNetwork->getGraph());
+    const Graph &graph = roadNetwork->getGraph();
+    const Edge &edge = locationOnRoadNetwork.edge;
+    Vertex vertexA = boost::source(edge, graph);
+    Vertex vertexB = boost::target(edge, graph);
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+    if (vertex == vertexA)
+        return distanceToVertexA < 10;
+    else if (vertex == vertexB)
+        return distanceToVertexB < 10;
+    else
+        return false;
 }
 
 /*!

@@ -107,6 +107,22 @@ public:
      */
     VertexVector getShortestPathToVertex(Vertex targetVertex,
             const Graph &graph) const;
+private:
+    /*!
+     * @brief Calcula el peso de una arista a partir de otra.
+     *
+     * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
+     * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
+     * y la dirección de la arista _B_ hacia el vértice _v_.
+     *
+     * Para calcular el peso, ambas aristas deben ser adyacentes.
+     *
+     * @param edge [in] Arista cuyo peso se va a calcular.
+     * @param sourceEdge [in] Arista desde la que se calcula el peso.
+     * @param graph [in] Grafo al que pertenecen ambas aristas.
+     * @return Peso de la arista
+     */
+    double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
 };
 
 }    // namespace veins_proj

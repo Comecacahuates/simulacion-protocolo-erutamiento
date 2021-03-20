@@ -3,15 +3,15 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
  * @file RoutingProtocolStaticHost.cc
@@ -152,7 +152,7 @@ void RoutingProtocolStaticHost::processHelloCar(
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-                            // @formatter:on
+                                // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -264,10 +264,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
             inet::getNetworkProtocolHeader(datagram);
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
-    omnetpp::simtime_t now = omnetpp::simTime();
     removeExpiredRoutes(omnetpp::simTime());
-    const inet::Ipv6Route *routex = routingTable->doLongestPrefixMatch(
-            destAddress);
     if (routingTable->doLongestPrefixMatch(destAddress))
         return inet::INetfilter::IHook::ACCEPT;
 
@@ -342,7 +339,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-                        // @formatter:on
+                            // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es _multicast_,
@@ -389,7 +386,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
     // @formatter:off
     EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
              << "Destination address: " << destAddress.str() << std::endl;
-                        // @formatter:on
+                            // @formatter:on
 
     /*
      * Si la dirección de destino es una dirección local o si es *multicast*,
