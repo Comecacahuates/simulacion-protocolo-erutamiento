@@ -38,34 +38,42 @@ class ShortestPaths: public omnetpp::cObject {
 
 protected:
 
-    /*!
-     * @brief Vector de predecesores de cada vértice.
-     *
-     * El valor de cada elemento indica el vértice predecesor, y el índice
-     * indica de qué vertice es predecesor.
+    /*
+     * Atributos.
      */
-    VertexVector predecessors;
-    /*!
-     * @brief Vector de distancias de ruta desde la arista de origen hacia cada
-     * uno de los vértices.
-     * */
-    std::vector<double> routeDistances;
-
+    //! Grafo con el que se ejecuta el algoritmo.
+    const Graph *graph;
     //! Arista de origen.
     Edge sourceEdge;
+    //! Vector de predecesores de cada vértice.
+    VertexVector predecessors;
+    //! Vector de distancias de ruta hacia cada uno de los vértices.
+    std::vector<double> routeDistances;
 
 public:
 
+    /*
+     * Constructor.
+     */
+    /*!
+     * @brief Constructor.
+     *
+     * @param graph      [in] Grafo con el que se ejecuta el algoritmo.
+     * @param sourceEdge [in] Arista de origen.
+     */
+    ShortestPaths(const Graph &graph, const Edge sourceEdge);
+
+    /*
+     * Cómputo de rutas.
+     */
     /*!
      * @brief Calcular la ruta más corta hacia el resto de los vértices.
      *
-     * @param sourceEdge      [in] Arista de origen.
-     * @param graph           [in] Grafo por el que se realiza la búsqueda.
-     * @param visitedVertices [in] Vértices por los que el paquete ya ha pasado.
-     * @param activeEdges     [in] Aristas inactivas.
+     *@param visitedVertices [in] Vértices visitados.
+     * @param activeEdges    [in] Aristas activas.
      */
-    void computeShortestPath(const Edge sourceEdge, const Graph &graph,
-            const VertexSet &visitedVertices, const EdgeSet &activeEdges);
+    void computeShortestPaths(const VertexSet visitedVertices,
+            const EdgeSet &activeEdges = { });
     /*!
      * @brief Obtener la distancia de ruta a un vértice.
      *
@@ -105,8 +113,7 @@ public:
      * @return Vector de vértices que indican la ruta desde el vértice de la
      * arista de origen.
      */
-    VertexVector getShortestPathToVertex(Vertex targetVertex,
-            const Graph &graph) const;
+    VertexVector getShortestPathToVertex(Vertex targetVertex) const;
 private:
     /*!
      * @brief Calcula el peso de una arista a partir de otra.
@@ -122,7 +129,7 @@ private:
      * @param graph [in] Grafo al que pertenecen ambas aristas.
      * @return Peso de la arista
      */
-    double getEdgeWeight(Edge edge, Edge sourceEdge, const Graph &graph);
+    double getEdgeWeight(Edge edge, Edge sourceEdge) const;
 };
 
 }    // namespace veins_proj

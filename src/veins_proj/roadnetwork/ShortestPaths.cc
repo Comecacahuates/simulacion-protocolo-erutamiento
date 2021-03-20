@@ -29,40 +29,54 @@
 
 using namespace veins_proj;
 
+/*
+ * Constructor.
+ */
+
+/*!
+ * @brief Constructor.
+ *
+ * @param graph      [in] Grafo con el que se ejecuta el algoritmo.
+ * @param sourceEdge [in] Arista de origen.
+ */
+ShortestPaths::ShortestPaths(const Graph &graph, Edge sourceEdge) :
+                graph(&graph),
+                sourceEdge(sourceEdge),
+                predecessors(boost::num_vertices(graph)),
+                routeDistances(boost::num_vertices(graph)) {
+}
+
+/*
+ * Cómputo de rutas.
+ */
+
 /*!
  * @brief Calcular la ruta más corta hacia el resto de los vértices.
  *
- * @param sourceEdge      [in] Arista de origen.
- * @param graph           [in] Grafo por el que se realiza la búsqueda.
- * @param visitedVertices [in] Vértices por los que el paquete ya ha pasado.
- * @param activeEdges     [in] Aristas inactivas.
+ *@param visitedVertices [in] Vértices visitados.
+ * @param activeEdges    [in] Aristas activas.
  */
-void ShortestPaths::computeShortestPath(const Edge sourceEdge,
-        const Graph &graph, const VertexSet &visitedVertices,
+void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
         const EdgeSet &activeEdges) {
-    this->sourceEdge = sourceEdge;
-    int n = boost::num_vertices(graph);    // Número de vértices del grafo.
-    const Edge &ab = sourceEdge;    // Arista de origen.
+    const Graph &graph = *this->graph;
+    const Edge &ab = sourceEdge;
     Vertex a = boost::source(sourceEdge, graph);    // Primer vértice de la arista de origen.
     Vertex b = boost::target(sourceEdge, graph);    // Segundo vértice de la arista de origen.
     const VertexSet &VV = visitedVertices;
     const EdgeSet &AE = activeEdges;
     /*
-     * Se inicializan los vectores de distancias y predecesores para que cada
-     * vértice tenga su propio índice. Las distancias de los vértices de la
-     * arista de origen tienen distancia 0.
+     * Se inicializan los vectores de predecesores y distancias de ruta.
+     * La distancia de ruta de los vértices de la arista de origen valen 0.
      */
-    predecessors.resize(n);
-    routeDistances.resize(n);
+    std::fill(predecessors.begin(), predecessors.end(),
+            std::numeric_limits<Vertex>::max());
     std::fill(routeDistances.begin(), routeDistances.end(),
             std::numeric_limits<double>::infinity());
     routeDistances[a] = 0;
     routeDistances[b] = 0;
-    if (activeEdges.empty())
-        return;
     /*
-     * Se inicializa el conjunto de vértices que restan por procesar para que
-     * contenga todos los vértices, excepto los vértices de la arista de origen.
+     * Se inicializa el conjunto de vértices que restan por procesar.
+     * Los vértices de la arista de origen no se procesan.
      */
     VertexSet S;
     {
@@ -85,7 +99,7 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
         Vertex v = boost::target(av, graph);
         if (v != b) {
             if (!VV.count(v) && AE.count(av)) {
-                routeDistances[v] = getEdgeWeight(av, ab, graph);
+                routeDistances[v] = getEdgeWeight(av, ab);
                 predecessors[v] = a;
             } else
                 S.erase(v);
@@ -102,7 +116,7 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
         Vertex v = boost::target(bv, graph);
         if (v != a) {
             if (!VV.count(v) && AE.count(bv)) {
-                double weight = getEdgeWeight(bv, ab, graph);
+                double weight = getEdgeWeight(bv, ab);
                 if (routeDistances[v] > weight) {
                     routeDistances[v] = weight;
                     predecessors[v] = b;
@@ -112,7 +126,7 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
         }
     }
     /*
-     * Se obtiene la distancia de cada uno de los vértices restantes de *S*.
+     * Se procesan cada uno de los vértices restantes en *S*.
      */
     while (!S.empty()) {
         /*
@@ -136,6 +150,7 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
         /*
          * Se calcula la distancia a cada vértice *w* adyacentes a *v*.
          */
+        OutEdgeIterator it, endIt;
         boost::tie(it, endIt) = boost::out_edges(v, graph);
         while (it != endIt) {
             Edge vw = *it;    // Arista cuyo peso se va a calcular.
@@ -144,7 +159,7 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
             Edge uv = boost::edge(u, v, graph).first;    // Arista desde la que se va a calcular el peso.
             if (w != u) {
                 if (!VV.count(w)) {
-                    double weight = getEdgeWeight(vw, uv, graph);
+                    double weight = getEdgeWeight(vw, uv);
                     if (routeDistances[w] > routeDistances[v] + weight) {
                         routeDistances[w] = routeDistances[v] + weight;
                         predecessors[w] = v;
@@ -169,10 +184,9 @@ void ShortestPaths::computeShortestPath(const Edge sourceEdge,
  * @return Vector de vértices que indican la ruta desde el vértice de la
  * arista de origen.
  */
-VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex,
-        const Graph &graph) const {
-    Vertex a = boost::source(sourceEdge, graph);
-    Vertex b = boost::target(sourceEdge, graph);
+VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex) const {
+    Vertex a = boost::source(sourceEdge, *graph);
+    Vertex b = boost::target(sourceEdge, *graph);
     VertexVector shortestPath = { vertex };
     while (!(vertex == a || vertex == b)) {
         vertex = predecessors[vertex];
@@ -200,12 +214,14 @@ VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex,
  * @param graph [in] Grafo al que pertenecen ambas aristas.
  * @return Peso de la arista
  */
-double ShortestPaths::getEdgeWeight(Edge edge, Edge sourceEdge,
-        const Graph &graph) {
-    Edge &e1 = sourceEdge;
-    Edge &e2 = edge;
+double ShortestPaths::getEdgeWeight(const Edge edge,
+        const Edge sourceEdge) const {
+    const Graph &graph = *this->graph;
+    const Edge &e1 = sourceEdge;
+    const Edge &e2 = edge;
     Vertex vertexA1 = boost::source(e1, graph);
     Vertex vertexB1 = boost::target(e1, graph);
+
     if (!sortedVertices(vertexA1, vertexB1, graph))
         boost::swap(vertexA1, vertexB1);
 

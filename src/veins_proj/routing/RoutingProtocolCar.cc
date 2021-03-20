@@ -1206,9 +1206,8 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
      * Si no se encontró una ruta vial, se descarta el datagrama.
      */
     const Edge &edge = mobility->getLocationOnRoadNetwork().edge;
-    ShortestPaths shortestPaths;
-    shortestPaths.computeShortestPath(edge, graph, visitedVertices,
-            activeEdges);
+    ShortestPaths shortestPaths(graph, edge);
+    shortestPaths.computeShortestPaths(visitedVertices, activeEdges);
     Vertex localDestVertex;
     bool localDestVertexFound;
     boost::tie(localDestVertex, localDestVertexFound) = getLocalDestVertex(
@@ -1228,7 +1227,7 @@ inet::INetfilter::IHook::Result RoutingProtocolCar::routeDatagram(
      * se selecciona enruta el datagrama hacia la subred adyacente.
      */
     VertexVector shortestPath = shortestPaths.getShortestPathToVertex(
-            localDestVertex, graph);
+            localDestVertex);
     if (shortestPath.size() == 2) {
         ASSERT(shortestPath[1] == localDestVertex);
         const TlvDestGeohashLocationOption *destGeohashLocationOption =
