@@ -157,9 +157,9 @@ bool CarMobility::isAtVertex(const Vertex vertex) const {
     const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
     const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
     if (vertex == vertexA)
-        return distanceToVertexA < 10;
+        return distanceToVertexA < vertexProximityRadius;
     else if (vertex == vertexB)
-        return distanceToVertexB < 10;
+        return distanceToVertexB < vertexProximityRadius;
     else
         return false;
 }
