@@ -50,7 +50,7 @@ network Scenario
         visualizer: IntegratedVisualizer {
             @display("p=69,475");
         }
-        radioMedium: <default("inet.physicallayer.wireless.unitdisk.UnitDiskRadioMedium")> like IRadioMedium {
+        radioMedium: <> like IRadioMedium {
             @display("p=69,256");
         }
         manager: VeinsInetManager {
