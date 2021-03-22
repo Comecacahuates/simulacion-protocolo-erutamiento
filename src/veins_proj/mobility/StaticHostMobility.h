@@ -3,21 +3,26 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
+
+/*!
+ * @file StaticHostMobility.h
+ * @author Adrián Juárez Monroy
+ */
 
 #pragma once
 
 #include <GeographicLib/GeoCoords.hpp>
 #include <omnetpp.h>
-#include "inet/mobility/base/MovingMobilityBase.h"
+#include "inet/mobility/base/StationaryMobilityBase.h"
 #include "inet/common/geometry/common/GeographicCoordinateSystem.h"
 #include "veins_proj/geohash/GeohashLocation.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
@@ -25,32 +30,59 @@
 
 namespace veins_proj {
 
-// TODO: Cambiar herencia de MovingMobilityBase.
-class StaticHostMobility: public inet::MovingMobilityBase {
+/*!
+ * @brief Módulo que representa la movilidad de un *host*.
+ */
+class StaticHostMobility: public inet::StationaryMobilityBase {
 
-protected:
-    // Context
+private:
+
+    /*
+     * Contexto.
+     */
+    //! Módulo del *host* contenedor.
     omnetpp::cModule *host;
+    //! Módulo global de base de datos de redes viales.
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
 
-    // Internal
+    /*
+     * Atributos.
+     */
+    //! Ubicación Geohash.
     GeohashLocation geohashLocation;
+    //! Red vial en la que se encuentra el *host*.
     const RoadNetwork *roadNetwork = nullptr;
 
 public:
-    StaticHostMobility();
 
-    const RoadNetwork *getRoadNetwork() const {
-        return roadNetwork;
-    }
-
+    /*
+     * Interfaz del módulo.
+     */
+    /*!
+     * @brief Inicialización.
+     *
+     * @param stage [in] Etapa de inicialización.
+     */
     virtual void initialize(int stage) override;
 
+    /*
+     * Acceso a los atributos.
+     */
+    /*!
+     * @brief Acceso a la ubicación Geohash.
+     *
+     * @return Ubicación Geohash.
+     */
     const GeohashLocation& getGeohashLocation() const {
         return geohashLocation;
     }
-
-    virtual void move() override {
+    /*!
+     * @brief Acceso a la red vial.
+     *
+     * @return Red vial.
+     */
+    const RoadNetwork* getRoadNetwork() const {
+        return roadNetwork;
     }
 };
 
