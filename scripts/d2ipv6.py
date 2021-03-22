@@ -7,13 +7,15 @@ Se utiliza para hacer legibles las direcciones IPv6,
 ya que en la depuración se muestran como un arreglo de
 cuatro números enteros.
 
+Uso: d2ipv6.py 4273995776, 317840312, 145359103, 4261412865
+
 @file: d2ipv6.py
 @author: Adrián Juárez Monroy
 """
 
-import sys
-import re
 import ipaddress
+import re
+import sys
 
 
 def d_to_ipv6_address(d):
@@ -32,7 +34,7 @@ def d_to_ipv6_address(d):
 if __name__ == '__main__':
     if len(sys.argv) != 5:
         raise ValueError("Proporciona cuatro números.")
-    
+
     d = list(map(lambda x: int(re.sub("[^\d\.]", "", x)), sys.argv[1:5]))
     ipv6_address = d_to_ipv6_address(d)
     print(ipv6_address)

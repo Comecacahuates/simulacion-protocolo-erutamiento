@@ -3,6 +3,8 @@
 Convierte los archivos Shapefile de las redes viales en archivos XML
 que se utilizan en la simulación para la base de datos de redes viales.
 
+Uso: shp2xml.py ../roadnetwork-database/shapefile ../roadnetwork-database/xml
+
 @file: shp2xml.py
 @author: Adrián Juárez Monroy
 """
@@ -11,9 +13,6 @@ import math
 import os
 import sys
 from xml.dom import minidom
-
-from numpy import shape
-from numpy.core.fromnumeric import _amin_dispatcher
 
 import shapefile as shp
 
