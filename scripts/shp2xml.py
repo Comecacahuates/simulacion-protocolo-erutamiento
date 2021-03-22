@@ -3,7 +3,14 @@
 Convierte los archivos Shapefile de las redes viales en archivos XML
 que se utilizan en la simulación para la base de datos de redes viales.
 
-Uso: shp2xml.py ../roadnetwork-database/shapefile ../roadnetwork-database/xml
+Cada par de archivos Shapefile de vértices y aristas debe estar contenido en
+un directorio cuyo nombre es el código Geohash la región a la que pertenecen.
+
+Todos los archivos XML de salida se guardan en el mismo directorio,
+y su nombre es el código Geohash de la región a la que pertenece.  
+
+Uso: shp2xml.py <Directorio de archivos Shapefile de entrada> <Directorio de archivos XML de salida>
+     shp2xml.py ../roadnetwork-database/shapefile ../roadnetwork-database/xml
 
 @file: shp2xml.py
 @author: Adrián Juárez Monroy
@@ -13,7 +20,6 @@ import math
 import os
 import sys
 from xml.dom import minidom
-
 import shapefile as shp
 
 

@@ -5,9 +5,10 @@ a una dirección IPv6, y muestra el resultado.
 
 Se utiliza para hacer legibles las direcciones IPv6,
 ya que en la depuración se muestran como un arreglo de
-cuatro números enteros.
+cuatro números enteros (que pueden ir separados por comas).
 
-Uso: d2ipv6.py 4273995776, 317840312, 145359103, 4261412865
+Uso: d2ipv6.py <d0> <d1> <d2> <d3>
+     d2ipv6.py 4273995776, 317840312, 145359103, 4261412865
 
 @file: d2ipv6.py
 @author: Adrián Juárez Monroy

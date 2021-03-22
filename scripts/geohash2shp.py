@@ -2,16 +2,15 @@
 """!
 Genera un archivo Shapefile con rectángulos que representan regiones Geohash.
 
-Uso: geohash2shp.py 9g3qx 6 ../roadnetwork-database/geohash
+Uso: geohash2shp.py <Región Geohash> <Longitud de los códigos Geohash generados> <Directorio de archivo Shapefil de salida>
+     geohash2shp.py 9g3qx 6 ../roadnetwork-database/geohash
 
 @file: geohash2shp.py
 @author: Adrián Juárez Monroy
 """
 
 import sys
-
 from geolib import geohash as gh
-
 import shapefile as shp
 
 base32 = '0123456789bcdefghjkmnpqrstuvwxyz'
