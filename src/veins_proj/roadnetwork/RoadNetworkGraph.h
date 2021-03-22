@@ -57,43 +57,43 @@ typedef boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS,
 //! Vértice del grafo vial.
 typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
 //! Iterador de vértices para grafo vial.
-typedef boost::graph_traits<Graph>::vertex_iterator VertexIterator;
+typedef boost::graph_traits<Graph>::vertex_iterator VertexIt;
 //! Arista del grafo vial.
 typedef boost::graph_traits<Graph>::edge_descriptor Edge;
 //! Iterador de aristas para grafo vial.
-typedef boost::graph_traits<Graph>::edge_iterator EdgeIterator;
+typedef boost::graph_traits<Graph>::edge_iterator EdgeIt;
 //! Iterador de aristas de salida para grafo vial.
-typedef boost::graph_traits<Graph>::out_edge_iterator OutEdgeIterator;
+typedef boost::graph_traits<Graph>::out_edge_iterator OutEdgeIt;
 //! Iterador de aristas de entrada para grafo vial.
-typedef boost::graph_traits<Graph>::in_edge_iterator InEdgeIterator;
+typedef boost::graph_traits<Graph>::in_edge_iterator InEdgeIt;
 
 //! Vector de vértices.
 typedef std::vector<Vertex> VertexVector;
 //! Iterador de vértices para vector.
-typedef VertexVector::iterator VertexVectorIterator;
+typedef VertexVector::iterator VertexVectorIt;
 //! Iterador de vértices para vector constante.
-typedef VertexVector::const_iterator VertexVectorConstIterator;
+typedef VertexVector::const_iterator VertexVectorConstIt;
 
 //! Conjunto de vértices.
 typedef std::set<Vertex> VertexSet;
 //! Iterador de vértices para conjunto.
-typedef VertexSet::iterator VertexSetIterator;
+typedef VertexSet::iterator VertexSetIt;
 //! Iterador de vértices para conjunto constante.
-typedef VertexSet::const_iterator VertexSetConstIterator;
+typedef VertexSet::const_iterator VertexSetConstIt;
 
 //! Vector de aristas.
 typedef std::vector<Edge> EdgeVector;
 //! Iterador de aristas para vector.
-typedef EdgeVector::iterator EdgeVectorIterator;
+typedef EdgeVector::iterator EdgeVectorIt;
 //! Iterador de aristas para vector constante.
-typedef EdgeVector::const_iterator EdgeVectorConstIterator;
+typedef EdgeVector::const_iterator EdgeVectorConstIt;
 
 //! Conjunto de aristas.
 typedef std::set<Edge> EdgeSet;
 //! Iterador de aristas para conjunto.
-typedef EdgeSet::iterator EdgeSetIterator;
+typedef EdgeSet::iterator EdgeSetIt;
 //! Iterador de aristas para conjunto constante.
-typedef EdgeSet::const_iterator EdgeSetConstIterator;
+typedef EdgeSet::const_iterator EdgeSetConstIt;
 
 //! Ubicación vial de un objeto.
 struct LocationOnRoadNetwork {

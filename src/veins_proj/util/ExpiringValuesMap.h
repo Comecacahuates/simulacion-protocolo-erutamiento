@@ -54,9 +54,9 @@ public:
     //! Registro del diccionario.
     typedef std::pair<K, MapValue> MapValueType;
     //! Iterador de registros para diccionario.
-    typedef typename Map::iterator Iterator;
+    typedef typename Map::iterator It;
     //! Iterador de registros para diccionario constante.
-    typedef typename Map::const_iterator ConstIterator;
+    typedef typename Map::const_iterator ConstIt;
 
 protected:
 
@@ -80,8 +80,8 @@ public:
      * @param expiryTime [in] Hora de expiración.
      */
     void removeOldValues(omnetpp::simtime_t expiryTime) {
-        Iterator it = map.begin();
-        Iterator endIt = map.end();
+        It it = map.begin();
+        It endIt = map.end();
 
         while (it != endIt)
             if (it->second.expiryTime <= expiryTime)
@@ -99,8 +99,8 @@ public:
     omnetpp::simtime_t getNextExpiryTime() const {
         omnetpp::simtime_t nextExpiryTime = omnetpp::SimTime::getMaxTime();
 
-        ConstIterator it = map.begin();
-        ConstIterator endIt = map.end();
+        ConstIt it = map.begin();
+        ConstIt endIt = map.end();
         while (it != endIt) {
             if (nextExpiryTime > it->second.expiryTime)
                 nextExpiryTime = it->second.expiryTime;
@@ -126,9 +126,9 @@ public:
     //! Registro del diccionario.
     typedef std::pair<K, MultimapValue> MultimapValueType;
     //! Iterador de registros para diccionario.
-    typedef typename Multimap::iterator Iterator;
+    typedef typename Multimap::iterator It;
     //! Iterador de registros para diccionario constante.
-    typedef typename Multimap::const_iterator ConstIterator;
+    typedef typename Multimap::const_iterator ConstIt;
 
 protected:
 
@@ -152,7 +152,7 @@ public:
      * @param expiryTime [in] Hora de expiración.
      */
     void removeOldValues(omnetpp::simtime_t expiryTime) {
-        Iterator it = multimap.begin();
+        It it = multimap.begin();
 
         while (it != multimap.end())
             if (it->second.expiryTime <= expiryTime)
@@ -170,8 +170,8 @@ public:
     omnetpp::simtime_t getNextExpiryTime() const {
         omnetpp::simtime_t nextExpiryTime = omnetpp::SimTime::getMaxTime();
 
-        ConstIterator it = multimap.begin();
-        ConstIterator endIt = multimap.end();
+        ConstIt it = multimap.begin();
+        ConstIt endIt = multimap.end();
         while (it != endIt) {
             if (nextExpiryTime > it->second.expiryTime)
                 nextExpiryTime = it->second.expiryTime;

@@ -3,15 +3,15 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
  * @file RoutingProtocolBase.h
@@ -276,10 +276,10 @@ protected:
     typedef NeighbouringCars::MapValue NeighbouringCar;
     //! Iterador de registros para diccionario del directorio
     //! de vehículos vecinos.
-    typedef NeighbouringCars::Iterator NeighbouringCarsIterator;
+    typedef NeighbouringCars::It NeighbouringCarsIt;
     //! Iterador de registros para diccionario de directorio
     //! de vehículos vecinos constante.
-    typedef NeighbouringCars::ConstIterator NeighbouringCarsConstIterator;
+    typedef NeighbouringCars::ConstIt NeighbouringCarsConstIt;
     //! Directorio de vehículos vecinos.
     NeighbouringCars neighbouringCars;
     /*!

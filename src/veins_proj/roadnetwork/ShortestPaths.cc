@@ -53,15 +53,15 @@ ShortestPaths::ShortestPaths(const Graph &graph, Edge sourceEdge) :
 /*!
  * @brief Calcular la ruta más corta hacia el resto de los vértices.
  *
- *@param visitedVertices [in] Vértices visitados.
- * @param activeEdges    [in] Aristas activas.
+ * @param visitedVertices [in] Vértices visitados.
+ * @param inactiveEdges   [in] Aristas inactivas.
  */
 void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
         const EdgeSet &activeEdges) {
     const Graph &graph = *this->graph;
     const Edge &ab = sourceEdge;
-    Vertex a = boost::source(sourceEdge, graph);    // Primer vértice de la arista de origen.
-    Vertex b = boost::target(sourceEdge, graph);    // Segundo vértice de la arista de origen.
+    const Vertex a = boost::source(sourceEdge, graph);    // Primer vértice de la arista de origen.
+    const Vertex b = boost::target(sourceEdge, graph);    // Segundo vértice de la arista de origen.
     const VertexSet &VV = visitedVertices;
     const EdgeSet &AE = activeEdges;
     /*
@@ -80,7 +80,7 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
      */
     VertexSet S;
     {
-        VertexIterator it, endIt;
+        VertexIt it, endIt;
         boost::tie(it, endIt) = boost::vertices(graph);
         while (it != endIt)
             S.insert(*it++);
@@ -92,11 +92,11 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
      * y se calcula la distancia de ruta de estos, excepto los vértices
      * visitados o que sean parte de una arista inactiva.
      */
-    OutEdgeIterator it, endIt;
+    OutEdgeIt it, endIt;
     boost::tie(it, endIt) = boost::out_edges(a, graph);
     while (it != endIt) {
-        Edge av = *it++;
-        Vertex v = boost::target(av, graph);
+        const Edge &av = *it;
+        const Vertex v = boost::target(av, graph);
         if (v != b) {
             if (!VV.count(v) && AE.count(av)) {
                 routeDistances[v] = getEdgeWeight(av, ab);
@@ -104,6 +104,7 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
             } else
                 S.erase(v);
         }
+        it++;
     }
     /*
      * Se establece el vértice *b* como predecesor de sus nodos adyacentes
@@ -112,7 +113,7 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
      */
     boost::tie(it, endIt) = boost::out_edges(b, graph);
     while (it != endIt) {
-        Edge bv = *it++;
+        const Edge &bv = *it;
         Vertex v = boost::target(bv, graph);
         if (v != a) {
             if (!VV.count(v) && AE.count(bv)) {
@@ -124,33 +125,39 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
             } else
                 S.erase(v);
         }
+        it++;
     }
     /*
      * Se procesan cada uno de los vértices restantes en *S*.
      */
     while (!S.empty()) {
         /*
-         * Se busca el vértice en *S* con la menor distancia y se guarda
-         * en *v*.
+         * Se busca el vértice en *S* con la menor distancia y se guarda en *v*.
+         * Si no se encuentra el vértice, significa que los vértices restantes
+         * en *S* son inalcanzables, por lo que se vacía *S*.
          */
         Vertex v;
+        bool vertexFound = false;
         {
-            VertexSetConstIterator it = S.begin();
-            VertexSetConstIterator endIt = S.end();
+            VertexSetConstIt it = S.begin();
+            VertexSetConstIt endIt = S.end();
             double minDistance = std::numeric_limits<double>::infinity();
             while (it != endIt) {
                 double distance = routeDistances[*it];
                 if (minDistance > distance) {
                     minDistance = distance;
                     v = *it;
+                    vertexFound = true;
                 }
                 it++;
             }
         }
+        if (!vertexFound)
+            break;
         /*
          * Se calcula la distancia a cada vértice *w* adyacentes a *v*.
          */
-        OutEdgeIterator it, endIt;
+        OutEdgeIt it, endIt;
         boost::tie(it, endIt) = boost::out_edges(v, graph);
         while (it != endIt) {
             Edge vw = *it;    // Arista cuyo peso se va a calcular.

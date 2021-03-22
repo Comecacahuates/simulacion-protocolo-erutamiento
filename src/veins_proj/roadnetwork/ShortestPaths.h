@@ -69,11 +69,11 @@ public:
     /*!
      * @brief Calcular la ruta más corta hacia el resto de los vértices.
      *
-     *@param visitedVertices [in] Vértices visitados.
-     * @param activeEdges    [in] Aristas activas.
+     * @param visitedVertices [in] Vértices visitados.
+     * @param inactiveEdges   [in] Aristas inactivas.
      */
     void computeShortestPaths(const VertexSet visitedVertices,
-            const EdgeSet &activeEdges = { });
+            const EdgeSet &inactiveEdges = { });
     /*!
      * @brief Obtener la distancia de ruta a un vértice.
      *

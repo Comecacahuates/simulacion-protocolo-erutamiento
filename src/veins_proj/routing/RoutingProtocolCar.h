@@ -71,6 +71,16 @@ protected:
     omnetpp::cMessage *purgePendingPongsTimer;
 
     /*
+     * Vehículos vecinos agrupados por arista.
+     */
+    //! Diccionario de vehículos vecinos arupados por arista.
+    typedef std::multimap<Edge, inet::Ipv6Address> NeighbouringCarsByEdge;
+    //! Iterador de diccionario de vehículos vecinos agrupados por arista.
+    typedef NeighbouringCarsByEdge::iterator NeighbouringCarsByEdgeIt;
+    //! Iterador de diccionario de vehículos vecinos agrupados por arista constante.
+    typedef NeighbouringCarsByEdge::const_iterator NeighbouringCarsByEdgeConstIt;
+
+    /*
      * Interfaz del módulo.
      */
     /*!
@@ -235,12 +245,12 @@ protected:
      * @brief Iterador de registros para diccionario del directorio
      * de *hosts* vecinos.
      */
-    typedef NeighbouringHosts::Iterator NeighbouringHostsIterator;
+    typedef NeighbouringHosts::It NeighbouringHostsIt;
     /*!
      * @brief Iterador de registros para diccionario del directorio de *hosts*
      * vecinos constante.
      */
-    typedef NeighbouringHosts::ConstIterator NeighbouringHostsConstIterator;
+    typedef NeighbouringHosts::ConstIt NeighbouringHostsConstIt;
     /*!
      * @brief Directorio de *hosts* vecinos.
      */
@@ -277,11 +287,11 @@ protected:
     /*!
      * @brief Iterador para diccionario de aristas activas.
      */
-    typedef EdgesStatus::Iterator EdgesStatusIterator;
+    typedef EdgesStatus::It EdgesStatusIt;
     /*!
      * @brief Iterador para diccionario de aristas activas constante.
      */
-    typedef EdgesStatus::ConstIterator EdgesStatusConstIterator;
+    typedef EdgesStatus::ConstIt EdgesStatusConstIt;
     /*!
      * @brief Estatus de las aristas.
      *
@@ -315,11 +325,11 @@ protected:
     /*!
      * @brief Iterador para diccionario de datagramas demorados.
      */
-    typedef DelayedDatagrams::iterator DelayedDatagramsIterator;
+    typedef DelayedDatagrams::iterator DelayedDatagramsIt;
     /*!
      * @brief Iterador para diccionario de datagramas demorados constante.
      */
-    typedef DelayedDatagrams::const_iterator DelayedDatagramsConstIterator;
+    typedef DelayedDatagrams::const_iterator DelayedDatagramsConstIt;
     /*!
      * @brief Paquetes demorados.
      */
@@ -353,17 +363,11 @@ protected:
     /*
      * Mensajes PONG pendientes.
      */
-    /*!
-     * @brief Registro de mensaje PONG pendiente.
-     */
+    //! Registro de mensaje PONG pendiente.
     struct PendingPongValue {
-        /*!
-         * @brief Vértice de origen.
-         */
+        //! Vértice de origen.
         Vertex pingVertex;
-        /*!
-         * @brief Vértice de destino.
-         */
+        //! Vértice de destino.
         Vertex pongVertex;
     };
     /*!
@@ -380,11 +384,11 @@ protected:
     /*!
      * @brief Iterador para diccionario de mensajes PONG pendientes.
      */
-    typedef PendingPongs::Iterator PendingPongsIterator;
+    typedef PendingPongs::It PendingPongsIt;
     /*!
      * @brief Iterador para diccionario de mensajes PONG pendientes constante.
      */
-    typedef PendingPongs::ConstIterator PendingPongsConstIterator;
+    typedef PendingPongs::ConstIt PendingPongsConstIt;
     /*!
      * @brief Mensajes PONG pendientes.
      */
@@ -420,6 +424,29 @@ protected:
      */
     bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
     /*!
+     * @brief Obtener el conjunto de aristas activas.
+     *
+     * Las aristas activas son aquellas en las que hay vehículos vecinos.
+     *
+     * @return Conjunto de aristas activas.
+     */
+    EdgeSet getActiveEdges() const;
+    /*!
+     * @brief Agrupar vehículos vecinos según la arista en la que se encuentran.
+     *
+     * @return Diccinario de vecinos agrupados según la aristan en la
+     * que se encuentran.
+     */
+    NeighbouringCarsByEdge getNeighbouringCarByEdge() const;
+    /*!
+     * @brief Obtiene el tramo recto más largo desde el inicio de una ruta.
+     *
+     * @param shortestPath [in] Ruta de la que se obtiene el tramo recto.
+     * @return Tramo recto más largo desde el inicio de la ruta.
+     */
+    VertexVector getStraightPath(const VertexVector &shortestPath,
+            const ShortestPaths &shortestPaths) const;
+    /*!
      * @brief Enrutar datagrama.
      *
      * Revisa si existe en la tabla de enrutamiento una ruta hacia la
@@ -432,6 +459,24 @@ protected:
     virtual inet::INetfilter::IHook::Result routeDatagram(
             inet::Packet *datagram) override;
     /*!
+     * @brief Enrutar datagrama hacia un *host* vecino.
+     *
+     * @param datagram [in] Datagrama a enrutar.
+     * @return Resultado del enrutamiento.
+     */
+    inet::INetfilter::IHook::Result routeToNeighbouringHost(
+            inet::Packet *datagram);
+    /*!
+     * @brief Enrutar datagrama hacia el vecino más cercano a una ubicación.
+     *
+     * @param datagram [in] Datagrama a enrutar.
+     * @param geohashLocation [in] Ubicación hacia la que
+     * se enruta el datagrama.
+     * @return Resultado del enrutamiento.
+     */
+    inet::INetfilter::IHook::Result routeDatagramToLocation(
+            inet::Packet *datagram, const GeohashLocation &geohashLocation);
+    /*!
      * @brief Enrutar datagrama hacia una subred vecina.
      *
      * @param datagram  [in] Datagrama a enrutar.
@@ -442,12 +487,42 @@ protected:
     inet::INetfilter::IHook::Result routeDatagramToAdjacentNetwork(
             inet::Packet *datagram, GeohashLocation::Adjacency adjacency);
     /*!
+     * @brief Enrutar el datagrama al vehículo vecino más lejano
+     * en el tramo recto.
+     *
+     * @param datagram     [in] Datagrama a enrutar.
+     * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
+     * @return Resultado del enrutamiento.
+     */
+    inet::INetfilter::IHook::Result routeDatagramFurthestInStraightPath(
+            inet::Packet *datagram, const VertexVector &straightPath);
+    /*!
+     * @brief Enrutar el datagrama al vehículo vecino más cercano
+     * en el tramo recto.
+     *
+     * @param datagram     [in] Datagrama a enrutar.
+     * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
+     * @return Resultado del enrutamiento.
+     */
+    inet::INetfilter::IHook::Result routeDatagramClosestInStraightPath(
+            inet::Packet *datagram, const VertexVector &straightPath);
+    /*!
+     * @brief Enrutar datagrama al vehículo vecino en la misma arista
+     * que se encuentre más cerca a un vértice.
+     *
+     * @param datagram [in] Datagrama a enrutar.
+     * @param vertex   [in] Vértice hacia el que se enruta el datagrama.
+     * @return Resultado del enrutamiento.
+     */
+    inet::INetfilter::IHook::Result routeDatagramClosestToVertex(
+            inet::Packet *datagram, const Vertex vertex);
+    /*!
      * @brief Se obtiene el conjunto de vértices visitados.
      *
      * @param visitedVerticesOption [in] Opción de vértices visitados.
      * @return Conjunto de vértices visitados.
      */
-    VertexSet getVisitedVertices(inet::Packet *datagram) const;
+    VertexSet getDatagramVisitedVertices(inet::Packet *datagram) const;
     /*!
      * @brief Obtener el vértice de destino local.
      *
@@ -456,21 +531,6 @@ protected:
      * @return Vértice de destino local y bandera que indica si sí se encontró.
      */
     std::pair<Vertex, bool> getLocalDestVertex(inet::Packet *datagram,
-            const ShortestPaths &shortestPath) const;
-    /*!
-     * @brief Obtener aristas en la ruta más corta que forman un tramo recto.
-     *
-     * Se obtienen las aristas en la ruta que forman el tramo largo más recto,
-     * y en las que haya vehículos vecinos circulando.
-     *
-     * @param shortestPathToDestVertex [in] Ruta más corta al vértice
-     * de destino.
-     * @param shortestPath [in] Rutas más cortas.
-     * @return Aristas que forman un
-     *
-     * TODO Eliminar.
-     */
-    EdgeVector getReachableEdges(const VertexVector &shortestPathToDestVertex,
             const ShortestPaths &shortestPath) const;
     /*!
      * @brief Obtener vehículo vecino en la región Geohash adyacente.
@@ -490,8 +550,8 @@ protected:
     const inet::Ipv6Address& findNextHopClosestToLocation(
             const GeohashLocation &geohashLocation) const;
     /*!
-     * @brief Encontrar siguiente salto más lejano en el tramo más recto
-     * de la ruta vial.
+     * @brief Encontrar siguiente salto más lejano en el
+     * tramo recto de la ruta.
      *
      * @param shortestPath  [in] Ruta vial a un vértice.
      * @param shortestPsths [in] Rutas viales más cortas
@@ -499,21 +559,42 @@ protected:
      * si no se encuentra ninguno.
      */
     const inet::Ipv6Address& findNextHopFurthestInStraightPath(
-            const VertexVector &shortestPath,
-            const ShortestPaths &shortestPaths) const;
+            const VertexVector &straightPath) const;
     /*!
-     * @brief Buscar vehículo vecino más cercano a un vértice que
-     * se encuentra en la misma arista.
+     * @brief Encontrar siguiente salto más cercano en el
+     * tramo recto de la ruta.
      *
-     * Se buscan los vehículos vecinos que circulan sobre la misma arista,
-     * y se obtiene el que se encuentra a la menor distancia del vértice
-     * indicado.
-     *
-     * @param vertex [in] Vértice de referencia.
+     * @param straightPath [in] Tramo recto de la ruta.
      * @return Dirección IPv6 del siguiente salto, o `::/128`.
      * si no se encuentra ninguno.
      */
-    const inet::Ipv6Address& findNextHopClosestToVertex(Vertex vertex) const;
+    const inet::Ipv6Address& findNextHopClosestInStraightPath(
+            const VertexVector &straightPath) const;
+    /*!
+     * @brief Buscar vehículo vecino más cercano a un vértice que
+     * se encuentra en una arista.
+     *
+     * @param vertex [in] Vértice de referencia.
+     * @param edge   [in] Arista en la que se encuentran los vehículos
+     * entre los que se hace la búsqueda.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`.
+     * si no se encuentra ninguno.
+     */
+    const inet::Ipv6Address& findNextHopClosestToVertex(const Vertex vertex,
+            const Edge edge,
+            const NeighbouringCarsByEdge &neighbouringCarsByEdge) const;
+    /*!
+     * @brief Buscar vehículo vecino más cercano a un vértice que
+     * se encuentra en una arista.
+     *
+     * @param vertex [in] Vértice de referencia.
+     * @param edge   [in] Arista en la que se encuentran los vehículos
+     * entre los que se hace la búsqueda.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`.
+     * si no se encuentra ninguno.
+     */
+    const inet::Ipv6Address& findNextHopClosestToVertex(
+            const Vertex vertex) const;
     /*!
      * @brief Agrega los vértices visitados del siguiente salto.
      *
@@ -522,7 +603,7 @@ protected:
      * @param shortestPath [in] Ruta vial.
      */
     VertexSet getNextHopVisitedVertices(const inet::Ipv6Address &nextHopAddress,
-            const VertexVector &shortestPath) const;
+            const VertexVector &path) const;
     /*!
      * @brief Agrega los siguientes vértices visitados de la ruta a la opción
      * de vértices visitados del datagrama.

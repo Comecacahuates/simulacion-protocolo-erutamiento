@@ -3,15 +3,15 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
  * @file RoutingProtocolBase.CC
@@ -373,9 +373,9 @@ void RoutingProtocolBase::showNeighbouringCars() const {
     Enter_Method
     ("RoutingProtocolBase::showNeighbouringCars");
 
-    NeighbouringCarsConstIterator neighbouringCarsIt =
+    NeighbouringCarsConstIt neighbouringCarsIt =
             neighbouringCars.getMap().begin();
-    NeighbouringCarsConstIterator neighbouringCarsEndIt =
+    NeighbouringCarsConstIt neighbouringCarsEndIt =
             neighbouringCars.getMap().end();
     while (neighbouringCarsIt != neighbouringCarsEndIt) {
         EV_INFO << "Address: " << neighbouringCarsIt->first << std::endl;
@@ -458,8 +458,8 @@ inet::Ipv6Address RoutingProtocolBase::findClosestNeighbouringCar(
      */
     double minDistance = std::numeric_limits<double>::infinity();
     inet::Ipv6Address address = inet::Ipv6Address::UNSPECIFIED_ADDRESS;
-    NeighbouringCarsConstIterator it = neighbouringCars.getMap().begin();
-    NeighbouringCarsConstIterator endIt = neighbouringCars.getMap().end();
+    NeighbouringCarsConstIt it = neighbouringCars.getMap().begin();
+    NeighbouringCarsConstIt endIt = neighbouringCars.getMap().end();
     while (it != endIt) {
         double distance = geohashLocation.getDistance(
                 it->second.value.geohashLocation);
@@ -634,11 +634,15 @@ TlvVisitedVerticesOption* RoutingProtocolBase::createTlvVisitedVerticesOption(
 
     TlvVisitedVerticesOption *tlvOption = new TlvVisitedVerticesOption();
     tlvOption->setVisitedVerticesArraySize(visitedVertices.size());
-    VertexSetConstIterator it = visitedVertices.begin();
-    VertexSetConstIterator endIt = visitedVertices.end();
+    VertexSetConstIt it = visitedVertices.begin();
+    VertexSetConstIt endIt = visitedVertices.end();
+    tlvOption->setVisitedVerticesArraySize(visitedVertices.size());
     size_t i = 0;
-    while (it != endIt)
-        tlvOption->insertVisitedVertices(i, *it);
+    while (it != endIt) {
+        tlvOption->setVisitedVertices(i, *it);
+        it++;
+        i++;
+    }
     tlvOption->setLength(computeTlvOptionLength(tlvOption));
     return tlvOption;
 }

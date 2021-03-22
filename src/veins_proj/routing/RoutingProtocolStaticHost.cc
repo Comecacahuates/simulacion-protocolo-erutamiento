@@ -152,7 +152,7 @@ void RoutingProtocolStaticHost::processHelloCar(
             << "Distance to vertex B: " << distanceToVertexB << std::endl;
 
     EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-                                // @formatter:on
+                                            // @formatter:on
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -336,13 +336,15 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
 
-    // @formatter:off
-    EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
-             << "Destination address: " << destAddress.str() << std::endl;
-                            // @formatter:on
+    EV_DEBUG << "Source address: "
+             << srcAddress.str()
+             << std::endl
+             << "Destination address: "
+             << destAddress.str()
+             << std::endl;
 
     /*
-     * Si la dirección de destino es una dirección local o si es _multicast_,
+     * Si la dirección de destino es una dirección local o si es *multicast*,
      * se acepta el datagrama..
      */
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
@@ -350,7 +352,7 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
         return inet::INetfilter::IHook::ACCEPT;
 
     /*
-     * Si el datagrama no está dirigido al _host_, se descarta.
+     * Si el datagrama no está dirigido al *host*, se descarta.
      */
     return inet::INetfilter::IHook::DROP;
 }
@@ -383,10 +385,12 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
 
-    // @formatter:off
-    EV_DEBUG << "Source address: " << srcAddress.str() << std::endl
-             << "Destination address: " << destAddress.str() << std::endl;
-                            // @formatter:on
+    EV_DEBUG << "Source address: "
+             << srcAddress.str()
+             << std::endl
+             << "Destination address: "
+             << destAddress.str()
+             << std::endl;
 
     /*
      * Si la dirección de destino es una dirección local o si es *multicast*,

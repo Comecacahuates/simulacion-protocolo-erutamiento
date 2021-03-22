@@ -128,7 +128,7 @@ bool RoadNetwork::getLocationOnRoadNetwork(
      */
     double closestDistanceToEdge = std::numeric_limits<double>::infinity();
     bool success = false;
-    EdgeIterator edgeIt, endEdgeIt;
+    EdgeIt edgeIt, endEdgeIt;
     boost::tie(edgeIt, endEdgeIt) = boost::edges(graph);
     while (edgeIt != endEdgeIt) {
         Edge edge = *edgeIt++;
@@ -173,7 +173,7 @@ bool RoadNetwork::getLocationOnRoadNetworkFromVertex(const Vertex vertex,
      */
     double closestDistanceToEdge = std::numeric_limits<double>::infinity();
     bool success = false;
-    OutEdgeIterator edgeIt, endEdgeIt;
+    OutEdgeIt edgeIt, endEdgeIt;
     boost::tie(edgeIt, endEdgeIt) = boost::out_edges(vertex, graph);
     while (edgeIt != endEdgeIt) {
         Edge edge = *edgeIt++;
