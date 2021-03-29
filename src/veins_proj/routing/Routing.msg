@@ -23,22 +23,12 @@ namespace veins_proj;
 
 
 enum PacketType {
-    ACK = 0;
-    HELLO_CAR = 1;
-    HELLO_HOST = 2;
-    PING = 3;
-    PONG = 4;
-    EDGE_STATUS = 5;
+    HELLO_CAR = 0;
+    HELLO_HOST = 1;
 };
 
 class RoutingPacket extends inet::FieldsChunk {
 	PacketType packetType;
-}
-
-class Ack extends RoutingPacket {
-    chunkLength = inet::B(1 + 16);
-    packetType = PacketType::ACK;
-	inet::Ipv6Address address;
 }
 
 class HelloCar extends RoutingPacket {
@@ -64,32 +54,6 @@ class HelloHost extends RoutingPacket {
 	uint64_t geohash; // Ubicación Geohash (8 bytes)
 }
 
-class Ping extends RoutingPacket {
-    chunkLength = inet::B(40);
-    packetType = PacketType::PING;
-	inet::Ipv6Address address; // Dirección IPv6 de origen (16 bytes)
-	unsigned int pingVertex; // Vértice de origen (2 bytes)
-	unsigned int pongVertex; // Vértice de destino (2 bytes)
-}
-
-class Pong extends RoutingPacket {
-    chunkLength = inet::B(24);
-    packetType = PacketType::PONG;
-    bool error; // Error en la operación ping-pong (1 bit)
-	inet::Ipv6Address destAddress; // Dirección IPv6 (16 bytes)
-	unsigned int pingVertex; // Vértice de origen (2 bytes)
-	unsigned int pongVertex; // Vértice de destino (2 bytes)
-}
-
-class HelloEdge extends RoutingPacket {
-	chunkLength = inet::B(8);
-    packetType = PacketType::EDGE_STATUS;
-    bool isActive; // Indica si la ruta está activa (1 bit)
-	int hopCount; // Número de saltos (1 byte)
-	int neighboursAverage; // Promedio de vehículos vecinos (1 byte)
-	unsigned int vertexA; // Vértice A (2 bytes)
-	unsigned int vertexB; // Vértice B (2 bytes)
-}
 
 class TlvDestGeohashLocationOption extends inet::TlvOptionBase {
 	uint64_t geohash; // Ubicación Geohash (8 bytes)

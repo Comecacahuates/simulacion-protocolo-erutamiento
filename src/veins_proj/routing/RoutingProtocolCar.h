@@ -67,8 +67,6 @@ protected:
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
     //! Temporizador de limpieza de aristas activas.
     omnetpp::cMessage *purgeEdgesStatusTimer;
-    //! Temporizador de limpieza de mensajes PONG pendientes.
-    omnetpp::cMessage *purgePendingPongsTimer;
 
     /*
      * Vehículos vecinos agrupados por arista.
@@ -147,82 +145,6 @@ protected:
      */
     virtual void processHelloHost(const inet::Ptr<HelloHost> &helloHost)
             override;
-
-    /*
-     * Mensajes PING.
-     */
-    /*!
-     * @brief Crear mensaje PING.
-     *
-     * @param srcAddress [in] Dirección del vehículo remitente.
-     * @param pingVertex [in] Vértice de origen.
-     * @param pongVertex [in] Vértice de destino.
-     * @return Mensaje PING.
-     */
-    virtual const inet::Ptr<Ping> createPing(
-            const inet::Ipv6Address &srcAddress, Vertex pingVertex,
-            Vertex pongVertex) const;
-    /*!
-     * @brief Procesar mensaje PING.
-     *
-     * Si el vehículo se encuentra en el vértice de destino,
-     * se crea un mensaje PONG de respuesta y se transmite al vecino
-     * que se encuentre más cerca del vértice de origen;
-     * después, transmite un mensaje HOLA_VEHIC
-     * indicando que la arista está activa.
-     *
-     * Si no se encuentra en el vértice de destino,
-     * se busca el vehículo vecino más cercano vértice de destino
-     * y se retransmite el mensaje hacia este.
-     *
-     * Si no se encuentra un vecino cerca del vértice de destino,
-     * se crea un mensaje PONG de respuesta con la bandera de error activa,
-     * y se busca el vecino que se encuentre más cerca del vertice
-     * de origen para transmitir el mensaje hacia este.
-     *
-     * Si no se encuentra un vecino cerca del vértice de origen,
-     * se descarta el mensaje.
-     *
-     * @param ping [in] Mensaje a procesar.
-     */
-    virtual void processPing(const inet::Ptr<Ping> &ping) override;
-
-    /*
-     * Mensajes PONG.
-     */
-    /*!
-     * @brief Crear mensaje PONG.
-     *
-     * @param pingAddress [in] Dirección del vehículo que originó
-     * el mensaje PING.
-     * @param error [in] Bandera de error.
-     * @param pingVertex [in] Vértice de origen.
-     * @param pongVertex [in] Vértice de destino.
-     * @return Mensaje PONG.
-     */
-    virtual const inet::Ptr<Pong> createPong(
-            const inet::Ipv6Address &pingAddress, bool error, Vertex pingVertex,
-            Vertex pongVertex) const;
-    /*!
-     * @brief Procesar mensaje PONG.
-     *
-     * Si la dirección de destino es una dirección local,
-     * se revisa si es un mensaje PONG pendiente, en cuyo caso,
-     * si el valor de la bandera E es falso,
-     * se establece la arista correspondiente como arista activa,
-     * y se programa el temporizador de limpieza de aristas activas.
-     * También, se transmite un mensaje HOLA_VEHIC indicando que
-     * la arista está activa.
-     * Si se acabó el tiempo de espera del mensaje, se ignora el mensaje.
-     *
-     * Si la dirección de destino no es una dirección local, se verifica
-     * si el destinatario se encuentra es un vecino. En ese caso,
-     * se retransmite directamente hacia este. En otro caso, se busca un
-     * vecino que se encuentre más cerca del vértice de destino.
-     *
-     * @param pong [in] Mensaje a procesar.
-     */
-    virtual void processPong(const inet::Ptr<Pong> &pong) override;
 
     /*
      * Directorio de hosts vecinos.
@@ -311,102 +233,6 @@ protected:
      * @brief Procesar el temporizador de limpieza de aristas activas.
      */
     virtual void processPurgeEdgesStatusTimer();
-
-    /*
-     * Datagramas demorados.
-     */
-    /*!
-     * @brief Diccionario de datagramas demorado.
-     *
-     * La clave es la dirección de destino del datagrama, y el valor es
-     * el datagrama.
-     */
-    typedef std::multimap<Edge, inet::Packet*> DelayedDatagrams;
-    /*!
-     * @brief Iterador para diccionario de datagramas demorados.
-     */
-    typedef DelayedDatagrams::iterator DelayedDatagramsIt;
-    /*!
-     * @brief Iterador para diccionario de datagramas demorados constante.
-     */
-    typedef DelayedDatagrams::const_iterator DelayedDatagramsConstIt;
-    /*!
-     * @brief Paquetes demorados.
-     */
-    DelayedDatagrams delayedDatagrams;
-    /*!
-     * @brief Imprimir los datagramas demorados.
-     */
-    void showDelayedDatagrams() const;
-    /*!
-     * @brief Eliminar los datagramas demorados cuyo mensaje PONG no llegó,
-     * o no existe una ruta para enviarlos.
-     */
-    void removeStuckDelayedDatagrams();
-
-    /*
-     * Operación ping-pong
-     *
-     */
-    /*!
-     * @brief Iniciar una operación ping-pong.
-     *
-     * Se crea un mensaje PING y se transmite hacia el vehículo vecino
-     * más cercano al vértice de destino.
-     *
-     * @param pingVertex [in] Vértice de origen.
-     * @param pongVertex [in] Vértice de destino.
-     * @return `true` si se pudo iniciar la operación ping-pong.
-     */
-    bool startPingPong(const Vertex pingVertex, const Vertex pongVertex);
-
-    /*
-     * Mensajes PONG pendientes.
-     */
-    //! Registro de mensaje PONG pendiente.
-    struct PendingPongValue {
-        //! Vértice de origen.
-        Vertex pingVertex;
-        //! Vértice de destino.
-        Vertex pongVertex;
-    };
-    /*!
-     * @brief Diccionario de mensajes PONG pendientes.
-     *
-     * La clave es la arista por la que se envió el mensaje PING,
-     * y el valor es el par de vértices de origen y destino.
-     */
-    typedef ExpiringValuesMap<Edge, PendingPongValue> PendingPongs;
-    /*!
-     * @brief Valor.
-     */
-    typedef PendingPongs::MapValue PendingPong;
-    /*!
-     * @brief Iterador para diccionario de mensajes PONG pendientes.
-     */
-    typedef PendingPongs::It PendingPongsIt;
-    /*!
-     * @brief Iterador para diccionario de mensajes PONG pendientes constante.
-     */
-    typedef PendingPongs::ConstIt PendingPongsConstIt;
-    /*!
-     * @brief Mensajes PONG pendientes.
-     */
-    PendingPongs pendingPongs;
-    /*!
-     * @brief Imprimir los mensajes PONG pendientes.
-     */
-    void showPendingPongs() const;
-    /*!
-     * @brief Programar el temporizador de limpieza de mensajes
-     * PONG pendientes.
-     */
-    void schedulePurgePendingPongsTimer();
-    /*!
-     * @brief Procesar el temporizador de limpieza de mensajes
-     * PONG pendientes.
-     */
-    void processPurgePendingPongsTimer();
 
     /*
      * Enrutamiento.

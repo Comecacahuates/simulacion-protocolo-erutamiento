@@ -75,14 +75,10 @@ protected:
     omnetpp::simtime_t neighbouringCarValidityTime;
     //! Tiempo de vigencia de los registros del directorio de *hosts* vecinos.
     omnetpp::simtime_t neighbouringHostValidityTime;
-    //! Tiempo de espera para los mensahes PONG.
-    omnetpp::simtime_t pongTimeout;
     //! Tiempo de vigencia de aristas activas.
     omnetpp::simtime_t edgeStatusValidityTime;
     //! Tiempo de vigencia de las rutas.
     omnetpp::simtime_t routeValidityTime;
-    //! Tiempo de vigencia de los datagramas demorados.
-    omnetpp::simtime_t delayedDatagramValidityTime;
     //! Tiempo de demora opcional de transmisión de paquetes UDP.
     omnetpp::simtime_t udpPacketDelayTime;
     //! Radio de proximidad a los vértices.
@@ -194,25 +190,6 @@ protected:
             const inet::Ipv6Address &destAddress, bool delayed = false);
 
     /*
-     * Mensajes ACK.
-     */
-    /*!
-     * @brief Crear mensaje ACK.
-     *
-     * @param address [in] Dirección del remitente.
-     *
-     * @return Mensaje ACK.
-     */
-    virtual const inet::Ptr<Ack> createAck(
-            const inet::Ipv6Address &address) const;
-    /*!
-     * @brief Procesar mensaje ACK.
-     *
-     * @param ack [in] Mensaje a procesar.
-     */
-    virtual void processAck(const inet::Ptr<Ack> &ack);
-
-    /*
      * Mensajes HOLA_VEHIC.
      */
     /*!
@@ -232,28 +209,6 @@ protected:
      * @param helloHost [in] Mensaje a procesar.
      */
     virtual void processHelloHost(const inet::Ptr<HelloHost> &helloHost) {
-    }
-
-    /*
-     * Mensajes PING.
-     */
-    /*!
-     * @brief Procesar mensaje PING.
-     *
-     * @param ping [in] Mensaje a procesar.
-     */
-    virtual void processPing(const inet::Ptr<Ping> &ping) {
-    }
-
-    /*
-     * Mensajes PONG.
-     */
-    /*!
-     * @brief Procesar mensaje PONG.
-     *
-     * @param pong [in] Mensaje a procesar.
-     */
-    virtual void processPong(const inet::Ptr<Pong> &pong) {
     }
 
     /*

@@ -69,10 +69,8 @@ void RoutingProtocolBase::initialize(int stage) {
         neighbouringCarValidityTime = par("neighbouringCarValidityTime");
         helloHostInterval = par("helloHostInterval");
         neighbouringHostValidityTime = par("neighbouringHostValidityTime");
-        pongTimeout = par("pongTimeout");
         edgeStatusValidityTime = par("edgeStatusValidityTime");
         routeValidityTime = par("routeValidityTime");
-        delayedDatagramValidityTime = par("delayedDatagramValidityTime");
         udpPacketDelayTime = par("udpPacketDelayTime");
         vertexProximityRadius = par("vertexProximityRadius");
 
@@ -232,14 +230,6 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
 
     switch (packetType) {
 
-        case PacketType::ACK: {
-            inet::Ptr<Ack> ack = inet::dynamicPtrCast<Ack>(
-                    routingPacket->dupShared());
-            processAck(ack);
-
-            break;
-        }
-
         case PacketType::HELLO_CAR: {
             inet::Ptr<HelloCar> helloCar = inet::dynamicPtrCast<HelloCar>(
                     routingPacket->dupShared());
@@ -252,14 +242,6 @@ void RoutingProtocolBase::processUdpPacket(inet::Packet *udpPacket) {
             inet::Ptr<HelloHost> helloHost = inet::dynamicPtrCast<HelloHost>(
                     routingPacket->dupShared());
             processHelloHost(helloHost);
-
-            break;
-        }
-
-        case PacketType::PING: {
-            inet::Ptr<Ping> ping = inet::dynamicPtrCast<Ping>(
-                    routingPacket->dupShared());
-            processPing(ping);
 
             break;
         }
@@ -318,46 +300,6 @@ void RoutingProtocolBase::sendRoutingMessage(
     dispatchProtocol->setProtocol(&inet::Protocol::ipv6);
 
     sendUdpPacket(udpPacket, delayed);
-}
-
-/*
- * Mensajes ACK.
- */
-
-/*!
- * @brief Crear mensaje ACK.
- *
- * @param address [in] Dirección del remitente.
- *
- * @return Mensaje ACK.
- */
-const inet::Ptr<Ack> RoutingProtocolBase::createAck(
-        const inet::Ipv6Address &address) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::createAck");
-
-    const inet::Ptr<Ack> &ack = inet::makeShared<Ack>();
-
-    EV_INFO << "Address: " << address.str() << std::endl;
-
-    ack->setAddress(address);
-
-    return ack;
-}
-
-/*!
- * @brief Procesar mensaje ACK.
- *
- * @param ack [in] Mensaje a procesar.
- */
-void RoutingProtocolBase::processAck(const inet::Ptr<Ack> &ack) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::processAck");
-    EV_INFO << "Address: " << ack->getAddress().str() << std::endl;
 }
 
 /*

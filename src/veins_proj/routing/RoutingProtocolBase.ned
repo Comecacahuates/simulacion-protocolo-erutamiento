@@ -30,10 +30,8 @@ simple RoutingProtocolBase like IManetRouting {
         double neighbouringCarValidityTime @unit(s) = default(5s);
         volatile double helloHostInterval @unit(s) = default(3s + uniform(0.5s, 1.0s));
         double neighbouringHostValidityTime @unit(s) = default(5s);
-        double pongTimeout @unit(s) = default(1s);
         double edgeStatusValidityTime @unit(s) = default(5s);
         double routeValidityTime @unit(s) = default(2s);
-        double delayedDatagramValidityTime @unit(s) = default(2s);
         double udpPacketDelayTime @unit(s) = default(0.5s);
         double vertexProximityRadius @unit(m) = default(10m);
 
