@@ -65,8 +65,6 @@ protected:
     omnetpp::cMessage *helloCarTimer;
     //! Temporizador de limpieza del directorio de *hosts* vecinos.
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
-    //! Temporizador de limpieza de aristas activas.
-    omnetpp::cMessage *purgeEdgesStatusTimer;
 
     /*
      * Vehículos vecinos agrupados por arista.
@@ -191,48 +189,6 @@ protected:
      * de *hosts* vecinos.
      */
     virtual void processPurgeNeighbouringHostsTimer();
-
-    /*
-     * Estatus de las aristas.
-     */
-    /*!
-     * @brief Diccionario de aristas activas.
-     *
-     * La clave es la arista activa, y el valor es la hora de expiración
-     * del registro.
-     */
-    typedef ExpiringValuesMap<Edge, bool> EdgesStatus;
-    /*!
-     * @brief Valor.
-     */
-    typedef EdgesStatus::MapValue EdgeStatus;
-    /*!
-     * @brief Iterador para diccionario de aristas activas.
-     */
-    typedef EdgesStatus::It EdgesStatusIt;
-    /*!
-     * @brief Iterador para diccionario de aristas activas constante.
-     */
-    typedef EdgesStatus::ConstIt EdgesStatusConstIt;
-    /*!
-     * @brief Estatus de las aristas.
-     *
-     * Cuando se recibe un mensaje PONG indicando que la arista se
-     * encuentra activa, se agrega un registro.
-     */
-    EdgesStatus edgesStatus;
-    /*!
-     * @brief Imprimir las aristas activas.
-     */
-    virtual void showEdgesStatus() const;
-    /*!
-     * @brief Programar el temporizador de limpieza de aristas activas.
-     */
-    virtual void schedulePurgeEdgesStatusTimer();
-    /*!
-     * @brief Procesar el temporizador de limpieza de aristas activas.
-     */
-    virtual void processPurgeEdgesStatusTimer();
 
     /*
      * Enrutamiento.

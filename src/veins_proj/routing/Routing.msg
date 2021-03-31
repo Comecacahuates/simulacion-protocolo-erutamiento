@@ -41,10 +41,6 @@ class HelloCar extends RoutingPacket {
 	unsigned int vertexA; // Vértice A (2 bytes)
 	unsigned int vertexB; // Vértice B (2 bytes)
 	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
-	bool pingPong = false; // Bandera ping-pong (1 bit)
-	bool pingPongError = false; // Bandera de error ping-pong (1 bit)
-	unsigned int pingVertex = 0; // Vértice de origen del mensaje PING (2 bytes)
-	unsigned int pongVertex = 0; // Vértice de destino del mensaje PONG (2 bytes)
 }
 
 class HelloHost extends RoutingPacket {
