@@ -3,15 +3,15 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
  * @file CarConfigurator.cc
@@ -47,7 +47,6 @@ Define_Module(CarConfigurator);
  */
 void CarConfigurator::initialize(int stage) {
     ConfiguratorBase::initialize(stage);
-
     /*
      * Etapa de inicialización local.
      */
@@ -56,7 +55,6 @@ void CarConfigurator::initialize(int stage) {
          * Parámetros de configuración.
          */
         locationUpdateInterval = par("locationUpdateInterval");
-
         /*
          * Contexto.
          */
@@ -64,12 +62,10 @@ void CarConfigurator::initialize(int stage) {
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
-
         /*
          * Mensajes propios.
          */
         locationUpdateTimer = new omnetpp::cMessage("LocationUpdateTimer");
-
         /*
          * FSM de actualización de la ubicación.
          */
@@ -83,11 +79,6 @@ void CarConfigurator::initialize(int stage) {
  * @param message [in] Mensaje a procesar.
  */
 void CarConfigurator::handleMessageWhenUp(omnetpp::cMessage *message) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("CarConfigurator::handleMessageWhenUp");
-
     if (message->isSelfMessage())
         processSelfMessage(message);
 }
@@ -102,10 +93,6 @@ void CarConfigurator::handleMessageWhenUp(omnetpp::cMessage *message) {
  * @param message [in] Mensaje a procesar.
  */
 void CarConfigurator::processSelfMessage(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    EV_INFO << "CarConfigurator::processSelfMessage" << std::endl;
-
     if (message == locationUpdateTimer)
         processLocationUpdateTimer();
 }
@@ -121,10 +108,6 @@ void CarConfigurator::processSelfMessage(omnetpp::cMessage *message) {
  * a la hora de inicio.
  */
 void CarConfigurator::scheduleLocationUpdateTimer(bool start) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    EV_INFO << "CarConfigurator::scheduleLocationUpdateTimer" << std::endl;
-
     if (start && omnetpp::simTime() < startTime)
         scheduleAt(startTime, locationUpdateTimer);
     else
@@ -147,10 +130,6 @@ void CarConfigurator::scheduleLocationUpdateTimer(bool start) {
  * y realizar la configuración correspondiente.
  */
 void CarConfigurator::processLocationUpdateTimer() {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    EV_INFO << "CarConfigurator::processLocationUpdateTimer" << std::endl;
-
     /*
      * Se guarda la ubicación previa y se calcula la nueva ubicación
      * para determinar qué transiciones debe realizar el FSM.
@@ -162,7 +141,6 @@ void CarConfigurator::processLocationUpdateTimer() {
     const RoadNetwork *newRoadNetwork = mobility->getRoadNetwork();
     GeohashLocation::Adjacency gatewayRegionAdjacency =
             mobility->getGatewayRegionAdjacency();
-
     /*
      * Si la ubicación cambió, se hace ningún cambio en la
      * configuración de la interfaz.
@@ -259,7 +237,6 @@ void CarConfigurator::processLocationUpdateTimer() {
             }
         }
     }
-
     scheduleLocationUpdateTimer();
 }
 
@@ -269,11 +246,6 @@ void CarConfigurator::processLocationUpdateTimer() {
 
 void CarConfigurator::handleStartOperation(
         inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("CarConfigurator::handleStartOperation");
-
     inet::Ipv6InterfaceData *ipv6Data =
             networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
     ipv6Data->setAdvSendAdvertisements(false);
@@ -283,11 +255,6 @@ void CarConfigurator::handleStartOperation(
 }
 
 void CarConfigurator::handleStopOperation(inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("CarConfigurator::handleStartOperation");
-
     cancelAndDelete(locationUpdateTimer);
     leaveNetwork(NetworkType::PRIMARY);
     leaveNetwork(NetworkType::SECONDARY);
@@ -295,11 +262,6 @@ void CarConfigurator::handleStopOperation(inet::LifecycleOperation *operation) {
 
 void CarConfigurator::handleCrashOperation(
         inet::LifecycleOperation *operation) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("CarConfigurator::handleStartOperation");
-
     cancelAndDelete(locationUpdateTimer);
     leaveNetwork(NetworkType::PRIMARY);
     leaveNetwork(NetworkType::SECONDARY);

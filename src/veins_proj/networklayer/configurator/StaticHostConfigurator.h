@@ -40,8 +40,10 @@
 namespace veins_proj {
 
 /*!
- * @brief Módulo que implementa la configuración
- * de la interfaz de los *hosts*.
+ * @brief Módulo que implementa la configuración de la interfaz de los *hosts*.
+ *
+ * Durante la inicialización, se registra la ubicación Geohash del *host*
+ * en el módulo global @link veins_proj::HostsLocationTable.
  */
 class StaticHostConfigurator: public ConfiguratorBase {
 

@@ -40,7 +40,6 @@ Register_Abstract_Class(ConfiguratorBase);
  */
 void ConfiguratorBase::initialize(int stage) {
     OperationalBase::initialize(stage);
-
     /*
      * Etapa de inicialización local.
      */
@@ -49,7 +48,6 @@ void ConfiguratorBase::initialize(int stage) {
          * Parámetros de configuración.
          */
         interface = par("interface").stdstringValue();
-
         /*
          * Contexto.
          */
@@ -57,7 +55,6 @@ void ConfiguratorBase::initialize(int stage) {
         interfaceTable = inet::L3AddressResolver().interfaceTableOf(host);
         if (!interfaceTable)
             throw omnetpp::cRuntimeError("No interface table found");
-
         /*
          * Etapa de inicialización de las interfaces.
          */
@@ -84,11 +81,6 @@ void ConfiguratorBase::initialize(int stage) {
  * @brief Imprimir las direcciones.
  */
 void ConfiguratorBase::showAddresses() const {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::showAddresses");
-
     const inet::Ipv6InterfaceData *ipv6Data =
             networkInterface->findProtocolData<inet::Ipv6InterfaceData>();
 
@@ -114,18 +106,12 @@ void ConfiguratorBase::showAddresses() const {
  */
 void ConfiguratorBase::joinNetwork(const GeohashLocation &geohashRegion,
         const NetworkType networkType) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::joinNetwork");
-
     /*
      * Si ya forma parte de la región Geohash solicitada,
      * no se reconfigura la interfaz.
      */
     if (geohashRegions[networkType] == geohashRegion)
         return;
-
     /*
      * Se crean las direcciones *unicast* y *multicast*
      * y se asigna a la interfaz.
@@ -145,7 +131,6 @@ void ConfiguratorBase::joinNetwork(const GeohashLocation &geohashRegion,
         SIMTIME_ZERO, SIMTIME_ZERO);
     if (!ipv6Data->isMemberOfMulticastGroup(multicastAddresses[networkType]))
         ipv6Data->joinMulticastGroup(multicastAddresses[networkType]);
-
     showAddresses();
 }
 
@@ -157,11 +142,6 @@ void ConfiguratorBase::joinNetwork(const GeohashLocation &geohashRegion,
  * @param networkType [in] Tipo de subred de la que se va a salir.
  */
 void ConfiguratorBase::leaveNetwork(const NetworkType networkType) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::leaveNetwork");
-
     /*
      * Se reconfigura la interfaz para desasignar las direcciones
      * *unicast* y *multicast*.
@@ -185,11 +165,6 @@ void ConfiguratorBase::leaveNetwork(const NetworkType networkType) {
  * Se utiliza cuando un vehículo cambia de una región Geohash a otra.
  */
 void ConfiguratorBase::swapNetworks() {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::swapNetworks");
-
     boost::swap(unicastAddresses[NetworkType::PRIMARY],
             unicastAddresses[NetworkType::SECONDARY]);
     boost::swap(multicastAddresses[NetworkType::PRIMARY],

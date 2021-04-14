@@ -44,7 +44,6 @@ Define_Module(StaticHostConfigurator);
  */
 void StaticHostConfigurator::initialize(int stage) {
     ConfiguratorBase::initialize(stage);
-
     /*
      * Etapa de inicialización local.
      */
@@ -70,11 +69,6 @@ void StaticHostConfigurator::initialize(int stage) {
 
 void StaticHostConfigurator::handleStartOperation(
         inet::LifecycleOperation *operation) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::handleStartOperation");
-
     inet::Ipv6InterfaceData *ipv6Data =
             networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
     ipv6Data->setAdvSendAdvertisements(false);
@@ -86,20 +80,10 @@ void StaticHostConfigurator::handleStartOperation(
 
 void StaticHostConfigurator::handleStopOperation(
         inet::LifecycleOperation *operation) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::handleStopOperation");
-
     leaveNetwork(NetworkType::PRIMARY);
 }
 
 void StaticHostConfigurator::handleCrashOperation(
         inet::LifecycleOperation *operation) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("StaticHostConfigurator::handleCrashOperation");
-
     leaveNetwork(NetworkType::PRIMARY);
 }
