@@ -57,11 +57,11 @@ protected:
     /*
      * Contexto
      */
-    //! Módulo de base de datos de redes viales.
+    //! Módulo global de base de datos de redes viales.
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
 
     /*
-     * Datos de la ubicación.
+     * Atributos.
      */
     //! Ubicación Geohash.
     GeohashLocation geohashLocation;
@@ -98,12 +98,14 @@ protected:
      *
      * @param message [in] Mensaje a procesar.
      */
-    virtual void handleMessage(omnetpp::cMessage *message) override {};
+    virtual void handleMessage(omnetpp::cMessage *message) override {
+    }
+    ;
 
 public:
 
     /*
-     * Acceso a los datos de ubicación.
+     * Acceso a los atributos.
      */
     /*!
      * @brief Acceso a la ubicación geográfica.

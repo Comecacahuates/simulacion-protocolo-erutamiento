@@ -55,7 +55,6 @@ void CarMobility::initialize(int stage) {
          * Parámetros de configuración.
          */
         vertexProximityRadius = par("vertexProximityRadius");
-
         /*
          * Contexto.
          */
@@ -63,7 +62,6 @@ void CarMobility::initialize(int stage) {
                 getModuleByPath(par("roadNetworkDatabaseModule")));
         if (!roadNetworkDatabase)
             throw omnetpp::cRuntimeError("No roadway database module found");
-
         /*
          * Etapa de inicialización de movilidad.
          */
@@ -76,44 +74,39 @@ void CarMobility::initialize(int stage) {
  * @brief Actualizar la ubicación.
  */
 void CarMobility::updateLocation() {
-    // Obtener coordenadas cartesianas
+    /*
+     * Se obtienen las coordenadas en el lienzo.
+     */
     inet::Coord inetLocation = veins::VeinsInetMobility::getCurrentPosition();
     veins::Coord veinsLocation = veins::Coord(inetLocation.x, inetLocation.y);
-
-    // Obtener coordenadas geográficas
+    /*
+     * Se obtienen las  coordenadas geográficas a partir de
+     * las coordenadas en el lienzo..
+     */
     double lat, lon;
     boost::tie(lon, lat) =
             veins::VeinsInetMobility::getCommandInterface()->getLonLat(
                     veinsLocation);
-
-    // Obtener velocidad
+    /*
+     * Se obtiene la velocidad y la dirección.
+     */
     inet::Coord inetSpeed = veins::VeinsInetMobility::getCurrentVelocity();
     speed = std::sqrt(inetSpeed.x * inetSpeed.x + inetSpeed.y * inetSpeed.y);
-
-    // Obtener dirección
     if (speed > 0)
         direction = std::fmod(
                 2.5 * 180.0
                         - inet::math::rad2deg(
                                 std::atan2(-inetSpeed.y, inetSpeed.x)), 360.0);
-
+    /*
+     * Si la ubicación cambió, se calcula la ubicación vial,
+     * y se actualiza la red vial si es necesario.
+     */
     GeographicLib::GeoCoords location(lat, lon);
-
-    // Se verifica si la ubicación cambió
     if (geohashLocation.isNull() || !geohashLocation.contains(location)) {
         geohashLocation.setLocation(location);
-
-        // Se actualiza la red vial
         updateRoadNetwork();
-
-        bool locationSuccess = roadNetwork->getLocationOnRoadNetwork(
-                getLocation(), speed, direction, locationOnRoadNetwork);
-
-        if (locationSuccess)
-            EV_INFO << "Ubicación correcta" << std::endl;
-
-        else
-            EV_INFO << "Error obtenindo ubicación" << std::endl;
+        roadNetwork->getLocationOnRoadNetwork(geohashLocation.getLocation(),
+                speed, direction, locationOnRoadNetwork);
     }
 }
 
@@ -127,13 +120,6 @@ void CarMobility::updateLocation() {
  * en la que se encuentra el vehículo.
  */
 GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl
-             << "CarMobility::getGatewayRegion"
-             << std::endl;
-    Enter_Method
-    ("CarMobility::getGatewayRegion");
-
     const Graph &graph = roadNetwork->getGraph();
     const Edge &edge = locationOnRoadNetwork.edge;
     const Vertex &vertexA = boost::source(edge, graph);

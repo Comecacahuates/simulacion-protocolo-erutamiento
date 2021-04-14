@@ -22,7 +22,7 @@
 
 #include <GeographicLib/GeoCoords.hpp>
 #include <omnetpp.h>
-#include "inet/mobility/base/StationaryMobilityBase.h"
+#include "inet/mobility/static/StationaryMobility.h"
 #include "inet/common/geometry/common/GeographicCoordinateSystem.h"
 #include "veins_proj/geohash/GeohashLocation.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
@@ -33,15 +33,13 @@ namespace veins_proj {
 /*!
  * @brief Módulo que representa la movilidad de un *host*.
  */
-class StaticHostMobility: public inet::StationaryMobilityBase {
+class StaticHostMobility: public inet::StationaryMobility {
 
 private:
 
     /*
      * Contexto.
      */
-    //! Módulo del *host* contenedor.
-    omnetpp::cModule *host;
     //! Módulo global de base de datos de redes viales.
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
 

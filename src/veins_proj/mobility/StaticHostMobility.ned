@@ -15,19 +15,15 @@
 
 package veins_proj.mobility;
 
-import inet.mobility.base.MovingMobilityBase;
+import inet.mobility.static.StationaryMobility;
 
 
-simple StaticHostMobility extends MovingMobilityBase {
+simple StaticHostMobility extends StationaryMobility {
     
     parameters:
         @class(veins_proj::StaticHostMobility);
         
 		string roadNetworkDatabaseModule = default("roadNetworkDatabase");
 		
-        double initialLatitude @unit(deg) = default(0deg);
-        double initialLongitude @unit(deg) = default(0deg);
-        double initialAltitude @unit(m) = default(0m);
-        
-        updateInterval = 0s;
+        initFromDisplayString = false;
 }

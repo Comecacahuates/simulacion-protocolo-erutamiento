@@ -36,8 +36,7 @@ Define_Module(StaticHostMobility);
  * @param stage [in] Etapa de inicialización.
  */
 void StaticHostMobility::initialize(int stage) {
-    inet::StationaryMobilityBase::initialize(stage);
-
+    inet::StationaryMobility::initialize(stage);
     /*
      * Etapa de inicialización local.
      */
