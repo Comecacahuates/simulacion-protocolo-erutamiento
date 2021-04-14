@@ -18,7 +18,7 @@ package veins_proj.node;
 import inet.node.inet.AdhocHost;
 import veins_proj.networklayer.configurator.CarConfigurator;
 import veins_proj.mobility.CarMobility;
-import veins_proj.routing.RoutingProtocolCar;
+import veins_proj.routing.CarRoutingProtocol;
 
 
 module Car extends AdhocHost {
@@ -34,7 +34,7 @@ module Car extends AdhocHost {
         configurator: CarConfigurator {
             @display("p=124.424995,641.02496;is=s");
         }
-        routingProtocol: RoutingProtocolCar {
+        routingProtocol: CarRoutingProtocol {
             @display("p=913,225");
         }
 

@@ -14,12 +14,12 @@
 //
 
 /*!
- * @file RoutingProtocolStaticHost.cc
+ * @file StaticHostRoutingProtocol.cc
  * @author Adrián Juárez Monroy
  */
 
 #include "veins_proj/roadnetwork/RoadNetwork.h"
-#include "veins_proj/routing/RoutingProtocolStaticHost.h"
+#include "veins_proj/routing/StaticHostRoutingProtocol.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/packet/chunk/Chunk.h"
 #include "inet/transportlayer/udp/UdpHeader_m.h"
@@ -34,7 +34,7 @@
 
 using namespace veins_proj;
 
-Define_Module(RoutingProtocolStaticHost);
+Define_Module(StaticHostRoutingProtocol);
 
 /*
  * Interfaz del módulo.
@@ -45,9 +45,8 @@ Define_Module(RoutingProtocolStaticHost);
  *
  * @param stage [in] Etapa de inicialización.
  */
-void RoutingProtocolStaticHost::initialize(int stage) {
+void StaticHostRoutingProtocol::initialize(int stage) {
     RoutingProtocolBase::initialize(stage);
-
     /*
      * Etapa de inicialización local.
      */
@@ -68,7 +67,6 @@ void RoutingProtocolStaticHost::initialize(int stage) {
         if (!hostsLocationTable)
             throw omnetpp::cRuntimeError(
                     "No hosts location table module found");
-
         /*
          * Mensajes propios.
          */
@@ -85,15 +83,9 @@ void RoutingProtocolStaticHost::initialize(int stage) {
  *
  * @param message [in] Mensaje a procesar.
  */
-void RoutingProtocolStaticHost::processSelfMessage(omnetpp::cMessage *message) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::processSelfMessage");
-
+void StaticHostRoutingProtocol::processSelfMessage(omnetpp::cMessage *message) {
     if (message == helloHostTimer)
         processHelloHostTimer();
-
     else
         RoutingProtocolBase::processSelfMessage(message);
 }
@@ -107,13 +99,8 @@ void RoutingProtocolStaticHost::processSelfMessage(omnetpp::cMessage *message) {
  *
  * @param helloCar [in] Mensaje a procesar.
  */
-void RoutingProtocolStaticHost::processHelloCar(
+void StaticHostRoutingProtocol::processHelloCar(
         const inet::Ptr<HelloCar> &helloCar) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::processHelloCar");
-
     /*
      * Se obtienen los datos del mensaje.
      */
@@ -132,7 +119,6 @@ void RoutingProtocolStaticHost::processHelloCar(
     double distanceToVertexB = graph[edge].length - distanceToVertexA;
     LocationOnRoadNetwork locationOnRoadNetwork = { edge, 0, distanceToVertexA,
             distanceToVertexB };
-
     /*
      * Se guarda el registro en el directorio de vehículos vecinos.
      */
@@ -141,18 +127,37 @@ void RoutingProtocolStaticHost::processHelloCar(
     neighbouringCars.getMap()[srcAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
 
-    // @formatter:off
-    EV_INFO << "Address: " << srcAddress.str() << std::endl
-            << "Geohash location: " << geohashLocation.getGeohash() << std::endl
-            << "Speed: " << speed << std::endl << "Direction: " << direction << std::endl
-            << "Vertex A: " << vertexA << std::endl
-            << "Vertex B: " << vertexB << std::endl
-            << "Edge: " << edge << std::endl
-            << "Distance to vertex A: " << distanceToVertexA << std::endl
-            << "Distance to vertex B: " << distanceToVertexB << std::endl;
+    EV_INFO << "Address: "
+            << srcAddress.str()
+            << std::endl
+            << "Geohash location: "
+            << geohashLocation.getGeohash()
+            << std::endl
+            << "Speed: "
+            << speed
+            << std::endl
+            << "Direction: "
+            << direction
+            << std::endl
+            << "Vertex A: "
+            << vertexA
+            << std::endl
+            << "Vertex B: "
+            << vertexB
+            << std::endl
+            << "Edge: "
+            << edge
+            << std::endl
+            << "Distance to vertex A: "
+            << distanceToVertexA
+            << std::endl
+            << "Distance to vertex B: "
+            << distanceToVertexB
+            << std::endl;
 
-    EV_DEBUG << "Number of car neighbours: " << neighbouringCars.getMap().size() << std::endl;
-                                            // @formatter:on
+    EV_DEBUG << "Number of car neighbours: "
+             << neighbouringCars.getMap().size()
+             << std::endl;
 
     showRoutes();
     schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
@@ -168,12 +173,7 @@ void RoutingProtocolStaticHost::processHelloCar(
  * @param start [in] Indica si se va a programar el temporizador
  * a la hora de inicio.
  */
-void RoutingProtocolStaticHost::scheduleHelloHostTimer(bool start) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("RoutingProtocolBase::scheduleHelloHostTimer");
-
+void StaticHostRoutingProtocol::scheduleHelloHostTimer(bool start) {
     if (start && omnetpp::simTime() < startTime)
         scheduleAt(startTime, helloHostTimer);
     else
@@ -183,11 +183,7 @@ void RoutingProtocolStaticHost::scheduleHelloHostTimer(bool start) {
 /*!
  * @brief Procesar el temporizador de transmisión de mensajes HOLA_HOST.
  */
-void RoutingProtocolStaticHost::processHelloHostTimer() {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    EV_DEBUG << "RoutingProtocolStaticHost::processHelloHostTimer" << std::endl;
-
+void StaticHostRoutingProtocol::processHelloHostTimer() {
     const inet::Ipv6Address &primaryUnicastAddress =
             configurator->getUnicastAddress(
                     ConfiguratorBase::NetworkType::PRIMARY);
@@ -208,12 +204,8 @@ void RoutingProtocolStaticHost::processHelloHostTimer() {
  *
  * @return Mensaje HOLA_HOST.
  */
-const inet::Ptr<HelloHost> RoutingProtocolStaticHost::createHelloHost(
+const inet::Ptr<HelloHost> StaticHostRoutingProtocol::createHelloHost(
         const inet::Ipv6Address &hostAddress) const {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    EV_DEBUG << "RoutingProtocolStaticHost::createHelloHost" << std::endl;
-
     const GeohashLocation &geohashLocation = mobility->getGeohashLocation();
     const inet::Ptr<HelloHost> &helloHost = inet::makeShared<HelloHost>();
     helloHost->setAddress(hostAddress);
@@ -249,12 +241,8 @@ const inet::Ptr<HelloHost> RoutingProtocolStaticHost::createHelloHost(
  *
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
+inet::INetfilter::IHook::Result StaticHostRoutingProtocol::routeDatagram(
         inet::Packet *datagram) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    EV_DEBUG << "RoutingProtocolStaticHost::routeDatagram" << std::endl;
-
     /*
      * Se eliminan las rutas expiradas de la tabla de enrutamiento
      * y se verifica si en la tabal de enrutamiento existe una ruta hacia esta,
@@ -267,7 +255,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
     removeExpiredRoutes(omnetpp::simTime());
     if (routingTable->doLongestPrefixMatch(destAddress))
         return inet::INetfilter::IHook::ACCEPT;
-
     /*
      * Si el destino es un vehículo vecino,
      * se usa su dirección como siguiente salto.
@@ -290,7 +277,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
                     "No next hop found, dropping packet");
         return inet::INetfilter::IHook::DROP;
     }
-
     /*
      * Si sí se encuentra el siguiente salto, se crea una ruta hacia el destino.
      */
@@ -318,14 +304,9 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::routeDatagram(
  *
  * @return Resultado del procesamiento.
  */
-inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHook(
+inet::INetfilter::IHook::Result StaticHostRoutingProtocol::datagramPreRoutingHook(
         inet::Packet *datagram) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::datagramPreRoutingHook");
     EV_INFO << "Datagram: " << datagram->str() << std::endl;
-
     /*
      * Se obtiene la dirección de destino del datagrama para saber hacia
      * dónde enrutarlo.
@@ -342,7 +323,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
              << "Destination address: "
              << destAddress.str()
              << std::endl;
-
     /*
      * Si la dirección de destino es una dirección local o si es *multicast*,
      * se acepta el datagrama..
@@ -350,7 +330,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
             || destAddress.isMulticast())
         return inet::INetfilter::IHook::ACCEPT;
-
     /*
      * Si el datagrama no está dirigido al *host*, se descarta.
      */
@@ -367,14 +346,9 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramPreRoutingHoo
  *
  * @return Resultado del procesamiento.
  */
-inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
+inet::INetfilter::IHook::Result StaticHostRoutingProtocol::datagramLocalOutHook(
         inet::Packet *datagram) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::datagramLocalOutHook");
     EV_INFO << "Datagram: " << datagram->str() << std::endl;
-
     /*
      * Se obtiene la dirección de destino del datagrama para saber si
      * el paquete se procesa o se desecha.
@@ -391,7 +365,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
              << "Destination address: "
              << destAddress.str()
              << std::endl;
-
     /*
      * Si la dirección de destino es una dirección local o si es *multicast*,
      * se acepta el datagrama..
@@ -399,7 +372,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
             || destAddress.isMulticast())
         return inet::INetfilter::IHook::ACCEPT;
-
     /*
      * Si el datagrama se tiene que enrutar,
      * se agrega la opción TLV de ubicación del destino.
@@ -410,7 +382,6 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
             createTlvDestGeohashLocationOption(destGeohashLocation.getBits());
     setTlvOption<TlvDestGeohashLocationOption>(datagram,
             destGeohashLocationOption);
-
     /*
      * Se busca una ruta para el datagrama.
      */
@@ -421,34 +392,19 @@ inet::INetfilter::IHook::Result RoutingProtocolStaticHost::datagramLocalOutHook(
  * Lifecycle.
  */
 
-void RoutingProtocolStaticHost::handleStartOperation(
+void StaticHostRoutingProtocol::handleStartOperation(
         inet::LifecycleOperation *operation) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::handleStartOperation");
-
     scheduleHelloHostTimer(true);
 }
 
-void RoutingProtocolStaticHost::handleStopOperation(
+void StaticHostRoutingProtocol::handleStopOperation(
         inet::LifecycleOperation *operation) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::handleStopOperation");
-
     RoutingProtocolBase::handleStopOperation(operation);
     cancelAndDelete(helloHostTimer);
 }
 
-void RoutingProtocolStaticHost::handleCrashOperation(
+void StaticHostRoutingProtocol::handleCrashOperation(
         inet::LifecycleOperation *operation) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::handleCrashOperation");
-
     RoutingProtocolBase::handleCrashOperation(operation);
     cancelAndDelete(helloHostTimer);
 }
@@ -457,13 +413,8 @@ void RoutingProtocolStaticHost::handleCrashOperation(
  * Notification.
  */
 
-void RoutingProtocolStaticHost::receiveSignal(omnetpp::cComponent *source,
+void StaticHostRoutingProtocol::receiveSignal(omnetpp::cComponent *source,
         omnetpp::simsignal_t signalID, omnetpp::cObject *obj,
         cObject *details) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("RoutingProtocolStaticHost::receiveSignal");
-
 }
 

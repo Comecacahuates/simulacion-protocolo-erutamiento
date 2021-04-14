@@ -18,8 +18,8 @@ package veins_proj.routing;
 import veins_proj.routing.RoutingProtocolBase;
 
 
-simple RoutingProtocolCar extends RoutingProtocolBase {
+simple CarRoutingProtocol extends RoutingProtocolBase {
 
     parameters:
-        @class(veins_proj::RoutingProtocolCar);
+        @class(veins_proj::CarRoutingProtocol);
 }

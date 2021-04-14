@@ -17,10 +17,10 @@ package veins_proj.routing;
 
 import veins_proj.routing.RoutingProtocolBase;
 
-simple RoutingProtocolStaticHost extends RoutingProtocolBase {
+simple StaticHostRoutingProtocol extends RoutingProtocolBase {
 
     parameters:
-        @class(veins_proj::RoutingProtocolStaticHost);
+        @class(veins_proj::StaticHostRoutingProtocol);
 
         string hostsLocationTableModule = default("hostsLocationTable");
 }

@@ -3,18 +3,18 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
- * @file RoutingProtocolHost.h
+ * @file StaticHostRoutingProtocol.h
  * @author Adrián Juárez Monroy
  */
 
@@ -35,7 +35,7 @@ namespace veins_proj {
  * @brief Módulo que implementa las operaciones de enrutamiento
  * exclusivamnte para los _hosts_.
  */
-class RoutingProtocolStaticHost: public RoutingProtocolBase {
+class StaticHostRoutingProtocol: public RoutingProtocolBase {
 
 protected:
 
