@@ -44,9 +44,9 @@ simple RoutingProtocolBase like IManetRouting {
         // Tiempo de inicio del protocolo de enrutamiento
         double startTime @unit(s) = default(10s + uniform(0.0s, 3s));
         // Intervalo de mensajes HOLA-VEHIC
-        volatile double helloCarInterval @unit(s) = default(3s + uniform(0.5s, 1.0s));
+        volatile double helloVehicleInterval @unit(s) = default(3s + uniform(0.5s, 1.0s));
         // Tiempo de vigencia de los registros de vehículos vecinos
-        double neighbouringCarValidityTime @unit(s) = default(5s);
+        double neighbouringVehicleValidityTime @unit(s) = default(5s);
         // Intervalo de mensajes HOLA-HOST
         volatile double helloHostInterval @unit(s) = default(3s + uniform(0.5s, 1.0s));
         // Tiempo de vigencia de los registros de <i>hosts</i> vecinos

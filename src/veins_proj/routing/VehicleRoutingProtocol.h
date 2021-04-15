@@ -61,7 +61,7 @@ protected:
      * Mensajes propios.
      */
     //! Temporizador de transmisión de mensajes HOLA_VEHIC.
-    omnetpp::cMessage *helloCarTimer;
+    omnetpp::cMessage *helloVehicleTimer;
     //! Temporizador de limpieza del directorio de *hosts* vecinos.
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
 
@@ -69,11 +69,11 @@ protected:
      * Vehículos vecinos agrupados por arista.
      */
     //! Diccionario de vehículos vecinos arupados por arista.
-    typedef std::multimap<Edge, inet::Ipv6Address> NeighbouringCarsByEdge;
+    typedef std::multimap<Edge, inet::Ipv6Address> NeighbouringVehiclesByEdge;
     //! Iterador de diccionario de vehículos vecinos agrupados por arista.
-    typedef NeighbouringCarsByEdge::iterator NeighbouringCarsByEdgeIt;
+    typedef NeighbouringVehiclesByEdge::iterator NeighbouringVehiclesByEdgeIt;
     //! Iterador de diccionario de vehículos vecinos agrupados por arista constante.
-    typedef NeighbouringCarsByEdge::const_iterator NeighbouringCarsByEdgeConstIt;
+    typedef NeighbouringVehiclesByEdge::const_iterator NeighbouringVehiclesByEdgeConstIt;
 
     /*
      * Interfaz del módulo.
@@ -112,25 +112,26 @@ protected:
      * @param start [in] Indica si se va a programar el temporizador
      * a la hora de inicio.
      */
-    virtual void scheduleHelloCarTimer(bool start = false);
+    virtual void scheduleHelloVehicleTimer(bool start = false);
     /*!
      * @brief Procesar el temporizador de transmisión de mensajes HOLA_VEIC.
      */
-    virtual void processHelloCarTimer();
+    virtual void processHelloVehicleTimer();
     /*!
      * @brief Crear mensaje HOLA_VEHIC.
      *
      * @param srcAddress [in] Dirección del vehículo que trnasmite el mensaje.
      * @return Mensaje HOLA_VEHIC.
      */
-    virtual const inet::Ptr<HelloCar> createHelloCar(
+    virtual const inet::Ptr<HelloVehicle> createHelloVehicle(
             const inet::Ipv6Address &srcAddress) const;
     /*!
      * @brief Procesar mensaje HOLA_VEHIC.
      *
-     * @param helloCar [in] Mensaje a procesar.
+     * @param helloVehicle [in] Mensaje a procesar.
      */
-    virtual void processHelloCar(const inet::Ptr<HelloCar> &helloCar) override;
+    virtual void processHelloVehicle(
+            const inet::Ptr<HelloVehicle> &helloVehicle) override;
 
     /*
      * Mensajes HOLA_HOST.
@@ -218,7 +219,7 @@ protected:
      * @return Diccinario de vecinos agrupados según la aristan en la
      * que se encuentran.
      */
-    NeighbouringCarsByEdge getNeighbouringCarByEdge() const;
+    NeighbouringVehiclesByEdge getNeighbouringVehicleByEdge() const;
     /*!
      * @brief Obtiene el tramo recto más largo desde el inicio de una ruta.
      *
@@ -363,7 +364,7 @@ protected:
      */
     const inet::Ipv6Address& findNextHopClosestToVertex(const Vertex vertex,
             const Edge edge,
-            const NeighbouringCarsByEdge &neighbouringCarsByEdge) const;
+            const NeighbouringVehiclesByEdge &NeighbouringVehiclesByEdge) const;
     /*!
      * @brief Buscar vehículo vecino más cercano a un vértice que
      * se encuentra en una arista.

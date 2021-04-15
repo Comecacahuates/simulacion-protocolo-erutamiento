@@ -97,9 +97,10 @@ protected:
     /*!
      * @brief Procesar mensaje HOLA_VEHIC.
      *
-     * @param helloCar [in] Mensaje a procesar.
+     * @param helloVehicle [in] Mensaje a procesar.
      */
-    virtual void processHelloCar(const inet::Ptr<HelloCar> &helloCar) override;
+    virtual void processHelloVehicle(
+            const inet::Ptr<HelloVehicle> &helloVehicle) override;
 
     /*
      * Mensajes HOLA_HOST

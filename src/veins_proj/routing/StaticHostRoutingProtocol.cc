@@ -96,20 +96,20 @@ void StaticHostRoutingProtocol::processSelfMessage(omnetpp::cMessage *message) {
 /*!
  * @brief Procesar mensaje HOLA_VEHIC.
  *
- * @param helloCar [in] Mensaje a procesar.
+ * @param helloVehicle [in] Mensaje a procesar.
  */
-void StaticHostRoutingProtocol::processHelloCar(
-        const inet::Ptr<HelloCar> &helloCar) {
+void StaticHostRoutingProtocol::processHelloVehicle(
+        const inet::Ptr<HelloVehicle> &helloVehicle) {
     /*
      * Se obtienen los datos del mensaje.
      */
-    const inet::Ipv6Address &srcAddress = helloCar->getSrcAddress();
-    GeohashLocation geohashLocation(helloCar->getGeohash(), 12);
-    double speed = helloCar->getSpeed();
-    double direction = helloCar->getDirection();
-    Vertex vertexA = (Vertex) helloCar->getVertexA();
-    Vertex vertexB = (Vertex) helloCar->getVertexB();
-    double distanceToVertexA = helloCar->getDistanceToVertexA();
+    const inet::Ipv6Address &srcAddress = helloVehicle->getSrcAddress();
+    GeohashLocation geohashLocation(helloVehicle->getGeohash(), 12);
+    double speed = helloVehicle->getSpeed();
+    double direction = helloVehicle->getDirection();
+    Vertex vertexA = (Vertex) helloVehicle->getVertexA();
+    Vertex vertexB = (Vertex) helloVehicle->getVertexB();
+    double distanceToVertexA = helloVehicle->getDistanceToVertexA();
     const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
     if (!roadNetwork->getGeohashRegion().contains(geohashLocation))
         return;
@@ -121,9 +121,9 @@ void StaticHostRoutingProtocol::processHelloCar(
     /*
      * Se guarda el registro en el directorio de vehículos vecinos.
      */
-    neighbouringCars.getMap()[srcAddress].expiryTime = omnetpp::simTime()
-            + neighbouringCarValidityTime;
-    neighbouringCars.getMap()[srcAddress].value = { geohashLocation, speed,
+    neighbouringVehicles.getMap()[srcAddress].expiryTime = omnetpp::simTime()
+            + neighbouringVehicleValidityTime;
+    neighbouringVehicles.getMap()[srcAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
 
     EV_INFO << "Address: "
@@ -154,12 +154,12 @@ void StaticHostRoutingProtocol::processHelloCar(
             << distanceToVertexB
             << std::endl;
 
-    EV_DEBUG << "Number of car neighbours: "
-             << neighbouringCars.getMap().size()
+    EV_DEBUG << "Number of neighbouring vehicles: "
+             << neighbouringVehicles.getMap().size()
              << std::endl;
 
     showRoutes();
-    schedulePurgeNeighbouringCarsTimer();    // TODO Revisar si es necesario.
+    schedulePurgeNeighbouringVehiclesTimer();    // TODO Revisar si es necesario.
 }
 
 /*
@@ -257,10 +257,10 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::routeDatagram(
     /*
      * Si el destino es un vehículo vecino,
      * se usa su dirección como siguiente salto.
-     * TODO: vERIFICAR SI ES CORRECTO.
+     * TODO: Verificar si es correcto.
      */
     inet::Ipv6Address nextHopAddress;
-    if (neighbouringCars.getMap().count(destAddress))
+    if (neighbouringVehicles.getMap().count(destAddress))
         nextHopAddress = destAddress;
     /*
      * Si no existe una ruta, se busca el vehículo vecino más cercano
@@ -268,7 +268,7 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::routeDatagram(
      * Si este no se encuentra, se descarta el datagrama.
      */
     else
-        nextHopAddress = findClosestNeighbouringCar(
+        nextHopAddress = findClosestNeighbouringVehicle(
                 mobility->getGeohashLocation());
     if (nextHopAddress.isUnspecified()) {
         if (hasGUI())

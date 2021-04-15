@@ -68,11 +68,11 @@ protected:
     //! Hora de inicio.
     omnetpp::simtime_t startTime;
     //! Intervalo de transmisión de mensajes HOLA_VEHIC.
-    omnetpp::simtime_t helloCarInterval;
+    omnetpp::simtime_t helloVehicleInterval;
+    //! Tiempo de vigencia de los registros del de vehículos vecinos.
+    omnetpp::simtime_t neighbouringVehicleValidityTime;
     //! Intervalo de transmisión de mensajes HOLA_HOST.
     omnetpp::simtime_t helloHostInterval;
-    //! Tiempo de vigencia de los registros del de vehículos vecinos.
-    omnetpp::simtime_t neighbouringCarValidityTime;
     //! Tiempo de vigencia de los registros del directorio de *hosts* vecinos.
     omnetpp::simtime_t neighbouringHostValidityTime;
     //! Tiempo de vigencia de las rutas.
@@ -100,7 +100,7 @@ protected:
      * Mensajes propios.
      */
     //! Temporizador de limpieza del directorio de vehículos vecinos.
-    omnetpp::cMessage *purgeNeighbouringCarsTimer = nullptr;
+    omnetpp::cMessage *purgeNeighbouringVehiclesTimer = nullptr;
 
     /*
      * Interfaz del módulo.
@@ -191,9 +191,10 @@ protected:
     /*!
      * @brief Procesar mensaje HOLA_VEHIC.
      *
-     * @param helloCar [in] Mensaje a procesar.
+     * @param helloVehicle [in] Mensaje a procesar.
      */
-    virtual void processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
+    virtual void processHelloVehicle(
+            const inet::Ptr<HelloVehicle> &helloVehicle) {
     }
 
     /*
@@ -211,7 +212,7 @@ protected:
      * Directorio de vehículos vecinos.
      */
     //! Registro de vehículo vecino.
-    struct NeighbouringCarValue {
+    struct NeighbouringVehicleValue {
         //! Ubicación Geohash del vehículo.
         GeohashLocation geohashLocation;
         //! Velocidad de movimiento del vehículo en metros por segundo.
@@ -222,31 +223,31 @@ protected:
         LocationOnRoadNetwork locationOnRoadNetwork;
     };
     //! Diccionario de directorio de vehículos vecinos.
-    typedef ExpiringValuesMap<inet::Ipv6Address, NeighbouringCarValue> NeighbouringCars;
-    //! Valor en el directorio de vehículos vecinos..
-    typedef NeighbouringCars::MapValue NeighbouringCar;
+    typedef ExpiringValuesMap<inet::Ipv6Address, NeighbouringVehicleValue> NeighbouringVehicles;
+    //! Valor en el directorio de vehículos vecinos.
+    typedef NeighbouringVehicles::MapValue NeighbouringVehicle;
     //! Iterador de registros para diccionario del directorio
     //! de vehículos vecinos.
-    typedef NeighbouringCars::It NeighbouringCarsIt;
+    typedef NeighbouringVehicles::It NeighbouringVehiclesIt;
     //! Iterador de registros para diccionario de directorio
     //! de vehículos vecinos constante.
-    typedef NeighbouringCars::ConstIt NeighbouringCarsConstIt;
+    typedef NeighbouringVehicles::ConstIt NeighbouringVehiclesConstIt;
     //! Directorio de vehículos vecinos.
-    NeighbouringCars neighbouringCars;
+    NeighbouringVehicles neighbouringVehicles;
     /*!
      * @brief Imprimir el directorio de vehículos vecinos.
      */
-    virtual void showNeighbouringCars() const;
+    virtual void showNeighbouringVehicles() const;
     /*!
      * @brief Programar el temporizador de limpieza del directorio de
      * vehículos vecinos.
      */
-    virtual void schedulePurgeNeighbouringCarsTimer();
+    virtual void schedulePurgeNeighbouringVehiclesTimer();
     /*!
      * @brief Procesar el temporizador de limpieza del directorio de
      * vehículos vecinos.
      */
-    virtual void processPurgeNeighbouringCarsTimer();
+    virtual void processPurgeNeighbouringVehiclesTimer();
     /*!
      * @brief Obtener el vehículo vecino más cercano.
      *
@@ -257,7 +258,7 @@ protected:
      *
      * @return Dirección IPv6 del vehículo vecino más cercano.
      */
-    inet::Ipv6Address findClosestNeighbouringCar(
+    inet::Ipv6Address findClosestNeighbouringVehicle(
             const GeohashLocation &geohashLocation) const;
 
     /*

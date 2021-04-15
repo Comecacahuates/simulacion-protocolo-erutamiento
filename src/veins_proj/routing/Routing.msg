@@ -27,7 +27,7 @@ namespace veins_proj;
 //
 enum PacketType {
     // Tipo de mensajes HOLA-VEHIC
-    HELLO_CAR = 0;
+    HELLO_VEHIC = 0;
     // Tipo de mensajes HOLA-HOST
     HELLO_HOST = 1;
 };
@@ -47,9 +47,9 @@ class RoutingPacket extends inet::FieldsChunk {
 //
 // @author Adrián Juárez
 //
-class HelloCar extends RoutingPacket {
+class HelloVehicle extends RoutingPacket {
     chunkLength = inet::B(40);
-    packetType = PacketType::HELLO_CAR;
+    packetType = PacketType::HELLO_VEHIC;
     // Dirección IPv6 (16 bytes)
 	inet::Ipv6Address srcAddress;
 	// Ubicación Geohash (8 bytes)
