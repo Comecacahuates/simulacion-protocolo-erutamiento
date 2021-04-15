@@ -29,5 +29,5 @@ simple StaticHostRoutingProtocol extends RoutingProtocolBase {
 
         //# Parámetros
         // Ruta del módulo del servicio de locacalización
-        string hostsLocationTableModule = default("hostsLocationTable");
+        string locationServiceModule = default("locationService");
 }

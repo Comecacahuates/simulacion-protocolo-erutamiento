@@ -33,7 +33,7 @@
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #include "veins_proj/mobility/StaticHostMobility.h"
 #include "veins_proj/networklayer/configurator/ConfiguratorBase.h"
-#include "veins_proj/locationservice/HostsLocationTable.h"
+#include "veins_proj/locationservice/LocationService.h"
 #include <vector>
 #include <algorithm>
 
@@ -43,7 +43,7 @@ namespace veins_proj {
  * @brief Módulo que implementa la configuración de la interfaz de los *hosts*.
  *
  * Durante la inicialización, se registra la ubicación Geohash del *host*
- * en el módulo global @link veins_proj::HostsLocationTable.
+ * en el módulo global @link veins_proj::LocationService.
  */
 class StaticHostConfigurator: public ConfiguratorBase {
 
@@ -59,7 +59,7 @@ protected:
     /*!
      * @brief Módulo de la tabla de ubicación de *hosts*.
      */
-    HostsLocationTable *hostsLocationTable;
+    LocationService *locationService;
 
     /*
      * Interfaz del módulo.

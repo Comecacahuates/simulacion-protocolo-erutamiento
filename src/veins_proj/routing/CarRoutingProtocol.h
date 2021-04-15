@@ -30,7 +30,6 @@
 #include "veins_proj/networklayer/configurator/CarConfigurator.h"
 #include "veins_proj/routing/RoutingProtocolBase.h"
 #include "veins_proj/routing/Routing_m.h"
-#include "veins_proj/locationservice/HostsLocationTable.h"
 #include "veins_proj/mobility/CarMobility.h"
 #include "veins_proj/roadnetwork/RoadNetworkDatabase.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"

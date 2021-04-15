@@ -55,9 +55,9 @@ void StaticHostConfigurator::initialize(int stage) {
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
-        hostsLocationTable = omnetpp::check_and_cast<HostsLocationTable*>(
-                getModuleByPath(par("hostsLocationTableModule")));
-        if (!hostsLocationTable)
+        locationService = omnetpp::check_and_cast<LocationService*>(
+                getModuleByPath(par("locationServiceModule")));
+        if (!locationService)
             throw omnetpp::cRuntimeError(
                     "No hosts location table module found");
     }
@@ -73,7 +73,7 @@ void StaticHostConfigurator::handleStartOperation(
             networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
     ipv6Data->setAdvSendAdvertisements(false);
     joinNetwork(mobility->getGeohashLocation(), NetworkType::PRIMARY);
-    hostsLocationTable->registerHostLocation(
+    locationService->registerHostLocation(
             unicastAddresses[NetworkType::PRIMARY],
             mobility->getGeohashLocation());
 }

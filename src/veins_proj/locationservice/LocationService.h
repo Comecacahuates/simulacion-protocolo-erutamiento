@@ -14,7 +14,7 @@
 //
 
 /*!
- * @file HostsLocationTable.h
+ * @file LocationService
  * @author Adrián Juárez Monroy
  */
 
@@ -37,7 +37,7 @@ namespace veins_proj {
  * ubicación del destino en la tabla de ubicaciónes de *hosts*,
  * y la incluye en la cabecera del datagrama.
  */
-class HostsLocationTable: public omnetpp::cSimpleModule {
+class LocationService: public omnetpp::cSimpleModule {
 
 private:
 

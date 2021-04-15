@@ -14,12 +14,12 @@
 //
 
 /*!
- * @file HostsLocationTable.cc
+ * @file LocationService
  * @author Adrián Juárez Monroy
  */
 
-#include "veins_proj/locationservice/HostsLocationTable.h"
+#include "veins_proj/locationservice/LocationService.h"
 
 using namespace veins_proj;
 
-Define_Module(HostsLocationTable);
+Define_Module(LocationService);

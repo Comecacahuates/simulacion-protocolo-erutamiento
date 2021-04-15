@@ -22,7 +22,7 @@
 
 #include <omnetpp.h>
 #include "veins_proj/routing/RoutingProtocolBase.h"
-#include "veins_proj/locationservice/HostsLocationTable.h"
+#include "veins_proj/locationservice/LocationService.h"
 #include "veins_proj/mobility/StaticHostMobility.h"
 #include "veins_proj/networklayer/configurator/StaticHostConfigurator.h"
 #include "veins_proj/routing/Routing_m.h"
@@ -53,7 +53,7 @@ protected:
     /*!
      * @brief Módulo de la tabla de ubicación de _hosts_.
      */
-    HostsLocationTable *hostsLocationTable = nullptr;
+    LocationService *locationService = nullptr;
 
     /*
      * Mensajes propios.

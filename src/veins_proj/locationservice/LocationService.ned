@@ -22,6 +22,6 @@ package veins_proj.locationservice;
 //
 // @author Adrián Juárez
 //
-simple HostsLocationTable {
-    @class(veins_proj::HostsLocationTable);
+simple LocationService {
+    @class(veins_proj::LocationService);
 }

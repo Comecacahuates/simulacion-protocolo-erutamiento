@@ -62,11 +62,10 @@ void StaticHostRoutingProtocol::initialize(int stage) {
                 getModuleByPath(par("configuratorModule")));
         if (!configurator)
             throw omnetpp::cRuntimeError("No configurator module found");
-        hostsLocationTable = omnetpp::check_and_cast<HostsLocationTable*>(
-                getModuleByPath(par("hostsLocationTableModule")));
-        if (!hostsLocationTable)
-            throw omnetpp::cRuntimeError(
-                    "No hosts location table module found");
+        locationService = omnetpp::check_and_cast<LocationService*>(
+                getModuleByPath(par("locationServiceModule")));
+        if (!locationService)
+            throw omnetpp::cRuntimeError("No location service module found");
         /*
          * Mensajes propios.
          */
@@ -377,7 +376,7 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::datagramLocalOutHook(
      * se agrega la opción TLV de ubicación del destino.
      */
     const GeohashLocation &destGeohashLocation =
-            hostsLocationTable->getHostLocation(destAddress);
+            locationService->getHostLocation(destAddress);
     TlvDestGeohashLocationOption *destGeohashLocationOption =
             createTlvDestGeohashLocationOption(destGeohashLocation.getBits());
     setTlvOption<TlvDestGeohashLocationOption>(datagram,

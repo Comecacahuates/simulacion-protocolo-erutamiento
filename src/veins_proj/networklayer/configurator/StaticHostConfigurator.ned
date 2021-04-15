@@ -31,5 +31,5 @@ simple StaticHostConfigurator extends ConfiguratorBase {
         // Ruta del módulo de la base de datos de redes viales
         string roadNetworkDatabaseModule = default("roadNetworkDatabase");
         // Ruta del módulo de la tabla de ubicaciones de los <i>hosts</i>
-        string hostsLocationTableModule = default("hostsLocationTable");
+        string locationServiceModule = default("locationService");
 }
