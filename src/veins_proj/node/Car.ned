@@ -17,7 +17,7 @@ package veins_proj.node;
 
 import inet.node.inet.AdhocHost;
 import veins_proj.networklayer.configurator.VehicleConfigurator;
-import veins_proj.routing.CarRoutingProtocol;
+import veins_proj.routing.VehicleRoutingProtocol;
 
 //
 // Módulo compuesto que representa un vehículo.
@@ -42,7 +42,7 @@ module Car extends AdhocHost
             @display("p=123.28,719.44;is=s");
         }
         // Módulo del protocolo de enrutamiento
-        routingProtocol: CarRoutingProtocol {
+        routingProtocol: VehicleRoutingProtocol {
             @display("p=913,225");
         }
 

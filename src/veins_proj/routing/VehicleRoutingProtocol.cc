@@ -14,12 +14,12 @@
 //
 
 /*!
- * @file CarRoutingProtocol.cc
+ * @file VehicleRoutingProtocol.cc
  * @author Adrián Juárez Monroy
  */
 
 #include "veins_proj/geohash/GeohashLocation.h"
-#include "veins_proj/routing/CarRoutingProtocol.h"
+#include "veins_proj/routing/VehicleRoutingProtocol.h"
 #include "inet/common/Protocol.h"
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/common/IProtocolRegistrationListener.h"
@@ -51,7 +51,7 @@
 
 using namespace veins_proj;
 
-Define_Module(CarRoutingProtocol);
+Define_Module(VehicleRoutingProtocol);
 
 /*
  * Interfaz del módulo.
@@ -62,7 +62,7 @@ Define_Module(CarRoutingProtocol);
  *
  * @param [in] Etapa de inicialización.
  */
-void CarRoutingProtocol::initialize(int stage) {
+void VehicleRoutingProtocol::initialize(int stage) {
     RoutingProtocolBase::initialize(stage);
 
     /*
@@ -99,7 +99,7 @@ void CarRoutingProtocol::initialize(int stage) {
  *
  * @param message [in] Mensaje a procesar.
  */
-void CarRoutingProtocol::processSelfMessage(omnetpp::cMessage *message) {
+void VehicleRoutingProtocol::processSelfMessage(omnetpp::cMessage *message) {
     if (message == helloCarTimer)
         processHelloCarTimer();
     else if (message == purgeNeighbouringHostsTimer)
@@ -118,11 +118,11 @@ void CarRoutingProtocol::processSelfMessage(omnetpp::cMessage *message) {
  * @param start [in] Indica si se va a programar el temporizador
  * a la hora de inicio.
  */
-void CarRoutingProtocol::scheduleHelloCarTimer(bool start) {
+void VehicleRoutingProtocol::scheduleHelloCarTimer(bool start) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::scheduleHelloCarTimer");
+    ("VehicleRoutingProtocol::scheduleHelloCarTimer");
 
     if (start && omnetpp::simTime() < startTime)
         scheduleAt(startTime, helloCarTimer);
@@ -133,11 +133,11 @@ void CarRoutingProtocol::scheduleHelloCarTimer(bool start) {
 /*!
  * @brief Procesar el temporizador de transmisión de mensajes HOLA_VEIC.
  */
-void CarRoutingProtocol::processHelloCarTimer() {
+void VehicleRoutingProtocol::processHelloCarTimer() {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::processHelloCarTimer");
+    ("VehicleRoutingProtocol::processHelloCarTimer");
 
     const inet::Ipv6Address &primaryUnicastAddress =
             configurator->getUnicastAddress(
@@ -180,14 +180,14 @@ void CarRoutingProtocol::processHelloCarTimer() {
  * @param srcAddress [in] Dirección del vehículo que trnasmite el mensaje.
  * @return Mensaje HOLA_VEHIC.
  */
-const inet::Ptr<HelloCar> CarRoutingProtocol::createHelloCar(
+const inet::Ptr<HelloCar> VehicleRoutingProtocol::createHelloCar(
         const inet::Ipv6Address &srcAddress) const {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl
-             << "CarRoutingProtocol::createHelloCar"
+             << "VehicleRoutingProtocol::createHelloCar"
              << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::createHelloCar");
+    ("VehicleRoutingProtocol::createHelloCar");
 
     /*
      * Se obtienen los datos para el mensaje.
@@ -248,13 +248,14 @@ const inet::Ptr<HelloCar> CarRoutingProtocol::createHelloCar(
  *
  * @param helloCar [in] Mensaje a procesar.
  */
-void CarRoutingProtocol::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
+void VehicleRoutingProtocol::processHelloCar(
+        const inet::Ptr<HelloCar> &helloCar) {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl
-             << "CarRoutingProtocol::processHelloHost"
+             << "VehicleRoutingProtocol::processHelloHost"
              << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::processHelloHost");
+    ("VehicleRoutingProtocol::processHelloHost");
 
     /*
      * Se obtienen los datos del mensaje.
@@ -328,12 +329,12 @@ void CarRoutingProtocol::processHelloCar(const inet::Ptr<HelloCar> &helloCar) {
  *
  * @param helloHost [in] Mensaje a procesar.
  */
-void CarRoutingProtocol::processHelloHost(
+void VehicleRoutingProtocol::processHelloHost(
         const inet::Ptr<HelloHost> &helloHost) {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::processHelloHost");
+    ("VehicleRoutingProtocol::processHelloHost");
 
     /*
      * Se obtienen los datos del mensaje.
@@ -388,11 +389,11 @@ void CarRoutingProtocol::processHelloHost(
 /*!
  * @brief Imrpimir el directorio de *hosts* vecinos.
  */
-void CarRoutingProtocol::showNeighbouringHosts() const {
+void VehicleRoutingProtocol::showNeighbouringHosts() const {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::showNeighbouringHosts");
+    ("VehicleRoutingProtocol::showNeighbouringHosts");
 
     EV_INFO << "Neighbouring hosts:" << std::endl;
 
@@ -413,11 +414,11 @@ void CarRoutingProtocol::showNeighbouringHosts() const {
  * @brief Programar el temporizador de limpieza del directorio
  * de *hosts* vecinos.
  */
-void CarRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
+void VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::schedulePurgeNeighbouringHostsTimer");
+    ("VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer");
 
     omnetpp::simtime_t nextExpiryTime = neighbouringHosts.getNextExpiryTime();
 
@@ -443,11 +444,11 @@ void CarRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
  * @brief Procesar el temporizador de limpieza del directorio
  * de *hosts* vecinos.
  */
-void CarRoutingProtocol::processPurgeNeighbouringHostsTimer() {
+void VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer() {
     EV_DEBUG << "******************************************************************************************************************************************************************"
              << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::processPurgeNeighbouringHostsTimer");
+    ("VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer");
 
     neighbouringHosts.removeOldValues(omnetpp::simTime());
     removeExpiredRoutes(omnetpp::simTime());
@@ -469,12 +470,12 @@ void CarRoutingProtocol::processPurgeNeighbouringHostsTimer() {
  *
  * Si la cabecera no contiene la opción de vértices visitados, se agrega.
  */
-bool CarRoutingProtocol::validateHopByHopOptionsHeader(
+bool VehicleRoutingProtocol::validateHopByHopOptionsHeader(
         inet::Packet *datagram) const {
     EV_INFO << "******************************************************************************************************************************************************************"
             << std::endl;
     Enter_Method
-    ("CarRoutingProtocol::validateHopByHopOptionsHeader");
+    ("VehicleRoutingProtocol::validateHopByHopOptionsHeader");
 
     /*
      * Se verifica la opción de ubicación del destino.
@@ -527,7 +528,7 @@ bool CarRoutingProtocol::validateHopByHopOptionsHeader(
  *
  * @return Conjunto de aristas activas.
  */
-EdgeSet CarRoutingProtocol::getActiveEdges() const {
+EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
     EdgeSet activeEdges;
     NeighbouringCarsConstIt it = neighbouringCars.getMap().begin();
     NeighbouringCarsConstIt endIt = neighbouringCars.getMap().end();
@@ -545,7 +546,7 @@ EdgeSet CarRoutingProtocol::getActiveEdges() const {
  * @return Diccinario de vecinos agrupados según la aristan en la
  * que se encuentran.
  */
-CarRoutingProtocol::NeighbouringCarsByEdge CarRoutingProtocol::getNeighbouringCarByEdge() const {
+VehicleRoutingProtocol::NeighbouringCarsByEdge VehicleRoutingProtocol::getNeighbouringCarByEdge() const {
     NeighbouringCarsByEdge neighbouringCarsByEdge;
     NeighbouringCarsConstIt it = neighbouringCars.getMap().begin();
     NeighbouringCarsConstIt endIt = neighbouringCars.getMap().end();
@@ -565,7 +566,7 @@ CarRoutingProtocol::NeighbouringCarsByEdge CarRoutingProtocol::getNeighbouringCa
  * @param shortestPath [in] Ruta de la que se obtiene el tramo recto.
  * @return Tramo recto más largo desde el inicio de la ruta.
  */
-VertexVector CarRoutingProtocol::getStraightPath(
+VertexVector VehicleRoutingProtocol::getStraightPath(
         const VertexVector &shortestPath,
         const ShortestPaths &shortestPaths) const {
     VertexVectorConstIt it = shortestPath.begin();
@@ -612,7 +613,7 @@ VertexVector CarRoutingProtocol::getStraightPath(
  * @param datagram [in] Datagrama a enrutar.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagram(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
         inet::Packet *datagram) {
     /*
      * Se valida la cabecera de opciones de salto por salto para
@@ -755,7 +756,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagram(
  * @param datagram [in] Datagrama a enrutar.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeToNeighbouringHost(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeToNeighbouringHost(
         inet::Packet *datagram) {
     const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader =
             inet::getNetworkProtocolHeader(datagram);
@@ -782,7 +783,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeToNeighbouringHost(
  * se enruta el datagrama.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramToLocation(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramToLocation(
         inet::Packet *datagram, const GeohashLocation &geohashLocation) {
     const inet::Ipv6Address nextHopAddress = findNextHopClosestToLocation(
             geohashLocation);
@@ -816,7 +817,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramToLocation(
  * a enrutar el paquete.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramToAdjacentNetwork(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramToAdjacentNetwork(
         inet::Packet *datagram, GeohashLocation::Adjacency adjacency) {
     const inet::Ipv6Address &nextHopAddress = findNextHopInAdjacentNetwork(
             adjacency);
@@ -851,7 +852,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramToAdjacentNetwo
  * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramFurthestInStraightPath(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramFurthestInStraightPath(
         inet::Packet *datagram, const VertexVector &straightPath) {
     const inet::Ipv6Address &nextHopAddress = findNextHopFurthestInStraightPath(
             straightPath);
@@ -888,7 +889,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramFurthestInStrai
  * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramClosestInStraightPath(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestInStraightPath(
         inet::Packet *datagram, const VertexVector &straightPath) {
     const inet::Ipv6Address &nextHopAddress = findNextHopClosestInStraightPath(
             straightPath);
@@ -925,7 +926,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramClosestInStraig
  * @param vertex   [in] Vértice hacia el que se enruta el datagrama.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramClosestToVertex(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestToVertex(
         inet::Packet *datagram, const Vertex vertex) {
     const inet::Ipv6Address &nextHopAddress = findNextHopClosestToVertex(
             vertex);
@@ -958,7 +959,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::routeDatagramClosestToVertex
  * @param visitedVerticesOption [in] Opción de vértices visitados.
  * @return Conjunto de vértices visitados.
  */
-VertexSet CarRoutingProtocol::getDatagramVisitedVertices(
+VertexSet VehicleRoutingProtocol::getDatagramVisitedVertices(
         inet::Packet *datagram) const {
     const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
             TlvVisitedVerticesOption>(datagram);
@@ -979,7 +980,7 @@ VertexSet CarRoutingProtocol::getDatagramVisitedVertices(
  * @param shortestPaths [in] Rutas más cortas.
  * @return Vértice de destino local.
  */
-std::pair<Vertex, bool> CarRoutingProtocol::getLocalDestVertex(
+std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
         inet::Packet *datagram, const ShortestPaths &shortestPaths) const {
     /*
      * Se obtiene la ubicación del destino para saber si se encuentra
@@ -1102,7 +1103,7 @@ std::pair<Vertex, bool> CarRoutingProtocol::getLocalDestVertex(
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
  * si no se encuentra ninguno.
  */
-const inet::Ipv6Address& CarRoutingProtocol::findNextHopInAdjacentNetwork(
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopInAdjacentNetwork(
         const GeohashLocation::Adjacency adjacencyDirection) const {
     GeohashLocation adjacentGeohashRegion =
             mobility->getRoadNetwork()->getGeohashRegion().getAdjacentGeohashRegion(
@@ -1125,7 +1126,7 @@ const inet::Ipv6Address& CarRoutingProtocol::findNextHopInAdjacentNetwork(
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
  * si no se encuentra ninguno.
  */
-const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestToLocation(
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToLocation(
         const GeohashLocation &geohashLocation) const {
     /*
      * Se recorre el directorio de vehículos vecinos en busca de uno
@@ -1161,7 +1162,7 @@ const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestToLocation(
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
  * si no se encuentra ninguno.
  */
-const inet::Ipv6Address& CarRoutingProtocol::findNextHopFurthestInStraightPath(
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopFurthestInStraightPath(
         const VertexVector &straightPath) const {
     /*
      * De la última arista a la primera, se busca el vecino más cercano
@@ -1195,7 +1196,7 @@ const inet::Ipv6Address& CarRoutingProtocol::findNextHopFurthestInStraightPath(
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
  * si no se encuentra ninguno.
  */
-const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestInStraightPath(
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestInStraightPath(
         const VertexVector &straightPath) const {
     /*
      * De la primera arista a la última, se busca el vecino más cercano
@@ -1229,7 +1230,7 @@ const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestInStraightPath(
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
  * si no se encuentra ninguno.
  */
-const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestToVertex(
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
         const Vertex vertex, const Edge edge,
         const NeighbouringCarsByEdge &neighbouringCarsByEdge) const {
     /*
@@ -1274,7 +1275,7 @@ const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestToVertex(
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
  * si no se encuentra ninguno.
  */
-const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestToVertex(
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
         Vertex vertex) const {
     /*
      * Se obtiene la distancia del vehículo al vértice
@@ -1316,7 +1317,7 @@ const inet::Ipv6Address& CarRoutingProtocol::findNextHopClosestToVertex(
  * del siguiente salto.
  * @param shortestPath [in] Ruta vial.
  */
-VertexSet CarRoutingProtocol::getNextHopVisitedVertices(
+VertexSet VehicleRoutingProtocol::getNextHopVisitedVertices(
         const inet::Ipv6Address &nextHopAddress,
         const VertexVector &path) const {
     /*
@@ -1350,8 +1351,8 @@ VertexSet CarRoutingProtocol::getNextHopVisitedVertices(
  * vértices visitados se actualiza.
  * @param route    [in] Ruta que tomará el datagrama.
  */
-void CarRoutingProtocol::updateTlvVisitedVerticesOption(inet::Packet *datagram,
-        const inet::Ipv6Route *route) const {
+void VehicleRoutingProtocol::updateTlvVisitedVerticesOption(
+        inet::Packet *datagram, const inet::Ipv6Route *route) const {
     /*
      * Si la ruta no incluye vértices visitados del siguiente salto,
      * no es necesario actualizar la opción de vértices visitados.
@@ -1398,7 +1399,7 @@ void CarRoutingProtocol::updateTlvVisitedVerticesOption(inet::Packet *datagram,
 /*!
  * @brief Mostrar la dirección IPv6 del vehículo y su ubicación vial.
  */
-void CarRoutingProtocol::showStatus() const {
+void VehicleRoutingProtocol::showStatus() const {
     const LocationOnRoadNetwork &locationOnRoadNetwork =
             mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
@@ -1407,10 +1408,17 @@ void CarRoutingProtocol::showStatus() const {
 
     EV_INFO << "Address: "
             << configurator->getUnicastAddress(
-                    ConfiguratorBase::NetworkType::PRIMARY) << std::endl
-            << "Edge: " << edge << std::endl << "Distance to vertex A: "
-            << distanceToVertexA << std::endl << "Distance to vertex B: "
-            << distanceToVertexB << std::endl;
+                    ConfiguratorBase::NetworkType::PRIMARY)
+            << std::endl
+            << "Edge: "
+            << edge
+            << std::endl
+            << "Distance to vertex A: "
+            << distanceToVertexA
+            << std::endl
+            << "Distance to vertex B: "
+            << distanceToVertexB
+            << std::endl;
 }
 
 /*
@@ -1424,7 +1432,7 @@ void CarRoutingProtocol::showStatus() const {
  * @param datagram [in] Datagrama a procesar.
  * @return Resultado del procesamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::datagramPreRoutingHook(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::datagramPreRoutingHook(
         inet::Packet *datagram) {
     /*
      * Se obtiene la dirección de destino del datagrama para saber hacia
@@ -1464,7 +1472,7 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::datagramPreRoutingHook(
  * @param datagram [in] Datagrama a procesar.
  * @return Resultado del procesamiento.
  */
-inet::INetfilter::IHook::Result CarRoutingProtocol::datagramLocalOutHook(
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::datagramLocalOutHook(
         inet::Packet *datagram) {
     const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader =
             inet::getNetworkProtocolHeader(datagram);
@@ -1486,12 +1494,12 @@ inet::INetfilter::IHook::Result CarRoutingProtocol::datagramLocalOutHook(
  * Lifecycle.
  */
 
-void CarRoutingProtocol::handleStartOperation(
+void VehicleRoutingProtocol::handleStartOperation(
         inet::LifecycleOperation *operation) {
     scheduleHelloCarTimer(true);
 }
 
-void CarRoutingProtocol::handleStopOperation(
+void VehicleRoutingProtocol::handleStopOperation(
         inet::LifecycleOperation *operation) {
     RoutingProtocolBase::handleStopOperation(operation);
     cancelAndDelete(helloCarTimer);
@@ -1499,7 +1507,7 @@ void CarRoutingProtocol::handleStopOperation(
     neighbouringHosts.getMap().clear();
 }
 
-void CarRoutingProtocol::handleCrashOperation(
+void VehicleRoutingProtocol::handleCrashOperation(
         inet::LifecycleOperation *operation) {
     RoutingProtocolBase::handleCrashOperation(operation);
     cancelAndDelete(helloCarTimer);
@@ -1511,7 +1519,7 @@ void CarRoutingProtocol::handleCrashOperation(
  * Notification.
  */
 
-void CarRoutingProtocol::receiveSignal(omnetpp::cComponent *source,
+void VehicleRoutingProtocol::receiveSignal(omnetpp::cComponent *source,
         omnetpp::simsignal_t signalID, omnetpp::cObject *obj,
         cObject *details) {
 

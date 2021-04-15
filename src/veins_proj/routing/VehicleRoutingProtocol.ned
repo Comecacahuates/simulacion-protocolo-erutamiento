@@ -22,8 +22,8 @@ import veins_proj.routing.RoutingProtocolBase;
 //
 // @author Adrián Juárez
 //
-simple CarRoutingProtocol extends RoutingProtocolBase {
+simple VehicleRoutingProtocol extends RoutingProtocolBase {
 
     parameters:
-        @class(veins_proj::CarRoutingProtocol);
+        @class(veins_proj::VehicleRoutingProtocol);
 }

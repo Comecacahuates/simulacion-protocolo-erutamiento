@@ -14,7 +14,7 @@
 //
 
 /*!
- * @file CarRoutingProtocol.h
+ * @file VehicleRoutingProtocol.h
  * @author Adrián Juárez Monroy
  */
 
@@ -45,7 +45,7 @@ namespace veins_proj {
  * @brief Módulo que implementa las operaciones de enrutamiento
  * exclusivamnte para los vehículos.
  */
-class CarRoutingProtocol: public RoutingProtocolBase {
+class VehicleRoutingProtocol: public RoutingProtocolBase {
 
 protected:
 

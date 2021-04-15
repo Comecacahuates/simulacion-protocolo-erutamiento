@@ -17,7 +17,6 @@ package veins_proj.node;
 
 import inet.node.inet.AdhocHost;
 import veins_proj.networklayer.configurator.StaticHostConfigurator;
-import veins_proj.mobility.StaticHostMobility;
 import veins_proj.routing.StaticHostRoutingProtocol;
 
 //
