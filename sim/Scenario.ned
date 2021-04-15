@@ -28,13 +28,16 @@ import inet.visualizer.common.IntegratedVisualizer;
 import inet.node.inet.INetworkNode;
 import org.car2x.veins.subprojects.veins_inet.VeinsInetManager;
 import veins_proj.roadnetwork.RoadNetworkDatabase;
-import veins_proj.locationservice.HostsLocationTable;
+import veins_proj.locationservice.LocationService;
 import inet.common.geometry.common.SimpleGeographicCoordinateSystem;
 import org.car2x.veins.base.modules.BaseWorldUtility;
 
-
-network Scenario
-{
+//
+// Escenario base para simulaciones.
+//
+// @author Adrián Juárez
+//
+network Scenario {
     parameters:
         @statistic[numRcvdPk](source=count(host[0].app[0].pingRxSeq); record=figure; targetFigure=numRcvdPkCounter; checkSignals=false);
         @figure[numRcvdPkCounter](type=indicatorText; pos=150,30; anchor=w; font=,12; textFormat="Received ping replies: %g"; initialValue=0);
@@ -44,26 +47,33 @@ network Scenario
         int numHosts;
 
     submodules:
+        // Sistema de coordenadas
         coordinateSystem: SimpleGeographicCoordinateSystem {
             @display("p=69,176");
         }
+        // Visualizador
         visualizer: IntegratedVisualizer {
             @display("p=69,475");
         }
+        // Medio inalámbrico
         radioMedium: <> like IRadioMedium {
             @display("p=69,256");
         }
+        // Administrador de Veins
         manager: VeinsInetManager {
             @display("p=69,30");
         }
-        hostsLocationTable: HostsLocationTable {
+        // Servicio de localización
+        locationService: LocationService {
             @display("p=69,401");
         }
-        host[numHosts]: <> like INetworkNode;
+        // Base de datos de redes viales
         roadNetworkDatabase: RoadNetworkDatabase {
             @display("p=69,103");
         }
         baseWorldUtility: BaseWorldUtility {
             @display("p=69,325");
         }
+        // <i>Hosts</i>
+        host[numHosts]: <> like INetworkNode;
 }
