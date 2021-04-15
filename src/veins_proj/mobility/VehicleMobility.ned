@@ -22,8 +22,8 @@ import org.car2x.veins.subprojects.veins_inet.VeinsInetMobility;
 //
 // @author Adrián Juárez
 //
-simple VehicleMobility extends VeinsInetMobility
-{
+simple VehicleMobility extends VeinsInetMobility {
+
     parameters:
         @class(veins_proj::VehicleMobility);
 

@@ -22,7 +22,7 @@ package veins_proj.networklayer.configurator;
 // @author Adrián Juárez
 //
 simple ConfiguratorBase {
-    
+
     parameters:
         @class(veins_proj::ConfiguratorBase);
         @display("i=block/cogwheel");

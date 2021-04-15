@@ -24,11 +24,12 @@ import veins_proj.routing.StaticHostRoutingProtocol;
 //
 // @author Adrián Juárez
 //
-module StaticHost extends AdhocHost
-{
-    parameters:
-        @display("i=device/cellphone;bgb=1253.7,823.725");
+module StaticHost extends AdhocHost {
 
+    parameters:
+        @display("i=misc/smartphone");
+
+        //# Parámetros
         hasIpv4 = false;
         hasIpv6 = true;
         **.isRouter = false;

@@ -24,10 +24,9 @@ import veins_proj.routing.VehicleRoutingProtocol;
 //
 // @author Adrián Juárez
 //
-module Car extends AdhocHost
-{
+module Vehicle extends AdhocHost {
+
     parameters:
-        @display("bgb=1253.47,916.05994");
         @display("i=misc/car");
 
         //# Parámetros
