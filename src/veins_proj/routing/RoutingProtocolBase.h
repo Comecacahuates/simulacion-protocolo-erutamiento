@@ -75,14 +75,10 @@ protected:
     omnetpp::simtime_t neighbouringCarValidityTime;
     //! Tiempo de vigencia de los registros del directorio de *hosts* vecinos.
     omnetpp::simtime_t neighbouringHostValidityTime;
-    //! Tiempo de vigencia de aristas activas.
-    omnetpp::simtime_t edgeStatusValidityTime;
     //! Tiempo de vigencia de las rutas.
     omnetpp::simtime_t routeValidityTime;
-    //! Tiempo de demora opcional de transmisión de paquetes UDP.
+    //! Tiempo de demora para transmisión de paquetes UDP consecutivos.
     omnetpp::simtime_t udpPacketDelayTime;
-    //! Radio de proximidad a los vértices.
-    double vertexProximityRadius;
 
     /*
      * Contexto.
@@ -96,7 +92,7 @@ protected:
     //! Módulo de la tabla de enrutamiento IPv6.
     inet::Ipv6RoutingTable *routingTable = nullptr;
     //! Módulo del protocolo de red.
-    inet::INetfilter *networkProtocol = nullptr;
+    inet::INetfilter *ipv6Protocol = nullptr;
     //! Módulo de la base de datos de redes viales.
     RoadNetworkDatabase *roadNetworkDatabase = nullptr;
 

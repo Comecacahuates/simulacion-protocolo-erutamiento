@@ -16,12 +16,16 @@
 package veins_proj.roadnetwork;
 
 //
-// TODO auto-generated module
+// Módulo que representa la base de datos de redes viales.
+//
+// @author Adrián Juárez
 //
 simple RoadNetworkDatabase {
     
     parameters:
         @class(veins_proj::RoadNetworkDatabase);
         
+        //# Parámetros
+        // Directorio de la base de datos de redes viales
         string databaseDirectory;
 }

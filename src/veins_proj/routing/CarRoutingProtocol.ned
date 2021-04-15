@@ -17,7 +17,11 @@ package veins_proj.routing;
 
 import veins_proj.routing.RoutingProtocolBase;
 
-
+//
+// Módulo que representa el protocolo de enrutamiento para los vehículos.
+//
+// @author Adrián Juárez
+//
 simple CarRoutingProtocol extends RoutingProtocolBase {
 
     parameters:

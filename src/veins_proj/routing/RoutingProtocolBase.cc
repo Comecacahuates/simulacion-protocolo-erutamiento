@@ -69,10 +69,8 @@ void RoutingProtocolBase::initialize(int stage) {
         neighbouringCarValidityTime = par("neighbouringCarValidityTime");
         helloHostInterval = par("helloHostInterval");
         neighbouringHostValidityTime = par("neighbouringHostValidityTime");
-        edgeStatusValidityTime = par("edgeStatusValidityTime");
         routeValidityTime = par("routeValidityTime");
         udpPacketDelayTime = par("udpPacketDelayTime");
-        vertexProximityRadius = par("vertexProximityRadius");
 
         /*
          * Contexto.
@@ -84,9 +82,9 @@ void RoutingProtocolBase::initialize(int stage) {
         routingTable = inet::L3AddressResolver().findIpv6RoutingTableOf(host);
         if (!routingTable)
             throw omnetpp::cRuntimeError("No routing table found");
-        networkProtocol = inet::getModuleFromPar<inet::INetfilter>(
-                par("networkProtocolModule"), this);
-        if (!networkProtocol)
+        ipv6Protocol = inet::getModuleFromPar<inet::INetfilter>(
+                par("ipv6ProtocolModule"), this);
+        if (!ipv6Protocol)
             throw omnetpp::cRuntimeError("No network protocol module found");
         roadNetworkDatabase = omnetpp::check_and_cast<RoadNetworkDatabase*>(
                 getModuleByPath(par("roadNetworkDatabaseModule")));
@@ -115,7 +113,7 @@ void RoutingProtocolBase::initialize(int stage) {
         inet::registerProtocol(inet::Protocol::manet, gate("ipOut"),
                 gate("ipIn"));
         host->subscribe(inet::linkBrokenSignal, this);
-        networkProtocol->registerHook(0, this);
+        ipv6Protocol->registerHook(0, this);
     }
 }
 

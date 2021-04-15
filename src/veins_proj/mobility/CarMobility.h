@@ -49,10 +49,8 @@ protected:
     /*
      * Parámetros de configuración.
      */
-    //! Intervalo de actualización de la ubicación.
-    omnetpp::simtime_t locationUpdateInterval;
-    //! Distancia de proximidad a un vértice.
-    double vertexProximityRadius;
+    //! Distancia de proximidad a vértices.
+    double vertexProximityDistance;
 
     /*
      * Contexto

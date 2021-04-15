@@ -17,12 +17,18 @@ package veins_proj.mobility;
 
 import inet.mobility.static.StationaryMobility;
 
-
+//
+// Módulo que representa la movilidad de los <i>hosts</i>.}
+//
+// @author Adrián Juárez
+//
 simple StaticHostMobility extends StationaryMobility {
     
     parameters:
         @class(veins_proj::StaticHostMobility);
         
+        //# Parámetros
+        // Ruta del módulo de la base de datos de redes viales
 		string roadNetworkDatabaseModule = default("roadNetworkDatabase");
 		
         initFromDisplayString = false;

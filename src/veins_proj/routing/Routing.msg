@@ -18,49 +18,98 @@ import inet.common.TlvOptions;
 import inet.common.packet.chunk.Chunk;
 import inet.networklayer.contract.ipv6.Ipv6Address;
 
-
 namespace veins_proj;
 
-
+//
+// Tipos de mensajes.
+//
+// @author Adrián Juárez
+//
 enum PacketType {
+    // Tipo de mensajes HOLA-VEHIC
     HELLO_CAR = 0;
+    // Tipo de mensajes HOLA-HOST
     HELLO_HOST = 1;
 };
 
+//
+// Clase abstracta base para los mensajes de enrutamiento.
+//
+// @author Adrián Juárez
+//
 class RoutingPacket extends inet::FieldsChunk {
+    // Tipo de mensaje
 	PacketType packetType;
 }
 
+//
+// Mensaje HOLA-VEHIC.
+//
+// @author Adrián Juárez
+//
 class HelloCar extends RoutingPacket {
     chunkLength = inet::B(40);
     packetType = PacketType::HELLO_CAR;
-	inet::Ipv6Address srcAddress; // Dirección IPv6 (16 bytes)
-	uint64_t geohash; // Ubicación Geohash (8 bytes)
-	double speed; // Velocidad (2 bytes)
-	double direction; // Dirección de movimiento (2 bytes)
-	unsigned int vertexA; // Vértice A (2 bytes)
-	unsigned int vertexB; // Vértice B (2 bytes)
-	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
+    // Dirección IPv6 (16 bytes)
+	inet::Ipv6Address srcAddress;
+	// Ubicación Geohash (8 bytes)
+	uint64_t geohash;
+	// Velocidad (2 bytes)
+	double speed;
+	// Dirección de movimiento (2 bytes)
+	double direction;
+	// Vértice A (2 bytes)
+	unsigned int vertexA;
+	// Vértice B (2 bytes)
+	unsigned int vertexB;
+	// Distancia al Vértice A (2 bytes)
+	double distanceToVertexA;
 }
 
+//
+// Mensaje HOLA-HOST.
+//
+// @author Adrián Juárez
+//
 class HelloHost extends RoutingPacket {
     chunkLength = inet::B(28);
     packetType = PacketType::HELLO_HOST;
-	inet::Ipv6Address address; // Dirección IPv6 de origen (16 bytes)
-	uint64_t geohash; // Ubicación Geohash (8 bytes)
+    // Dirección IPv6 de origen (16 bytes)
+	inet::Ipv6Address address;
+	// Ubicación Geohash (8 bytes)
+	uint64_t geohash;
 }
 
-
+//
+// Opción de ubicación del destino.
+//
+// @author Adrián Juárez
+//
 class TlvDestGeohashLocationOption extends inet::TlvOptionBase {
-	uint64_t geohash; // Ubicación Geohash (8 bytes)
+    // Ubicación Geohash (8 bytes)
+	uint64_t geohash;
 }
 
+//
+// Opción de ubicación vial del destino.
+//
+// @author Adrián Juárez
+//
 class TlvDestLocationOnRoadNetworkOption extends inet::TlvOptionBase {
-	unsigned int vertexA; // Vértice A (2 bytes)
-	unsigned int vertexB; // Vértice B (2 bytes)
-	double distanceToVertexA; // Distancia al Vértice A (2 bytes)
+	// Vértice A (2 bytes)
+	unsigned int vertexA;
+	// Vértice B (2 bytes)
+	unsigned int vertexB;
+	// Distancia al Vértice A (2 bytes)
+	double distanceToVertexA;
 }
 
+//
+// Opción de vértices visitados.
+//
+// @author Adrián Juárez
+//
 class TlvVisitedVerticesOption extends inet::TlvOptionBase {
-	unsigned int visitedVertices[]; // Vértices que ha recorrido el paquete (2 bytes por Vértice)
+    // Vértices que ha recorrido el paquete (2 bytes por Vértice)
+	unsigned int visitedVertices[];
 }

@@ -17,16 +17,20 @@ package veins_proj.mobility;
 
 import org.car2x.veins.subprojects.veins_inet.VeinsInetMobility;
 
-
-simple CarMobility extends VeinsInetMobility {
-    
+//
+// Módulo que representa la movilidad de los vehículos.
+//
+// @author Adrián Juárez
+//
+simple CarMobility extends VeinsInetMobility
+{
     parameters:
-		@class(veins_proj::CarMobility);
+        @class(veins_proj::CarMobility);
 
-		// Parámetros
-		double locationUpdateInterval @unit(s) = default(0.5s);
-		double vertexProximityRadius @unit(m) = default(8m);
-		
-		string roadNetworkDatabaseModule = default("roadNetworkDatabase");
+        //# Parámetros
+        // Distancia de proximidad a vértices
+        double vertexProximityDistance @unit(m) = default(8m);
+        // Ruta del módulo de la base de datos de redes viales
+        string roadNetworkDatabaseModule = default("roadNetworkDatabase");
 }
 

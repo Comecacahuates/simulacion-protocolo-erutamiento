@@ -15,7 +15,13 @@
 
 package veins_proj.locationservice;
 
-
+//
+// Módulo que representa un servicio de localización simple.
+// Permite consultar la ubicación de un <i>hosts</i> a partir
+// de su dirección IPv6.
+//
+// @author Adrián Juárez
+//
 simple HostsLocationTable {
     @class(veins_proj::HostsLocationTable);
 }

@@ -17,10 +17,17 @@ package veins_proj.routing;
 
 import veins_proj.routing.RoutingProtocolBase;
 
+//
+// Módulo que representa el protocolo de enrutamiento para los <i>hosts</i>.
+//
+// @author Adrián Juárez
+//
 simple StaticHostRoutingProtocol extends RoutingProtocolBase {
 
     parameters:
         @class(veins_proj::StaticHostRoutingProtocol);
 
+        //# Parámetros
+        // Ruta del módulo del servicio de locacalización
         string hostsLocationTableModule = default("hostsLocationTable");
 }

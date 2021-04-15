@@ -17,12 +17,19 @@ package veins_proj.networklayer.configurator;
 
 import veins_proj.networklayer.configurator.ConfiguratorBase;
 
+//
+// Módulo de configurador de direcciones IPv6 para <i>hosts</i>.
+//
+// @author Adrián Juárez
+//
 simple StaticHostConfigurator extends ConfiguratorBase {
     
     parameters:
         @class(veins_proj::StaticHostConfigurator);
-        @display("i=block/cogwheel");
         
+        //# Parámetros
+        // Ruta del módulo de la base de datos de redes viales
         string roadNetworkDatabaseModule = default("roadNetworkDatabase");
-        string hostsLocationTableModule = "hostsLocationTable";
+        // Ruta del módulo de la tabla de ubicaciones de los <i>hosts</i>
+        string hostsLocationTableModule = default("hostsLocationTable");
 }

@@ -20,20 +20,29 @@ import veins_proj.networklayer.configurator.CarConfigurator;
 import veins_proj.mobility.CarMobility;
 import veins_proj.routing.CarRoutingProtocol;
 
-
-module Car extends AdhocHost {
-
+//
+// Módulo compuesto que representa un vehículo.
+//
+// @author Adrián Juárez
+//
+module Car extends AdhocHost
+{
     parameters:
+        @display("bgb=1253.47,916.05994");
+        @display("i=misc/car");
+
+        //# Parámetros
         hasIpv4 = false;
         hasIpv6 = true;
         **.isRouter = true;
         mobility.typename = "veins_proj.mobility.CarMobility";
 
-        @display("bgb=1253.47,916.05994");
     submodules:
+        // Módulo del configurador de direcciones IPv6
         configurator: CarConfigurator {
-            @display("p=124.424995,641.02496;is=s");
+            @display("p=123.28,719.44;is=s");
         }
+        // Módulo del protocolo de enrutamiento
         routingProtocol: CarRoutingProtocol {
             @display("p=913,225");
         }

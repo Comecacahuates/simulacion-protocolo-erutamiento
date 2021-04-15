@@ -20,7 +20,11 @@ import veins_proj.networklayer.configurator.StaticHostConfigurator;
 import veins_proj.mobility.StaticHostMobility;
 import veins_proj.routing.StaticHostRoutingProtocol;
 
-
+//
+// Módulo compuesto que representa un <i>host</i>.
+//
+// @author Adrián Juárez
+//
 module StaticHost extends AdhocHost
 {
     parameters:
@@ -32,9 +36,11 @@ module StaticHost extends AdhocHost
         mobility.typename = "veins_proj.mobility.StaticHostMobility";
 
     submodules:
+        // Módulo del configurador de direcciones IPv6
         configurator: StaticHostConfigurator {
             @display("p=124.424995,641.02496;is=s");
         }
+        // Módulo del protocolo de enrutamiento
         routingProtocol: StaticHostRoutingProtocol {
             @display("p=913,225");
         }

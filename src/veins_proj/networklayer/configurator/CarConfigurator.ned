@@ -15,13 +15,21 @@
 
 package veins_proj.networklayer.configurator;
 
-simple CarConfigurator {
+import veins_proj.networklayer.configurator.ConfiguratorBase;
+
+//
+// Módulo de configurador de direcciones IPv6 para vehículos.
+//
+// @author Adrián Juárez
+//
+simple CarConfigurator extends ConfiguratorBase {
     
     parameters:
         @class(veins_proj::CarConfigurator);
-        @display("i=block/cogwheel");
         
+        //# Parámetros
+        // Tiempo de inicio de la configuración
 		double startTime @unit(s) = default(5s);
-        string interface = default("wlan0");
+        // Intervalo de actualización de la ubicación
 		double locationUpdateInterval @unit(s) = default(1s);
 }

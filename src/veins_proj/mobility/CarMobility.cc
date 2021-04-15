@@ -54,7 +54,7 @@ void CarMobility::initialize(int stage) {
         /*
          * Parámetros de configuración.
          */
-        vertexProximityRadius = par("vertexProximityRadius");
+        vertexProximityDistance = par("vertexProximityDistance");
         /*
          * Contexto.
          */
@@ -143,9 +143,9 @@ bool CarMobility::isAtVertex(const Vertex vertex) const {
     const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
     const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
     if (vertex == vertexA)
-        return distanceToVertexA < vertexProximityRadius;
+        return distanceToVertexA < vertexProximityDistance;
     else if (vertex == vertexB)
-        return distanceToVertexB < vertexProximityRadius;
+        return distanceToVertexB < vertexProximityDistance;
     else
         return false;
 }

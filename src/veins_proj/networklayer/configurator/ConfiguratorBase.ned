@@ -15,11 +15,19 @@
 
 package veins_proj.networklayer.configurator;
 
+//
+// Módulo abstracto de base para los módulos de configuración de
+// direcciones IPv6.
+//
+// @author Adrián Juárez
+//
 simple ConfiguratorBase {
     
     parameters:
         @class(veins_proj::ConfiguratorBase);
         @display("i=block/cogwheel");
         
+        //# Parámetros
+        // Interfaz a configurar
         string interface = default("wlan0");
 }
