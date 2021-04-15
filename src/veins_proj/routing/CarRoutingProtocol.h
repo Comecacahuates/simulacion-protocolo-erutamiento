@@ -30,7 +30,7 @@
 #include "veins_proj/networklayer/configurator/CarConfigurator.h"
 #include "veins_proj/routing/RoutingProtocolBase.h"
 #include "veins_proj/routing/Routing_m.h"
-#include "veins_proj/mobility/CarMobility.h"
+#include "veins_proj/mobility/VehicleMobility.h"
 #include "veins_proj/roadnetwork/RoadNetworkDatabase.h"
 #include "veins_proj/roadnetwork/RoadNetworkGraph.h"
 #include "veins_proj/roadnetwork/ShortestPaths.h"
@@ -53,7 +53,7 @@ protected:
      * Contexto.
      */
     //! Módulo de movilidad.
-    CarMobility *mobility = nullptr;
+    VehicleMobility *mobility = nullptr;
     //! Módulo de configurador de interfaz.
     CarConfigurator *configurator = nullptr;
 

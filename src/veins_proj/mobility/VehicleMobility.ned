@@ -22,10 +22,10 @@ import org.car2x.veins.subprojects.veins_inet.VeinsInetMobility;
 //
 // @author Adrián Juárez
 //
-simple CarMobility extends VeinsInetMobility
+simple VehicleMobility extends VeinsInetMobility
 {
     parameters:
-        @class(veins_proj::CarMobility);
+        @class(veins_proj::VehicleMobility);
 
         //# Parámetros
         // Distancia de proximidad a vértices

@@ -14,7 +14,7 @@
 //
 
 /*!
- * @file CarMobility.h
+ * @file VehicleMobility.h
  * @author Adrián Juárez Monroy
  */
 
@@ -42,7 +42,7 @@ namespace veins_proj {
  * así como su relación con la red vial, como la región Geohash donde
  * se encuentra, su ubicación vial, si se encuentra en un vértice, etc.
  */
-class CarMobility: public veins::VeinsInetMobility {
+class VehicleMobility: public veins::VeinsInetMobility {
 
 protected:
 

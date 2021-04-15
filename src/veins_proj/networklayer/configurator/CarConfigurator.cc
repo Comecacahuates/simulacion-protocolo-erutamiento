@@ -58,7 +58,7 @@ void CarConfigurator::initialize(int stage) {
         /*
          * Contexto.
          */
-        mobility = omnetpp::check_and_cast<CarMobility*>(
+        mobility = omnetpp::check_and_cast<VehicleMobility*>(
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");

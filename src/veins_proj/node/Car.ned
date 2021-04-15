@@ -17,7 +17,6 @@ package veins_proj.node;
 
 import inet.node.inet.AdhocHost;
 import veins_proj.networklayer.configurator.CarConfigurator;
-import veins_proj.mobility.CarMobility;
 import veins_proj.routing.CarRoutingProtocol;
 
 //
@@ -35,7 +34,7 @@ module Car extends AdhocHost
         hasIpv4 = false;
         hasIpv6 = true;
         **.isRouter = true;
-        mobility.typename = "veins_proj.mobility.CarMobility";
+        mobility.typename = "veins_proj.mobility.VehicleMobility";
 
     submodules:
         // Módulo del configurador de direcciones IPv6

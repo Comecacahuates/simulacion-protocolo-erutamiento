@@ -3,15 +3,15 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 /*!
  * @file CarConfigurator.h
@@ -32,7 +32,7 @@
 #include "inet/networklayer/contract/ipv6/Ipv6Address.h"
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #include "veins_proj/veins_proj.h"
-#include "veins_proj/mobility/CarMobility.h"
+#include "veins_proj/mobility/VehicleMobility.h"
 #include "veins_proj/networklayer/configurator/ConfiguratorBase.h"
 #include <vector>
 #include <algorithm>
@@ -58,7 +58,7 @@ protected:
     /*
      * Contexto.
      */
-    CarMobility *mobility;
+    VehicleMobility *mobility;
 
     /*
      * Mensajes propios.

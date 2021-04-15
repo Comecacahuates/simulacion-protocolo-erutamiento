@@ -14,11 +14,11 @@
 //
 
 /*!
- * @file CarMobility.h
+ * @file VehicleMobility.h
  * @author Adrián Juárez Monroy
  */
 
-#include "veins_proj/mobility/CarMobility.h"
+#include "veins_proj/mobility/VehicleMobility.h"
 #include "veins/base/utils/Coord.h"
 #include "inet/common/INETMath.h"
 #include "inet/common/geometry/common/Coord.h"
@@ -33,7 +33,7 @@
 
 using namespace veins_proj;
 
-Define_Module(CarMobility);
+Define_Module(VehicleMobility);
 
 /*
  * Interfaz del módulo.
@@ -44,7 +44,7 @@ Define_Module(CarMobility);
  *
  * @param stage [in] Etapa de inicialización.
  */
-void CarMobility::initialize(int stage) {
+void VehicleMobility::initialize(int stage) {
     VeinsInetMobility::initialize(stage);
 
     /*
@@ -73,7 +73,7 @@ void CarMobility::initialize(int stage) {
 /*!
  * @brief Actualizar la ubicación.
  */
-void CarMobility::updateLocation() {
+void VehicleMobility::updateLocation() {
     /*
      * Se obtienen las coordenadas en el lienzo.
      */
@@ -119,7 +119,7 @@ void CarMobility::updateLocation() {
  * @return Tipo de adyacencia de la región
  * en la que se encuentra el vehículo.
  */
-GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
+GeohashLocation::Adjacency VehicleMobility::getGatewayRegionAdjacency() const {
     const Graph &graph = roadNetwork->getGraph();
     const Edge &edge = locationOnRoadNetwork.edge;
     const Vertex &vertexA = boost::source(edge, graph);
@@ -135,7 +135,7 @@ GeohashLocation::Adjacency CarMobility::getGatewayRegionAdjacency() const {
  * @param vertex [in] Vértice de referencia.
  * @return `true` si el vehículo se encuentra en el vértice.
  */
-bool CarMobility::isAtVertex(const Vertex vertex) const {
+bool VehicleMobility::isAtVertex(const Vertex vertex) const {
     const Graph &graph = roadNetwork->getGraph();
     const Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
@@ -153,7 +153,7 @@ bool CarMobility::isAtVertex(const Vertex vertex) const {
 /*!
  * @brief Actualizar la red vial si es necesario.
  */
-void CarMobility::updateRoadNetwork() {
+void VehicleMobility::updateRoadNetwork() {
     if (roadNetwork == nullptr
             || !roadNetwork->getGeohashRegion().getBounds().contains(
                     geohashLocation.getLocation())) {

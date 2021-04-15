@@ -14,7 +14,7 @@
 //
 
 /*!
- * @file LocationService
+ * @file LocationService.h
  * @author Adrián Juárez Monroy
  */
 
