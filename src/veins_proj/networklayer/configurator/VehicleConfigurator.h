@@ -14,7 +14,7 @@
 //
 
 /*!
- * @file CarConfigurator.h
+ * @file VehicleConfigurator.h
  * @author Adrián Juárez Monroy
  */
 
@@ -43,7 +43,7 @@ namespace veins_proj {
  * @brief Módulo que implementa la configuración
  * de la interfaz de los vehículos.
  */
-class CarConfigurator: public ConfiguratorBase {
+class VehicleConfigurator: public ConfiguratorBase {
 
 protected:
 

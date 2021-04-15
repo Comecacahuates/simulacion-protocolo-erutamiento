@@ -76,7 +76,7 @@ void CarRoutingProtocol::initialize(int stage) {
                 host->getSubmodule("mobility"));
         if (!mobility)
             throw omnetpp::cRuntimeError("No mobility module found");
-        configurator = omnetpp::check_and_cast<CarConfigurator*>(
+        configurator = omnetpp::check_and_cast<VehicleConfigurator*>(
                 getModuleByPath(par("configuratorModule")));
         if (!configurator)
             throw omnetpp::cRuntimeError("No configurator module found");
@@ -1407,17 +1407,10 @@ void CarRoutingProtocol::showStatus() const {
 
     EV_INFO << "Address: "
             << configurator->getUnicastAddress(
-                    ConfiguratorBase::NetworkType::PRIMARY)
-            << std::endl
-            << "Edge: "
-            << edge
-            << std::endl
-            << "Distance to vertex A: "
-            << distanceToVertexA
-            << std::endl
-            << "Distance to vertex B: "
-            << distanceToVertexB
-            << std::endl;
+                    ConfiguratorBase::NetworkType::PRIMARY) << std::endl
+            << "Edge: " << edge << std::endl << "Distance to vertex A: "
+            << distanceToVertexA << std::endl << "Distance to vertex B: "
+            << distanceToVertexB << std::endl;
 }
 
 /*

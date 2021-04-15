@@ -27,7 +27,7 @@
 #include "inet/networklayer/contract/ipv6/Ipv6Address.h"
 #include "inet/networklayer/contract/INetfilter.h"
 #include "inet/networklayer/ipv6/Ipv6RoutingTable.h"
-#include "veins_proj/networklayer/configurator/CarConfigurator.h"
+#include "veins_proj/networklayer/configurator/VehicleConfigurator.h"
 #include "veins_proj/routing/RoutingProtocolBase.h"
 #include "veins_proj/routing/Routing_m.h"
 #include "veins_proj/mobility/VehicleMobility.h"
@@ -55,7 +55,7 @@ protected:
     //! Módulo de movilidad.
     VehicleMobility *mobility = nullptr;
     //! Módulo de configurador de interfaz.
-    CarConfigurator *configurator = nullptr;
+    VehicleConfigurator *configurator = nullptr;
 
     /*
      * Mensajes propios.

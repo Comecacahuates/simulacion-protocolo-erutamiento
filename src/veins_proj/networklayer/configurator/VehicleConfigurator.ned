@@ -22,10 +22,10 @@ import veins_proj.networklayer.configurator.ConfiguratorBase;
 //
 // @author Adrián Juárez
 //
-simple CarConfigurator extends ConfiguratorBase {
+simple VehicleConfigurator extends ConfiguratorBase {
     
     parameters:
-        @class(veins_proj::CarConfigurator);
+        @class(veins_proj::VehicleConfigurator);
         
         //# Parámetros
         // Tiempo de inicio de la configuración

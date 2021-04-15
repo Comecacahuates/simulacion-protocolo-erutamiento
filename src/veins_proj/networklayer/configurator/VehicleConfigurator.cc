@@ -14,11 +14,11 @@
 //
 
 /*!
- * @file CarConfigurator.cc
+ * @file VehicleConfigurator.cc
  * @author Adrián Juárez Monroy
  */
 
-#include "veins_proj/networklayer/configurator/CarConfigurator.h"
+#include "veins_proj/networklayer/configurator/VehicleConfigurator.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/ModuleOperations.h"
 #include "inet/common/lifecycle/NodeStatus.h"
@@ -34,7 +34,7 @@
 
 using namespace veins_proj;
 
-Define_Module(CarConfigurator);
+Define_Module(VehicleConfigurator);
 
 /*
  * Interfaz del módulo.
@@ -45,7 +45,7 @@ Define_Module(CarConfigurator);
  *
  * @param stage [in] Etapa de inicialización.
  */
-void CarConfigurator::initialize(int stage) {
+void VehicleConfigurator::initialize(int stage) {
     ConfiguratorBase::initialize(stage);
     /*
      * Etapa de inicialización local.
@@ -69,7 +69,7 @@ void CarConfigurator::initialize(int stage) {
         /*
          * FSM de actualización de la ubicación.
          */
-        fsm.setName("CarConfigurator::FSM");
+        fsm.setName("VehicleConfigurator::FSM");
     }
 }
 
@@ -78,7 +78,7 @@ void CarConfigurator::initialize(int stage) {
  *
  * @param message [in] Mensaje a procesar.
  */
-void CarConfigurator::handleMessageWhenUp(omnetpp::cMessage *message) {
+void VehicleConfigurator::handleMessageWhenUp(omnetpp::cMessage *message) {
     if (message->isSelfMessage())
         processSelfMessage(message);
 }
@@ -92,7 +92,7 @@ void CarConfigurator::handleMessageWhenUp(omnetpp::cMessage *message) {
  *
  * @param message [in] Mensaje a procesar.
  */
-void CarConfigurator::processSelfMessage(omnetpp::cMessage *message) {
+void VehicleConfigurator::processSelfMessage(omnetpp::cMessage *message) {
     if (message == locationUpdateTimer)
         processLocationUpdateTimer();
 }
@@ -107,7 +107,7 @@ void CarConfigurator::processSelfMessage(omnetpp::cMessage *message) {
  * @param start [in] Indica si se va a programar el temporizador
  * a la hora de inicio.
  */
-void CarConfigurator::scheduleLocationUpdateTimer(bool start) {
+void VehicleConfigurator::scheduleLocationUpdateTimer(bool start) {
     if (start && omnetpp::simTime() < startTime)
         scheduleAt(startTime, locationUpdateTimer);
     else
@@ -129,7 +129,7 @@ void CarConfigurator::scheduleLocationUpdateTimer(bool start) {
  * Después, se usan estos datos para realizar la transición del FSM
  * y realizar la configuración correspondiente.
  */
-void CarConfigurator::processLocationUpdateTimer() {
+void VehicleConfigurator::processLocationUpdateTimer() {
     /*
      * Se guarda la ubicación previa y se calcula la nueva ubicación
      * para determinar qué transiciones debe realizar el FSM.
@@ -244,7 +244,7 @@ void CarConfigurator::processLocationUpdateTimer() {
  * Lifecycle.
  */
 
-void CarConfigurator::handleStartOperation(
+void VehicleConfigurator::handleStartOperation(
         inet::LifecycleOperation *operation) {
     inet::Ipv6InterfaceData *ipv6Data =
             networkInterface->findProtocolDataForUpdate<inet::Ipv6InterfaceData>();
@@ -254,13 +254,14 @@ void CarConfigurator::handleStartOperation(
     scheduleLocationUpdateTimer(true);
 }
 
-void CarConfigurator::handleStopOperation(inet::LifecycleOperation *operation) {
+void VehicleConfigurator::handleStopOperation(
+        inet::LifecycleOperation *operation) {
     cancelAndDelete(locationUpdateTimer);
     leaveNetwork(NetworkType::PRIMARY);
     leaveNetwork(NetworkType::SECONDARY);
 }
 
-void CarConfigurator::handleCrashOperation(
+void VehicleConfigurator::handleCrashOperation(
         inet::LifecycleOperation *operation) {
     cancelAndDelete(locationUpdateTimer);
     leaveNetwork(NetworkType::PRIMARY);

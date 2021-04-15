@@ -16,7 +16,7 @@
 package veins_proj.node;
 
 import inet.node.inet.AdhocHost;
-import veins_proj.networklayer.configurator.CarConfigurator;
+import veins_proj.networklayer.configurator.VehicleConfigurator;
 import veins_proj.routing.CarRoutingProtocol;
 
 //
@@ -38,7 +38,7 @@ module Car extends AdhocHost
 
     submodules:
         // Módulo del configurador de direcciones IPv6
-        configurator: CarConfigurator {
+        configurator: VehicleConfigurator {
             @display("p=123.28,719.44;is=s");
         }
         // Módulo del protocolo de enrutamiento
