@@ -19,11 +19,6 @@
  */
 
 #include "veins_proj/roadnetwork/ShortestPaths.h"
-
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/detail/adjacency_list.hpp>
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/tuple/detail/tuple_basic.hpp>
 #include <algorithm>
 #include <utility>
 
@@ -99,7 +94,7 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
         const Vertex v = boost::target(av, graph);
         if (v != b) {
             if (!VV.count(v) && AE.count(av)) {
-                routeDistances[v] = getEdgeWeight(av, ab);
+                routeDistances[v] = getEdgeWeight(ab, av);
                 predecessors[v] = a;
             } else
                 S.erase(v);
@@ -117,7 +112,7 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
         Vertex v = boost::target(bv, graph);
         if (v != a) {
             if (!VV.count(v) && AE.count(bv)) {
-                double weight = getEdgeWeight(bv, ab);
+                double weight = getEdgeWeight(ab, bv);
                 if (routeDistances[v] > weight) {
                     routeDistances[v] = weight;
                     predecessors[v] = b;
@@ -166,7 +161,7 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
             Edge uv = boost::edge(u, v, graph).first;    // Arista desde la que se va a calcular el peso.
             if (w != u) {
                 if (!VV.count(w)) {
-                    double weight = getEdgeWeight(vw, uv);
+                    double weight = getEdgeWeight(uv, vw);
                     if (routeDistances[w] > routeDistances[v] + weight) {
                         routeDistances[w] = routeDistances[v] + weight;
                         predecessors[w] = v;
@@ -178,6 +173,76 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
         }
         S.erase(v);
     }
+}
+
+/*!
+ * @brief Calcular el primer tramo recto en la ruta.
+ *
+ * @param path [in] Ruta de la que se obtiene el primer tramo recto.
+ * @return Primer tramo recto más largo desde el inicio de la ruta.
+ */
+VertexVector ShortestPaths::getStraightPath(const VertexVector &path) const {
+    VertexVectorConstIt it = path.begin();
+    VertexVectorConstIt endIt = std::prev(path.end());
+    while (it != endIt) {
+        if (routeDistances[*endIt] < 15)
+            break;
+        endIt--;
+    }
+    VertexVector straightPath(it, std::next(endIt));
+    return straightPath;
+}
+
+/*!
+ * @brief Calcular el primer tramo recto desde una arista.
+ *
+ * @param edge [in] Arista desde la que se busca el tramo recto.
+ * @return Tramo recto desde la arista.
+ */
+VertexVector ShortestPaths::getStraightPathFromEdge(const Edge edge) const {
+    const Graph &graph = *this->graph;
+    Vertex u = boost::source(edge, graph);
+    Vertex v = boost::target(edge, graph);
+    Vertex w = v;
+    VertexVector straightPath( { u, v });
+    double minDistance = 0.0;
+    /*
+     * Se buscan las aristas que formen tramos rectos.
+     */
+    do {
+        /*
+         * Se recorren los vértices adyacentes a *a* y se busca uno que
+         * forme un tramo recto.
+         */
+        OutEdgeIt it, endIt;
+        boost::tie(it, endIt) = boost::out_edges(v, graph);
+        while (it != endIt) {
+            Edge uv = boost::edge(u, v, graph).first;
+            Edge vw = *it;
+            /*
+             * Se verifica si *vw* forma un tramo recto con *uv*.
+             */
+            double distance = minDistance + getEdgeWeight(uv, vw);
+            if (distance < 15) {
+                minDistance = distance;
+                w = boost::target(vw, graph);
+                break;
+            }
+            it++;
+        }
+        /*
+         * Si se encontró una arista *vw* que forme un tramo recto,
+         * se agrega *w* al tramo recto y se recorren *u* y *v*.
+         */
+        if (w != v)
+            straightPath.push_back(w);
+        u = v;
+        v = w;
+        /*
+         * Mientras se encuentre una arista nueva para el tramo recto.
+         */
+    } while (u != v);
+    return straightPath;
 }
 
 /*!
@@ -194,6 +259,9 @@ void ShortestPaths::computeShortestPaths(const VertexSet visitedVertices,
 VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex) const {
     Vertex a = boost::source(sourceEdge, *graph);
     Vertex b = boost::target(sourceEdge, *graph);
+    /*
+     * Se agrega a la ruta el vértice buscado y sus predecesores.
+     */
     VertexVector shortestPath = { vertex };
     while (!(vertex == a || vertex == b)) {
         vertex = predecessors[vertex];
@@ -203,6 +271,10 @@ VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex) const {
         shortestPath.push_back(b);
     else
         shortestPath.push_back(a);
+    /*
+     * Se invierte el orden de la ruta para que al inicio esté el primer
+     * vértice de la ruta y al final el vértice de destino.
+     */
     std::reverse(shortestPath.begin(), shortestPath.end());
     return shortestPath;
 }
@@ -210,19 +282,18 @@ VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex) const {
 /*!
  * @brief Calcula el peso de una arista a partir de otra.
  *
- * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
- * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
- * y la dirección de la arista _B_ hacia el vértice _v_.
+ * El peso de la arista *(vw)* desde la arista *(uv)*, cuyo vértice en común
+ * es *v*, es la diferencia entre la dirección de *(uv)* desde *u*
+ * y la dirección de *(vw)* desde vértice *v*.
  *
  * Para calcular el peso, ambas aristas deben ser adyacentes.
  *
- * @param edge [in] Arista cuyo peso se va a calcular.
  * @param sourceEdge [in] Arista desde la que se calcula el peso.
- * @param graph [in] Grafo al que pertenecen ambas aristas.
+ * @param edge       [in] Arista cuyo peso se va a calcular.
  * @return Peso de la arista
  */
-double ShortestPaths::getEdgeWeight(const Edge edge,
-        const Edge sourceEdge) const {
+double ShortestPaths::getEdgeWeight(const Edge sourceEdge,
+        const Edge edge) const {
     const Graph &graph = *this->graph;
     const Edge &e1 = sourceEdge;
     const Edge &e2 = edge;
@@ -251,7 +322,8 @@ double ShortestPaths::getEdgeWeight(const Edge edge,
         directionE1 = graph[e1].direction2;
         directionE2 = graph[e2].direction1;
 
-    } else /* if (vertexA1 == vertexB2) */{
+    } else /* if (vertexA1 == vertexB2) */
+    {
         directionE1 = graph[e1].direction2;
         directionE2 = graph[e2].direction2;
     }

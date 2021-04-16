@@ -221,14 +221,6 @@ protected:
      */
     NeighbouringVehiclesByEdge getNeighbouringVehicleByEdge() const;
     /*!
-     * @brief Obtiene el tramo recto más largo desde el inicio de una ruta.
-     *
-     * @param shortestPath [in] Ruta de la que se obtiene el tramo recto.
-     * @return Tramo recto más largo desde el inicio de la ruta.
-     */
-    VertexVector getStraightPath(const VertexVector &shortestPath,
-            const ShortestPaths &shortestPaths) const;
-    /*!
      * @brief Enrutar datagrama.
      *
      * Revisa si existe en la tabla de enrutamiento una ruta hacia la
@@ -371,27 +363,28 @@ protected:
      *
      * @param vertex [in] Vértice de referencia.
      * @param edge   [in] Arista en la que se encuentran los vehículos
-     * entre los que se hace la búsqueda.
-     * @return Dirección IPv6 del siguiente salto, o `::/128`.
-     * si no se encuentra ninguno.
+     *                    entre los que se hace la búsqueda.
+     * @return Dirección IPv6 del siguiente salto, o `::/128` si no se
+     *         encuentra ninguno.
      */
     const inet::Ipv6Address& findNextHopClosestToVertex(
             const Vertex vertex) const;
     /*!
-     * @brief Agrega los vértices visitados del siguiente salto.
+     * @brief Obtener los vértices visitados del siguiente salto.
      *
      * @param route        [in] Ruta a la que se agregan los vértices visitados
-     * del siguiente salto.
+     *                          del siguiente salto.
      * @param shortestPath [in] Ruta vial.
+     * @return Vértices visitados del siguiente salto.
      */
     VertexSet getNextHopVisitedVertices(const inet::Ipv6Address &nextHopAddress,
             const VertexVector &path) const;
     /*!
-     * @brief Agrega los siguientes vértices visitados de la ruta a la opción
+     * @brief Agregar los siguientes vértices visitados de la ruta a la opción
      * de vértices visitados del datagrama.
      *
-     * @param datagram [in] Datagrama cuya opción de
-     * vértices visitados se actualiza.
+     * @param datagram [in] Datagrama cuya opción de vértices visitados
+     *                      se actualiza.
      * @param route    [in] Ruta que tomará el datagrama.
      */
     void updateTlvVisitedVerticesOption(inet::Packet *datagram,

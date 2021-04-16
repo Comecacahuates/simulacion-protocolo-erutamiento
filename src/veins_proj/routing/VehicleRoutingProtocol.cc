@@ -235,13 +235,6 @@ const inet::Ptr<HelloVehicle> VehicleRoutingProtocol::createHelloVehicle(
  */
 void VehicleRoutingProtocol::processHelloVehicle(
         const inet::Ptr<HelloVehicle> &HelloVehicle) {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl
-             << "VehicleRoutingProtocol::processHelloHost"
-             << std::endl;
-    Enter_Method
-    ("VehicleRoutingProtocol::processHelloHost");
-
     /*
      * Se obtienen los datos del mensaje.
      */
@@ -316,11 +309,6 @@ void VehicleRoutingProtocol::processHelloVehicle(
  */
 void VehicleRoutingProtocol::processHelloHost(
         const inet::Ptr<HelloHost> &helloHost) {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("VehicleRoutingProtocol::processHelloHost");
-
     /*
      * Se obtienen los datos del mensaje.
      */
@@ -375,10 +363,6 @@ void VehicleRoutingProtocol::processHelloHost(
  * @brief Imrpimir el directorio de *hosts* vecinos.
  */
 void VehicleRoutingProtocol::showNeighbouringHosts() const {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("VehicleRoutingProtocol::showNeighbouringHosts");
 
     EV_INFO << "Neighbouring hosts:" << std::endl;
 
@@ -400,11 +384,6 @@ void VehicleRoutingProtocol::showNeighbouringHosts() const {
  * de *hosts* vecinos.
  */
 void VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer");
-
     omnetpp::simtime_t nextExpiryTime = neighbouringHosts.getNextExpiryTime();
 
     EV_INFO << "Next expiry time: " << nextExpiryTime << std::endl;
@@ -412,7 +391,6 @@ void VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
     if (nextExpiryTime == omnetpp::SimTime::getMaxTime()) {
         if (purgeNeighbouringHostsTimer->isScheduled())
             cancelEvent(purgeNeighbouringHostsTimer);
-
     } else {
         if (!purgeNeighbouringHostsTimer->isScheduled())
             scheduleAt(nextExpiryTime, purgeNeighbouringHostsTimer);
@@ -430,11 +408,6 @@ void VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
  * de *hosts* vecinos.
  */
 void VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer() {
-    EV_DEBUG << "******************************************************************************************************************************************************************"
-             << std::endl;
-    Enter_Method
-    ("VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer");
-
     neighbouringHosts.removeOldValues(omnetpp::simTime());
     removeExpiredRoutes(omnetpp::simTime());
     schedulePurgeNeighbouringHostsTimer();
@@ -457,11 +430,6 @@ void VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer() {
  */
 bool VehicleRoutingProtocol::validateHopByHopOptionsHeader(
         inet::Packet *datagram) const {
-    EV_INFO << "******************************************************************************************************************************************************************"
-            << std::endl;
-    Enter_Method
-    ("VehicleRoutingProtocol::validateHopByHopOptionsHeader");
-
     /*
      * Se verifica la opción de ubicación del destino.
      */
@@ -543,26 +511,6 @@ VehicleRoutingProtocol::NeighbouringVehiclesByEdge VehicleRoutingProtocol::getNe
         it++;
     }
     return neighbouringVehiclesByEdge;
-}
-
-/*!
- * @brief Obtiene el tramo recto más largo desde el inicio de una ruta.
- *
- * @param shortestPath [in] Ruta de la que se obtiene el tramo recto.
- * @return Tramo recto más largo desde el inicio de la ruta.
- */
-VertexVector VehicleRoutingProtocol::getStraightPath(
-        const VertexVector &shortestPath,
-        const ShortestPaths &shortestPaths) const {
-    VertexVectorConstIt it = shortestPath.begin();
-    VertexVectorConstIt endIt = std::prev(shortestPath.end());
-    while (it != endIt) {
-        if (shortestPaths.getRouteDistance(*endIt) < 15)
-            break;
-        endIt--;
-    }
-    VertexVector straightPath(it, std::next(endIt));
-    return straightPath;
 }
 
 /*!
@@ -706,7 +654,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
      * para reducir la posibilidad de que algún edificio se encuentre
      * en el camino de la transmisión.
      */
-    VertexVector straightPath = getStraightPath(shortestPath, shortestPaths);
+    VertexVector straightPath = shortestPaths.getStraightPath(shortestPath);
     if (straightPath.size() == 2) {
         if (!findNextHopClosestToVertex(straightPath[1]).isUnspecified())
             return routeDatagramClosestToVertex(datagram, straightPath[1]);
@@ -717,8 +665,8 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
          */
         else {
             shortestPath.erase(shortestPath.begin());
-            VertexVector straightPath = getStraightPath(shortestPath,
-                    shortestPaths);
+            VertexVector straightPath = shortestPaths.getStraightPath(
+                    shortestPath);
             return routeDatagramClosestInStraightPath(datagram, straightPath);
         }
         /*

@@ -114,22 +114,35 @@ public:
      * arista de origen.
      */
     VertexVector getShortestPathToVertex(Vertex targetVertex) const;
+    /*!
+     * @brief Calcular el primer tramo recto en la ruta.
+     *
+     * @param path [in] Ruta de la que se obtiene el primer tramo recto.
+     * @return Primer tramo recto de la ruta.
+     */
+    VertexVector getStraightPath(const VertexVector &path) const;
+    /*!
+     * @brief Calcular el primer tramo recto desde una arista.
+     *
+     * @param edge [in] Arista desde la que se busca el tramo recto.
+     * @return Tramo recto desde la arista.
+     */
+    VertexVector getStraightPathFromEdge(const Edge edge) const;
 private:
     /*!
      * @brief Calcula el peso de una arista a partir de otra.
      *
-     * El peso de la arista _A_ desde la arista _B_, cuyo vértice en común es _v_,
-     * es la diferencia entre la dirección de la arista _A_ desde el vértice _v_
-     * y la dirección de la arista _B_ hacia el vértice _v_.
+     * El peso de la arista *(vw)* desde la arista *(uv)*, cuyo vértice en común
+     * es *v*, es la diferencia entre la dirección de *(uv)* desde *u*
+     * y la dirección de *(vw)* desde vértice *v*.
      *
      * Para calcular el peso, ambas aristas deben ser adyacentes.
      *
-     * @param edge [in] Arista cuyo peso se va a calcular.
      * @param sourceEdge [in] Arista desde la que se calcula el peso.
-     * @param graph [in] Grafo al que pertenecen ambas aristas.
+     * @param edge       [in] Arista cuyo peso se va a calcular.
      * @return Peso de la arista
      */
-    double getEdgeWeight(Edge edge, Edge sourceEdge) const;
+    double getEdgeWeight(Edge sourceEdge, Edge edge) const;
 };
 
 }    // namespace veins_proj
