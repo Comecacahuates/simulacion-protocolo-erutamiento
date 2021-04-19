@@ -293,7 +293,7 @@ protected:
             inet::Packet *datagram) = 0;
 
     /*
-     * Opciones TLV.
+     * Cabecera de opciones de salto por salto.
      */
     /*!
      * @brief Agregar opción TLV a un datagrama.

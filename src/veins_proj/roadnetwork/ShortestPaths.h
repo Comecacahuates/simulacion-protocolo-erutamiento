@@ -73,7 +73,7 @@ public:
      * @param inactiveEdges   [in] Aristas inactivas.
      */
     void computeShortestPaths(const VertexSet visitedVertices,
-            const EdgeSet &inactiveEdges = { });
+            const EdgeSet &activeEdges = { });
     /*!
      * @brief Obtener la distancia de ruta a un vértice.
      *
@@ -130,11 +130,11 @@ public:
     VertexVector getStraightPathFromEdge(const Edge edge) const;
 private:
     /*!
-     * @brief Calcula el peso de una arista a partir de otra.
+     * @brief Calcular el peso de una arista a partir de otra.
      *
-     * El peso de la arista *(vw)* desde la arista *(uv)*, cuyo vértice en común
-     * es *v*, es la diferencia entre la dirección de *(uv)* desde *u*
-     * y la dirección de *(vw)* desde vértice *v*.
+     * El peso de la arista *(vw)* desde la arista *(uv)*,
+     * cuyo vértice en común es *v*, es la diferencia entre la dirección
+     * de *(uv)* desde *u* y la dirección de *(vw)* desde vértice *v*.
      *
      * Para calcular el peso, ambas aristas deben ser adyacentes.
      *

@@ -109,14 +109,14 @@ void VehicleRoutingProtocol::processSelfMessage(omnetpp::cMessage *message) {
 }
 
 /*
- * Mensajes HOLA_VEHIC.
+ * Mensajes HOLA-VEHIC.
  */
 
 /*!
- * @brief Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
+ * @brief Programar el temporizador de transmisión de mensajes HOLA-VEHIC.
  *
  * @param start [in] Indica si se va a programar el temporizador
- * a la hora de inicio.
+ *                   a la hora de inicio.
  */
 void VehicleRoutingProtocol::scheduleHelloVehicleTimer(bool start) {
     if (start && omnetpp::simTime() < startTime)
@@ -150,7 +150,7 @@ void VehicleRoutingProtocol::processHelloVehicleTimer() {
             && ipv6Data->hasAddress(primaryUnicastAddress)) {
         const inet::Ptr<HelloVehicle> helloVehicle = createHelloVehicle(
                 primaryUnicastAddress);
-        sendRoutingMessage(helloVehicle, "HOLA_VEHIC", primaryUnicastAddress,
+        sendRoutingMessage(helloVehicle, "HOLA-VEHIC", primaryUnicastAddress,
                 primaryMulticastAddress);
     }
 
@@ -158,7 +158,7 @@ void VehicleRoutingProtocol::processHelloVehicleTimer() {
             && ipv6Data->hasAddress(secondaryUnicastAddress)) {
         const inet::Ptr<HelloVehicle> helloVehicle = createHelloVehicle(
                 secondaryUnicastAddress);
-        sendRoutingMessage(helloVehicle, "HOLA_VEHIC", secondaryUnicastAddress,
+        sendRoutingMessage(helloVehicle, "HOLA-VEHIC", secondaryUnicastAddress,
                 secondaryMulticastAddress, true);
     }
 
@@ -166,10 +166,10 @@ void VehicleRoutingProtocol::processHelloVehicleTimer() {
 }
 
 /*!
- * @brief Crear mensaje HOLA_VEHIC.
+ * @brief Crear mensaje HOLA-VEHIC.
  *
  * @param srcAddress [in] Dirección del vehículo que trnasmite el mensaje.
- * @return Mensaje HOLA_VEHIC.
+ * @return Mensaje HOLA-VEHIC.
  */
 const inet::Ptr<HelloVehicle> VehicleRoutingProtocol::createHelloVehicle(
         const inet::Ipv6Address &srcAddress) const {
@@ -229,7 +229,7 @@ const inet::Ptr<HelloVehicle> VehicleRoutingProtocol::createHelloVehicle(
 }
 
 /*!
- * @brief Procesar mensaje HOLA_VEHIC.
+ * @brief Procesar mensaje HOLA-VEHIC.
  *
  * @param HelloVehicle [in] Mensaje a procesar.
  */
@@ -381,7 +381,7 @@ void VehicleRoutingProtocol::showNeighbouringHosts() const {
 
 /*!
  * @brief Programar el temporizador de limpieza del directorio
- * de *hosts* vecinos.
+ *        de *hosts* vecinos.
  */
 void VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
     omnetpp::simtime_t nextExpiryTime = neighbouringHosts.getNextExpiryTime();
@@ -405,7 +405,7 @@ void VehicleRoutingProtocol::schedulePurgeNeighbouringHostsTimer() {
 
 /*!
  * @brief Procesar el temporizador de limpieza del directorio
- * de *hosts* vecinos.
+ *        de *hosts* vecinos.
  */
 void VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer() {
     neighbouringHosts.removeOldValues(omnetpp::simTime());
@@ -414,19 +414,22 @@ void VehicleRoutingProtocol::processPurgeNeighbouringHostsTimer() {
 }
 
 /*
- * Enrutamiento.
+ * Cabecera de opciones de salto por salto.
  */
 
 /*!
- * @brief Verificar la cabecera de opciones de salto por salto.
+ * @brief Validar la cabecera de opciones de salto por salto
+ *        de un datagrama.
  *
  * Verifica si la cabecera tiene la opción de ubicación del destino.
  *
  * Si el destino se encuentra en la misma subred, se verifica si
  * la cabecera contiene la opción de ubicación vial del destino. Si no
- * la tiene, se agrega.
+ * la tiene, la agrega.
  *
  * Si la cabecera no contiene la opción de vértices visitados, se agrega.
+ *
+ * @param datagram [in] Datagrama cuya cabecera se valida.
  */
 bool VehicleRoutingProtocol::validateHopByHopOptionsHeader(
         inet::Packet *datagram) const {
@@ -475,6 +478,79 @@ bool VehicleRoutingProtocol::validateHopByHopOptionsHeader(
 }
 
 /*!
+ * @brief Se obtiene el conjunto de vértices visitados.
+ *
+ * @param visitedVerticesOption [in] Opción de vértices visitados.
+ * @return Conjunto de vértices visitados.
+ */
+VertexSet VehicleRoutingProtocol::getDatagramVisitedVertices(
+        inet::Packet *datagram) const {
+    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
+            TlvVisitedVerticesOption>(datagram);
+    ASSERT(visitedVerticesOption != nullptr);
+    int numVisitedVertices =
+            visitedVerticesOption->getVisitedVerticesArraySize();
+    VertexSet visitedVertices;
+    for (int i = 0; i < numVisitedVertices; i++)
+        visitedVertices.insert(visitedVerticesOption->getVisitedVertices(i));
+
+    return visitedVertices;
+}
+
+/*!
+ * @brief Agrega los siguientes vértices visitados de la ruta a la opción
+ *        de vértices visitados del datagrama.
+ *
+ * @param datagram [in] Datagrama cuya opción de
+ *                      vértices visitados se actualiza.
+ * @param route    [in] Ruta que tomará el datagrama.
+ */
+void VehicleRoutingProtocol::updateTlvVisitedVerticesOption(
+        inet::Packet *datagram, const inet::Ipv6Route *route) const {
+    /*
+     * Si la ruta no incluye vértices visitados del siguiente salto,
+     * no es necesario actualizar la opción de vértices visitados.
+     */
+    RouteData *routeData = dynamic_cast<RouteData*>(route->getProtocolData());
+    if (!routeData)
+        return;
+    const VertexSet &nextHopVisitedVertices =
+            routeData->getNextHopVisitedVertices();
+    /*
+     * Se crea el nuevo conjunto de vértices visitados y se agregan
+     * los siguientes vértices visitados del siguiente salto de la ruta.
+     */
+    VertexSet visitedVertices;
+    VertexSetConstIt it = nextHopVisitedVertices.begin();
+    VertexSetConstIt endIt = nextHopVisitedVertices.end();
+    while (it != endIt) {
+        visitedVertices.insert(*it);
+        it++;
+    }
+    /*
+     * Se agregan los vértices visitados del datagrama
+     * al nuevo conjunto de vértices visitados.
+     */
+    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
+            TlvVisitedVerticesOption>(datagram);
+    size_t i = 0;
+    size_t n = visitedVerticesOption->getVisitedVerticesArraySize();
+    while (i < n)
+        visitedVertices.insert(visitedVerticesOption->getVisitedVertices(i++));
+    /*
+     * Se crea una nueva opción de vértices visitados
+     * y se inserta en el datagrama.
+     */
+    TlvVisitedVerticesOption *newVisitedVerticesOption =
+            createTlvVisitedVerticesOption(visitedVertices);
+    setTlvOption<TlvVisitedVerticesOption>(datagram, newVisitedVerticesOption);
+}
+
+/*
+ * Cálculo de rutas.
+ */
+
+/*!
  * @brief Obtener el conjunto de aristas activas.
  *
  * Las aristas activas son aquellas en las que hay vehículos vecinos.
@@ -483,6 +559,9 @@ bool VehicleRoutingProtocol::validateHopByHopOptionsHeader(
  */
 EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
     EdgeSet activeEdges;
+    /*
+     * Se obtienen las aristas en las que hay vehículos.
+     */
     NeighbouringVehiclesConstIt it = neighbouringVehicles.getMap().begin();
     NeighbouringVehiclesConstIt endIt = neighbouringVehicles.getMap().end();
     while (it != endIt) {
@@ -490,28 +569,195 @@ EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
         activeEdges.insert(edge);
         it++;
     }
+    /*
+     * Se obtienen las aristas activas en el primer tramo recto.
+     *
+     * TODO: Terminar.
+     */
+
     return activeEdges;
 }
 
 /*!
- * @brief Agrupar vehículos vecinos según la arista en la que se encuentran.
+ * @brief Obtener el conjunto de aristas activas en una
+ *        secuencia de aristas.
  *
- * @return Diccinario de vecinos agrupados según la aristan en la
- * que se encuentran.
+ * Las aristas activas son aquellas en las que hay vehículos vecinos.
+ *
+ * @return Conjunto de aristas activas.
  */
-VehicleRoutingProtocol::NeighbouringVehiclesByEdge VehicleRoutingProtocol::getNeighbouringVehicleByEdge() const {
-    NeighbouringVehiclesByEdge neighbouringVehiclesByEdge;
-    NeighbouringVehiclesConstIt it = neighbouringVehicles.getMap().begin();
-    NeighbouringVehiclesConstIt endIt = neighbouringVehicles.getMap().end();
-    while (it != endIt) {
-        neighbouringVehiclesByEdge.insert(
-                std::pair<Edge, inet::Ipv6Address>(
-                        it->second.value.locationOnRoadNetwork.edge,
-                        it->first));
-        it++;
+EdgeSet VehicleRoutingProtocol::getActiveEdgesInPath(
+        const VertexVector &path) const {
+    const Graph &graph = mobility->getRoadNetwork()->getGraph();
+    EdgeSet activeEdges;
+    /*
+     * Se recorren las aristas del tramo recto de la última a la primera
+     * hasta encontrar la primera en la que haya un vehículo vecino.
+     */
+    NeighbouringVehiclesByEdge neighbouringVehiclesByEdge =
+            getNeighbouringVehiclesByEdge();
+    VertexVectorConstIt it = path.begin();
+    VertexVectorConstIt vertexAIt = std::prev(path.end(), 2);
+    VertexVectorConstIt vertexBIt = std::prev(path.end());
+    while (vertexBIt != it) {
+        Vertex vertexA = *vertexAIt;
+        Vertex vertexB = *vertexBIt;
+        Edge edge = boost::edge(vertexA, vertexB, graph).first;
+        if (neighbouringVehiclesByEdge.count(edge))
+            break;
+        vertexAIt--;
+        vertexBIt--;
     }
-    return neighbouringVehiclesByEdge;
+    /*
+     * Si no se encontró ningún vehículo vecino en alguna
+     * de las aristas se devuelve el conjunto de aristas vacío.
+     */
+    if (vertexBIt == it)
+        return activeEdges;
+    /*
+     * Se agregan las aristas del tramo recto hasta la arista en la
+     * que se encontró el vehículo vecino.
+     */
+    VertexVectorConstIt endIt = vertexBIt;
+    vertexAIt = path.begin();
+    vertexBIt = std::next(path.begin());
+    while (vertexAIt != endIt) {
+        Vertex vertexA = *vertexAIt;
+        Vertex vertexB = *vertexBIt;
+        Edge edge = boost::edge(vertexA, vertexB, graph).first;
+        activeEdges.insert(edge);
+        vertexAIt++;
+        vertexBIt++;
+    }
+    return activeEdges;
 }
+
+/*!
+ * @brief Obtener el vértice de destino local.
+ *
+ * @param datagram     [in] Datagrama a enrutar.
+ * @param shortestPath [in] Rutas más cortas.
+ * @return Vértice de destino local y bandera que indica si sí se encontró.
+ */
+std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
+        inet::Packet *datagram, const ShortestPaths &shortestPaths) const {
+    /*
+     * Se obtiene la ubicación del destino para saber si se encuentra
+     * en la misma subred o en otra.
+     */
+    const TlvDestGeohashLocationOption *destGeohashLocationOption =
+            findTlvOption<TlvDestGeohashLocationOption>(datagram);
+    ASSERT(destGeohashLocationOption != nullptr);
+    GeohashLocation destGeohashLocation(destGeohashLocationOption->getGeohash(),
+            12);
+    const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
+    const GeohashLocation &geohashRegion = roadNetwork->getGeohashRegion();
+    Vertex localDestVertex;
+    bool localDestVertexFound = false;
+    /*
+     * Si la ubicación del destino se encuentra en la misma región,
+     * se obtiene su ubicación vial de la cabecera del datagrama
+     * para buscar determinar cuál de los dos vértices de la arista
+     * en la que se encuentra será el vertice de destino local.
+     * Si no se encuentra una ruta hacia ninguno de los dos vértices,
+     * `destVertexFound` vale `false`.
+     */
+    if (geohashRegion.contains(destGeohashLocation)) {
+        const TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption =
+                findTlvOption<TlvDestLocationOnRoadNetworkOption>(datagram);
+        ASSERT(destLocationOnRoadNetworkOption != nullptr);
+        Vertex vertexA = (Vertex) destLocationOnRoadNetworkOption->getVertexA();
+        Vertex vertexB = (Vertex) destLocationOnRoadNetworkOption->getVertexB();
+        double routeDistanceA = shortestPaths.getRouteDistance(vertexA);
+        double routeDistanceB = shortestPaths.getRouteDistance(vertexB);
+        localDestVertex = vertexA;
+        localDestVertexFound = shortestPaths.routeToVertexFound(vertexA);
+        if (routeDistanceB < routeDistanceA) {
+            localDestVertex = vertexB;
+            localDestVertexFound = shortestPaths.routeToVertexFound(vertexB);
+        }
+        /*
+         * Si la ubicación del destino se encuentra en otra región Geohash,
+         * se obtiene su ubicación y se determina hacia qué dirección se
+         * encuentra la región en la que se encuentra para obtener
+         * el vértice *gateway* que será el vértice de destino local.
+         */
+    } else {
+        const GeographicLib::GeoCoords &destLocation =
+                destGeohashLocation.getLocation();
+        const Bounds &localRegionBounds = geohashRegion.getBounds();
+        VertexVector tentativeGatewayVertices;
+        /*
+         * Si el destino se encuentra al norte de la región local,
+         * se agregan como vértices *gateway* tentativos los vértices
+         * con adyacencia al norte.
+         */
+        if (destLocation.Latitude() > localRegionBounds.getNorth()) {
+            const VertexSet &northGatewayVertices =
+                    roadNetwork->getGatewayVertices(
+                            GeohashLocation::Adjacency::NORTH);
+            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
+                    northGatewayVertices.begin(), northGatewayVertices.end());
+            /*
+             * Si el destino se encuentra al norte de la región local,
+             * se agregan como vértices *gateway* tentativos los vértices
+             * con adyacencia al sur.
+             */
+        } else if (destLocation.Longitude() < localRegionBounds.getSouth()) {
+            const VertexSet &southGatewayVertices =
+                    roadNetwork->getGatewayVertices(
+                            GeohashLocation::Adjacency::SOUTH);
+            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
+                    southGatewayVertices.begin(), southGatewayVertices.end());
+        }
+        /*
+         * Si el destino se encuentra al norte de la región local,
+         * se agregan como vértices *gateway* tentativos los vértices
+         * con adyacencia al este.
+         */
+        if (destLocation.Longitude() > localRegionBounds.getEast()) {
+            const VertexSet &eastGatewayVertices =
+                    roadNetwork->getGatewayVertices(
+                            GeohashLocation::Adjacency::EAST);
+            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
+                    eastGatewayVertices.begin(), eastGatewayVertices.end());
+            /*
+             * Si el destino se encuentra al norte de la región local,
+             * se agregan como vértices *gateway* tentativos los vértices
+             * con adyacencia al oeste.
+             */
+        } else if (destLocation.Latitude() < localRegionBounds.getWest()) {
+            const VertexSet &westGatewayVertices =
+                    roadNetwork->getGatewayVertices(
+                            GeohashLocation::Adjacency::WEST);
+            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
+                    westGatewayVertices.begin(), westGatewayVertices.end());
+        }
+        /*
+         * Se busca dentro de los vértices *gateway* tentativos el que
+         * tenga la menor distancia de ruta y se selecciona como
+         * vértice de destino local.
+         */
+        double minRouteDistance = std::numeric_limits<double>::infinity();
+        VertexVectorConstIt it = tentativeGatewayVertices.begin();
+        VertexVectorConstIt endIt = tentativeGatewayVertices.end();
+        while (it != endIt) {
+            double routeDistance = shortestPaths.getRouteDistance(*it);
+            if (minRouteDistance > routeDistance) {
+                localDestVertex = *it;
+                localDestVertexFound = true;
+            }
+
+            it++;
+        }
+    }
+
+    return std::pair<Vertex, bool>(localDestVertex, localDestVertexFound);
+}
+
+/*
+ * Enrutamiento de datagramas.
+ */
 
 /*!
  * @brief Enrutar datagrama.
@@ -642,7 +888,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
     /*
      * Se busca el tramo recto más largo posible en la ruta más corta.
      * Si este tramo sólo tiene una arista,
-     * significa que la ruta da una vuelta en esquina.
+     * significa que la ruta da una vuelta en la esquina.
      * En este caso, si el vehículo no se encuentra en
      * el segundo vértice se esta arista,
      * se intenta enrutar hacia un vehículo vecino que esté más cerca de este.
@@ -667,7 +913,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
             shortestPath.erase(shortestPath.begin());
             VertexVector straightPath = shortestPaths.getStraightPath(
                     shortestPath);
-            return routeDatagramClosestInStraightPath(datagram, straightPath);
+            return routeDatagramClosestInPath(datagram, straightPath);
         }
         /*
          * Si el tramo recto tiene más de una arista,
@@ -675,7 +921,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
          * para que el datagrama haga el mayor avance posible.
          */
     } else
-        return routeDatagramFurthestInStraightPath(datagram, straightPath);
+        return routeDatagramFurthestInPath(datagram, straightPath);
 
     if (hasGUI())
         inet::getContainingNode(host)->bubble(
@@ -711,9 +957,9 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeToNeighbouringHost(
 /*!
  * @brief Enrutar datagrama hacia el vecino más cercano a una ubicación.
  *
- * @param datagram [in] Datagrama a enrutar.
+ * @param datagram        [in] Datagrama a enrutar.
  * @param geohashLocation [in] Ubicación hacia la que
- * se enruta el datagrama.
+ *        se enruta el datagrama.
  * @return Resultado del enrutamiento.
  */
 inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramToLocation(
@@ -747,7 +993,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramToLocation(
  *
  * @param datagram  [in] Datagrama a enrutar.
  * @param adjacency [in] Adyacencia de la subred a la que se va
- * a enrutar el paquete.
+ *                       a enrutar el paquete.
  * @return Resultado del enrutamiento.
  */
 inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramToAdjacentNetwork(
@@ -779,16 +1025,16 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramToAdjacentN
 
 /*!
  * @brief Enrutar el datagrama al vehículo vecino más lejano
- * en el tramo recto.
+ *        en una secuencia de aristas.
  *
- * @param datagram     [in] Datagrama a enrutar.
- * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
+ * @param datagram [in] Datagrama a enrutar.
+ * @param path     [in] Secuencia de aristas hacia las
+ *                      que se va a enrutar el datagrama.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramFurthestInStraightPath(
-        inet::Packet *datagram, const VertexVector &straightPath) {
-    const inet::Ipv6Address &nextHopAddress = findNextHopFurthestInStraightPath(
-            straightPath);
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramFurthestInPath(
+        inet::Packet *datagram, const VertexVector &path) {
+    const inet::Ipv6Address &nextHopAddress = findNextHopFurthestInPath(path);
     if (nextHopAddress.isUnspecified()) {
         if (hasGUI())
             inet::getContainingNode(host)->bubble(
@@ -805,7 +1051,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramFurthestInS
     newRoute->setInterface(networkInterface);
     newRoute->setMetric(1);
     VertexSet nextHopVisitedVertices = getNextHopVisitedVertices(nextHopAddress,
-            straightPath);
+            path);
     RouteData *routeData = new RouteData(omnetpp::simTime() + routeValidityTime,
             nextHopVisitedVertices);
     newRoute->setProtocolData(routeData);
@@ -816,16 +1062,16 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramFurthestInS
 
 /*!
  * @brief Enrutar el datagrama al vehículo vecino más cercano
- * en el tramo recto.
+ *        en una secuencia de aristas.
  *
- * @param datagram     [in] Datagrama a enrutar.
- * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
+ * @param datagram [in] Datagrama a enrutar.
+ * @param path     [in] Secuencia de aristas hacia las
+ *                      que se va a enrutar el datagrama.
  * @return Resultado del enrutamiento.
  */
-inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestInStraightPath(
-        inet::Packet *datagram, const VertexVector &straightPath) {
-    const inet::Ipv6Address &nextHopAddress = findNextHopClosestInStraightPath(
-            straightPath);
+inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestInPath(
+        inet::Packet *datagram, const VertexVector &path) {
+    const inet::Ipv6Address &nextHopAddress = findNextHopClosestInPath(path);
     if (nextHopAddress.isUnspecified()) {
         if (hasGUI())
             inet::getContainingNode(host)->bubble(
@@ -842,7 +1088,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestInSt
     newRoute->setInterface(networkInterface);
     newRoute->setMetric(1);
     VertexSet nextHopVisitedVertices = getNextHopVisitedVertices(nextHopAddress,
-            straightPath);
+            path);
     RouteData *routeData = new RouteData(omnetpp::simTime() + routeValidityTime,
             nextHopVisitedVertices);
     newRoute->setProtocolData(routeData);
@@ -853,7 +1099,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestInSt
 
 /*!
  * @brief Enrutar datagrama al vehículo vecino en la misma arista
- * que se encuentre más cerca a un vértice.
+ *        que se encuentre más cerca a un vértice.
  *
  * @param datagram [in] Datagrama a enrutar.
  * @param vertex   [in] Vértice hacia el que se enruta el datagrama.
@@ -886,155 +1132,16 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagramClosestToVe
     return inet::INetfilter::IHook::ACCEPT;
 }
 
-/*!
- * @brief Se obtiene el conjunto de vértices visitados.
- *
- * @param visitedVerticesOption [in] Opción de vértices visitados.
- * @return Conjunto de vértices visitados.
+/*
+ * Selección del siguiente salto.
  */
-VertexSet VehicleRoutingProtocol::getDatagramVisitedVertices(
-        inet::Packet *datagram) const {
-    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
-            TlvVisitedVerticesOption>(datagram);
-    ASSERT(visitedVerticesOption != nullptr);
-    int numVisitedVertices =
-            visitedVerticesOption->getVisitedVerticesArraySize();
-    VertexSet visitedVertices;
-    for (int i = 0; i < numVisitedVertices; i++)
-        visitedVertices.insert(visitedVerticesOption->getVisitedVertices(i));
-
-    return visitedVertices;
-}
-
-/*!
- * @brief Obtener el vértice de destino local.
- *
- * @param datagram [in] Datagrama a enrutar.
- * @param shortestPaths [in] Rutas más cortas.
- * @return Vértice de destino local.
- */
-std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
-        inet::Packet *datagram, const ShortestPaths &shortestPaths) const {
-    /*
-     * Se obtiene la ubicación del destino para saber si se encuentra
-     * en la misma subred o en otra.
-     */
-    const TlvDestGeohashLocationOption *destGeohashLocationOption =
-            findTlvOption<TlvDestGeohashLocationOption>(datagram);
-    ASSERT(destGeohashLocationOption != nullptr);
-    GeohashLocation destGeohashLocation(destGeohashLocationOption->getGeohash(),
-            12);
-    const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
-    const GeohashLocation &geohashRegion = roadNetwork->getGeohashRegion();
-    Vertex localDestVertex;
-    bool localDestVertexFound = false;
-    /*
-     * Si la ubicación del destino se encuentra en la misma región,
-     * se obtiene su ubicación vial de la cabecera del datagrama
-     * para buscar determinar cuál de los dos vértices de la arista
-     * en la que se encuentra será el vertice de destino local.
-     * Si no se encuentra una ruta hacia ninguno de los dos vértices,
-     * `destVertexFound` vale `false`.
-     */
-    if (geohashRegion.contains(destGeohashLocation)) {
-        const TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption =
-                findTlvOption<TlvDestLocationOnRoadNetworkOption>(datagram);
-        ASSERT(destLocationOnRoadNetworkOption != nullptr);
-        Vertex vertexA = (Vertex) destLocationOnRoadNetworkOption->getVertexA();
-        Vertex vertexB = (Vertex) destLocationOnRoadNetworkOption->getVertexB();
-        double routeDistanceA = shortestPaths.getRouteDistance(vertexA);
-        double routeDistanceB = shortestPaths.getRouteDistance(vertexB);
-        localDestVertex = vertexA;
-        localDestVertexFound = shortestPaths.routeToVertexFound(vertexA);
-        if (routeDistanceB < routeDistanceA) {
-            localDestVertex = vertexB;
-            localDestVertexFound = shortestPaths.routeToVertexFound(vertexB);
-        }
-        /*
-         * Si la ubicación del destino se encuentra en otra región Geohash,
-         * se obtiene su ubicación y se determina hacia qué dirección se
-         * encuentra la región en la que se encuentra para obtener
-         * el vértice *gateway* que será el vértice de destino local.
-         */
-    } else {
-        const GeographicLib::GeoCoords &destLocation =
-                destGeohashLocation.getLocation();
-        const Bounds &localRegionBounds = geohashRegion.getBounds();
-        VertexVector tentativeGatewayVertices;
-        /*
-         * Si el destino se encuentra al norte de la región local,
-         * se agregan como vértices *gateway* tentativos los vértices
-         * con adyacencia al norte.
-         */
-        if (destLocation.Latitude() > localRegionBounds.getNorth()) {
-            const VertexSet &northGatewayVertices =
-                    roadNetwork->getGatewayVertices(
-                            GeohashLocation::Adjacency::NORTH);
-            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
-                    northGatewayVertices.begin(), northGatewayVertices.end());
-            /*
-             * Si el destino se encuentra al norte de la región local,
-             * se agregan como vértices *gateway* tentativos los vértices
-             * con adyacencia al sur.
-             */
-        } else if (destLocation.Longitude() < localRegionBounds.getSouth()) {
-            const VertexSet &southGatewayVertices =
-                    roadNetwork->getGatewayVertices(
-                            GeohashLocation::Adjacency::SOUTH);
-            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
-                    southGatewayVertices.begin(), southGatewayVertices.end());
-        }
-        /*
-         * Si el destino se encuentra al norte de la región local,
-         * se agregan como vértices *gateway* tentativos los vértices
-         * con adyacencia al este.
-         */
-        if (destLocation.Longitude() > localRegionBounds.getEast()) {
-            const VertexSet &eastGatewayVertices =
-                    roadNetwork->getGatewayVertices(
-                            GeohashLocation::Adjacency::EAST);
-            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
-                    eastGatewayVertices.begin(), eastGatewayVertices.end());
-            /*
-             * Si el destino se encuentra al norte de la región local,
-             * se agregan como vértices *gateway* tentativos los vértices
-             * con adyacencia al oeste.
-             */
-        } else if (destLocation.Latitude() < localRegionBounds.getWest()) {
-            const VertexSet &westGatewayVertices =
-                    roadNetwork->getGatewayVertices(
-                            GeohashLocation::Adjacency::WEST);
-            tentativeGatewayVertices.insert(tentativeGatewayVertices.end(),
-                    westGatewayVertices.begin(), westGatewayVertices.end());
-        }
-        /*
-         * Se busca dentro de los vértices *gateway* tentativos el que
-         * tenga la menor distancia de ruta y se selecciona como
-         * vértice de destino local.
-         */
-        double minRouteDistance = std::numeric_limits<double>::infinity();
-        VertexVectorConstIt it = tentativeGatewayVertices.begin();
-        VertexVectorConstIt endIt = tentativeGatewayVertices.end();
-        while (it != endIt) {
-            double routeDistance = shortestPaths.getRouteDistance(*it);
-            if (minRouteDistance > routeDistance) {
-                localDestVertex = *it;
-                localDestVertexFound = true;
-            }
-
-            it++;
-        }
-    }
-
-    return std::pair<Vertex, bool>(localDestVertex, localDestVertexFound);
-}
 
 /*!
  * @brief Obtener vehículo vecino en la región Geohash adyacente.
  *
  * @param neighbouringGeohashRegion [in] Región Geohash adyacente.
- * @return Dirección IPv6 del siguiente salto, o `::/128`.
- * si no se encuentra ninguno.
+ * @return Dirección IPv6 del siguiente salto, o `::/128`
+ *         si no se encuentra ninguno.
  */
 const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopInAdjacentNetwork(
         const GeohashLocation::Adjacency adjacencyDirection) const {
@@ -1057,7 +1164,7 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopInAdjacentNetwork(
  * @brief Encontrar siguiente salto más cercano a una ubicación.
  *
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
- * si no se encuentra ninguno.
+ *         si no se encuentra ninguno.
  */
 const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToLocation(
         const GeohashLocation &geohashLocation) const {
@@ -1087,26 +1194,25 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToLocation(
 }
 
 /*!
- * @brief Encontrar siguiente salto más lejano en el tramo más recto
- * de la ruta vial.
+ * @brief Encontrar siguiente salto más lejano en una secuenaia de aristas.
  *
- * @param shortestPath  [in] Ruta vial a un vértice.
- * @param shortestPsths [in] Rutas viales más cortas
- * @return Dirección IPv6 del siguiente salto, o `::/128`.
- * si no se encuentra ninguno.
+ * @param path [in] Secuencia de aristas en las que se busca
+ *                  el siguiente salto.
+ * @return Dirección IPv6 del siguiente salto, o `::/128`
+ *         si no se encuentra ninguno.
  */
-const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopFurthestInStraightPath(
-        const VertexVector &straightPath) const {
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopFurthestInPath(
+        const VertexVector &path) const {
+    const Graph &graph = mobility->getRoadNetwork()->getGraph();
     /*
      * De la última arista a la primera, se busca el vecino más cercano
      * al segundo vértice de cada una.
      */
-    const Graph &graph = mobility->getRoadNetwork()->getGraph();
     NeighbouringVehiclesByEdge neighbouringVehiclesByEdge =
-            getNeighbouringVehicleByEdge();
-    VertexVectorConstIt it = straightPath.begin();
-    VertexVectorConstIt vertexAIt = std::prev(straightPath.end(), 2);
-    VertexVectorConstIt vertexBIt = std::prev(straightPath.end());
+            getNeighbouringVehiclesByEdge();
+    VertexVectorConstIt it = path.begin();
+    VertexVectorConstIt vertexAIt = std::prev(path.end(), 2);
+    VertexVectorConstIt vertexBIt = std::prev(path.end());
     while (vertexBIt != it) {
         Vertex vertexA = *vertexAIt;
         Vertex vertexB = *vertexBIt;
@@ -1118,30 +1224,29 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopFurthestInStraightPa
         vertexAIt--;
         vertexBIt--;
     }
-
     return inet::Ipv6Address::UNSPECIFIED_ADDRESS;
 }
 
 /*!
- * @brief Encontrar siguiente salto más cercano en el
- * tramo recto de la ruta.
+ * @brief Encontrar siguiente salto más cercano en una secuencia de aristas.
  *
- * @param straightPath [in] Tramo recto de la ruta.
- * @return Dirección IPv6 del siguiente salto, o `::/128`.
- * si no se encuentra ninguno.
+ * @param path [in] Secuencia de aristas en las que se busca
+ *                  el siguiente salto.
+ * @return Dirección IPv6 del siguiente salto, o `::/128`
+ *         si no se encuentra ninguno.
  */
-const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestInStraightPath(
-        const VertexVector &straightPath) const {
+const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestInPath(
+        const VertexVector &path) const {
     /*
      * De la primera arista a la última, se busca el vecino más cercano
      * al primer vértice de cada una.
      */
     const Graph &graph = mobility->getRoadNetwork()->getGraph();
     NeighbouringVehiclesByEdge neighbouringVehiclesByEdge =
-            getNeighbouringVehicleByEdge();
-    VertexVectorConstIt vertexAIt = straightPath.begin();
-    VertexVectorConstIt vertexBIt = std::next(straightPath.begin(), 1);
-    VertexVectorConstIt endIt = straightPath.end();
+            getNeighbouringVehiclesByEdge();
+    VertexVectorConstIt vertexAIt = path.begin();
+    VertexVectorConstIt vertexBIt = std::next(path.begin(), 1);
+    VertexVectorConstIt endIt = path.end();
     while (vertexBIt != endIt) {
         Vertex vertexA = *vertexAIt++;
         Vertex vertexB = *vertexBIt++;
@@ -1156,14 +1261,14 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestInStraightPat
 }
 
 /*!
- * @brief Buscar vehículo vecino más cercano a un vértice que
- * se encuentra en una arista.
+ * @brief Buscar vehículo vecino más cercano a un vértice entre los que
+ *        se encuentran en una arista.
  *
  * @param vertex [in] Vértice de referencia.
  * @param edge   [in] Arista en la que se encuentran los vehículos
- * entre los que se hace la búsqueda.
+ *                    entre los que se hace la búsqueda.
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
- * si no se encuentra ninguno.
+ *         si no se encuentra ninguno.
  */
 const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
         const Vertex vertex, const Edge edge,
@@ -1202,7 +1307,7 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
 
 /*!
  * @brief Buscar vehículo vecino más cercano a un vértice que
- * se encuentra en la misma arista.
+ *        se encuentra en la misma arista.
  *
  * Se buscan los vehículos vecinos que circulan sobre la misma arista,
  * y se obtiene el que se encuentra a la menor distancia del vértice
@@ -1210,7 +1315,9 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
  *
  * @param vertex [in] Vértice de referencia.
  * @return Dirección IPv6 del siguiente salto, o `::/128`.
- * si no se encuentra ninguno.
+ *         si no se encuentra ninguno.
+ *
+ * TODO: Verificar si hace falta.
  */
 const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
         Vertex vertex) const {
@@ -1247,12 +1354,37 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestToVertex(
     return chosenIt->first;
 }
 
+/*
+ * Métodos auxiliares.
+ */
+
 /*!
- * @brief Agrega los vértices visitados del siguiente salto.
+ * @brief Agrupar vehículos vecinos según la arista en la que se encuentran.
  *
- * @param route        [in] Ruta a la que se agregan los vértices visitados
- * del siguiente salto.
- * @param shortestPath [in] Ruta vial.
+ * @return Diccinario de vecinos agrupados según la aristan en la
+ *         que se encuentran.
+ */
+VehicleRoutingProtocol::NeighbouringVehiclesByEdge VehicleRoutingProtocol::getNeighbouringVehiclesByEdge() const {
+    NeighbouringVehiclesByEdge neighbouringVehiclesByEdge;
+    NeighbouringVehiclesConstIt it = neighbouringVehicles.getMap().begin();
+    NeighbouringVehiclesConstIt endIt = neighbouringVehicles.getMap().end();
+    while (it != endIt) {
+        neighbouringVehiclesByEdge.insert(
+                std::pair<Edge, inet::Ipv6Address>(
+                        it->second.value.locationOnRoadNetwork.edge,
+                        it->first));
+        it++;
+    }
+    return neighbouringVehiclesByEdge;
+}
+
+/*!
+ * @brief Obtener los vértices visitados del siguiente salto.
+ *
+ * @param nextHopAddress [in] Siguiente salto al que se asocian
+ *                            los vértices visitados.
+ * @param path           [in] Ruta vial.
+ * @return Vértices visitados del siguiente salto.
  */
 VertexSet VehicleRoutingProtocol::getNextHopVisitedVertices(
         const inet::Ipv6Address &nextHopAddress,
@@ -1278,55 +1410,6 @@ VertexSet VehicleRoutingProtocol::getNextHopVisitedVertices(
         it++;
     }
     return nextHopVisitedVertices;
-}
-
-/*!
- * @brief Agrega los siguientes vértices visitados de la ruta a la opción
- * de vértices visitados del datagrama.
- *
- * @param datagram [in] Datagrama cuya opción de
- * vértices visitados se actualiza.
- * @param route    [in] Ruta que tomará el datagrama.
- */
-void VehicleRoutingProtocol::updateTlvVisitedVerticesOption(
-        inet::Packet *datagram, const inet::Ipv6Route *route) const {
-    /*
-     * Si la ruta no incluye vértices visitados del siguiente salto,
-     * no es necesario actualizar la opción de vértices visitados.
-     */
-    RouteData *routeData = dynamic_cast<RouteData*>(route->getProtocolData());
-    if (!routeData)
-        return;
-    const VertexSet &nextHopVisitedVertices =
-            routeData->getNextHopVisitedVertices();
-    /*
-     * Se crea el nuevo conjunto de vértices visitados y se agregan
-     * los siguientes vértices visitados del siguiente salto de la ruta.
-     */
-    VertexSet visitedVertices;
-    VertexSetConstIt it = nextHopVisitedVertices.begin();
-    VertexSetConstIt endIt = nextHopVisitedVertices.end();
-    while (it != endIt) {
-        visitedVertices.insert(*it);
-        it++;
-    }
-    /*
-     * Se agregan los vértices visitados del datagrama
-     * al nuevo conjunto de vértices visitados.
-     */
-    const TlvVisitedVerticesOption *visitedVerticesOption = findTlvOption<
-            TlvVisitedVerticesOption>(datagram);
-    size_t i = 0;
-    size_t n = visitedVerticesOption->getVisitedVerticesArraySize();
-    while (i < n)
-        visitedVertices.insert(visitedVerticesOption->getVisitedVertices(i++));
-    /*
-     * Se crea una nueva opción de vértices visitados
-     * y se inserta en el datagrama.
-     */
-    TlvVisitedVerticesOption *newVisitedVerticesOption =
-            createTlvVisitedVerticesOption(visitedVertices);
-    setTlvOption<TlvVisitedVerticesOption>(datagram, newVisitedVerticesOption);
 }
 
 /*
@@ -1364,7 +1447,7 @@ void VehicleRoutingProtocol::showStatus() const {
 
 /*!
  * @brief Procesar datagrama recibido de la capa inferior
- * antes de enrutarlo.
+ *        antes de enrutarlo.
  *
  * @param datagram [in] Datagrama a procesar.
  * @return Resultado del procesamiento.
@@ -1404,7 +1487,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::datagramPreRoutingHook(
 
 /*!
  * @brief Procesar datagrama recibido de la capa superior
- * antes de enrutarlo.
+ *        antes de enrutarlo.
  *
  * @param datagram [in] Datagrama a procesar.
  * @return Resultado del procesamiento.

@@ -409,7 +409,7 @@ void RoutingProtocolBase::removeExpiredRoutes(omnetpp::simtime_t expiryTime) {
 }
 
 /*
- * Opciones TLV.
+ * Cabecera de opciones de salto por salto.
  */
 
 /*!

@@ -43,7 +43,7 @@ namespace veins_proj {
 
 /*!
  * @brief Módulo que implementa las operaciones de enrutamiento
- * exclusivamnte para los vehículos.
+ *        exclusivamnte para los vehículos.
  */
 class VehicleRoutingProtocol: public RoutingProtocolBase {
 
@@ -60,7 +60,7 @@ protected:
     /*
      * Mensajes propios.
      */
-    //! Temporizador de transmisión de mensajes HOLA_VEHIC.
+    //! Temporizador de transmisión de mensajes HOLA-VEHIC.
     omnetpp::cMessage *helloVehicleTimer;
     //! Temporizador de limpieza del directorio de *hosts* vecinos.
     omnetpp::cMessage *purgeNeighbouringHostsTimer;
@@ -104,13 +104,13 @@ protected:
     virtual void processSelfMessage(omnetpp::cMessage *message) override;
 
     /*
-     * Mensajes HOLA_VEHIC.
+     * Mensajes HOLA-VEHIC.
      */
     /*!
-     * @brief Programar el temporizador de transmisión de mensajes HOLA_VEHIC.
+     * @brief Programar el temporizador de transmisión de mensajes HOLA-VEHIC.
      *
      * @param start [in] Indica si se va a programar el temporizador
-     * a la hora de inicio.
+     *                   a la hora de inicio.
      */
     virtual void scheduleHelloVehicleTimer(bool start = false);
     /*!
@@ -118,15 +118,15 @@ protected:
      */
     virtual void processHelloVehicleTimer();
     /*!
-     * @brief Crear mensaje HOLA_VEHIC.
+     * @brief Crear mensaje HOLA-VEHIC.
      *
      * @param srcAddress [in] Dirección del vehículo que trnasmite el mensaje.
-     * @return Mensaje HOLA_VEHIC.
+     * @return Mensaje HOLA-VEHIC.
      */
     virtual const inet::Ptr<HelloVehicle> createHelloVehicle(
             const inet::Ipv6Address &srcAddress) const;
     /*!
-     * @brief Procesar mensaje HOLA_VEHIC.
+     * @brief Procesar mensaje HOLA-VEHIC.
      *
      * @param helloVehicle [in] Mensaje a procesar.
      */
@@ -145,7 +145,7 @@ protected:
             override;
 
     /*
-     * Directorio de hosts vecinos.
+     * Directorio de *hosts* vecinos.
      */
     /*!
      * @brief Diccionario de directorio de *hosts* vecinos.
@@ -163,12 +163,12 @@ protected:
     typedef std::pair<inet::Ipv6Address, GeohashLocation> NeighbouringHost;
     /*!
      * @brief Iterador de registros para diccionario del directorio
-     * de *hosts* vecinos.
+     *        de *hosts* vecinos.
      */
     typedef NeighbouringHosts::It NeighbouringHostsIt;
     /*!
      * @brief Iterador de registros para diccionario del directorio de *hosts*
-     * vecinos constante.
+     *        vecinos constante.
      */
     typedef NeighbouringHosts::ConstIt NeighbouringHostsConstIt;
     /*!
@@ -181,20 +181,21 @@ protected:
     virtual void showNeighbouringHosts() const;
     /*!
      * @brief Programar el temporizador de limpieza del directorio
-     * de *hosts* vecinos.
+     *        de *hosts* vecinos.
      */
     virtual void schedulePurgeNeighbouringHostsTimer();
     /*!
      * @brief Procesar el temporizador de limpieza del directorio
-     * de *hosts* vecinos.
+     *        de *hosts* vecinos.
      */
     virtual void processPurgeNeighbouringHostsTimer();
 
     /*
-     * Enrutamiento.
+     * Cabecera de opciones de salto por salto.
      */
     /*!
-     * @brief Verificar la cabecera de opciones de salto por salto.
+     * @brief Validar la cabecera de opciones de salto por salto
+     *        de un datagrama.
      *
      * Verifica si la cabecera tiene la opción de ubicación del destino.
      *
@@ -202,9 +203,32 @@ protected:
      * la cabecera contiene la opción de ubicación vial del destino. Si no
      * la tiene, la agrega.
      *
-     * Si la cabecera no contiene la opción de vértices visitados, la agrega.
+     * Si la cabecera no contiene la opción de vértices visitados, se agrega.
+     *
+     * @param datagram [in] Datagrama cuya cabecera se valida.
      */
     bool validateHopByHopOptionsHeader(inet::Packet *datagram) const;
+    /*!
+     * @brief Se obtiene el conjunto de vértices visitados.
+     *
+     * @param visitedVerticesOption [in] Opción de vértices visitados.
+     * @return Conjunto de vértices visitados.
+     */
+    VertexSet getDatagramVisitedVertices(inet::Packet *datagram) const;
+    /*!
+     * @brief Agregar los siguientes vértices visitados de la ruta a la opción
+     *        de vértices visitados del datagrama.
+     *
+     * @param datagram [in] Datagrama cuya opción de vértices visitados
+     *                      se actualiza.
+     * @param route    [in] Ruta que tomará el datagrama.
+     */
+    void updateTlvVisitedVerticesOption(inet::Packet *datagram,
+            const inet::Ipv6Route *route) const;
+
+    /*
+     * Cálculo de rutas.
+     */
     /*!
      * @brief Obtener el conjunto de aristas activas.
      *
@@ -214,12 +238,29 @@ protected:
      */
     EdgeSet getActiveEdges() const;
     /*!
-     * @brief Agrupar vehículos vecinos según la arista en la que se encuentran.
+     * @brief Obtener el conjunto de aristas activas en una
+     *        secuencia de aristas.
      *
-     * @return Diccinario de vecinos agrupados según la aristan en la
-     * que se encuentran.
+     * Las aristas activas son aquellas en las que hay vehículos vecinos.
+     *
+     * @param path [in] Secuencia de aristas en las que se buscan
+     *                  las aristas activas.
+     * @return Conjunto de aristas activas.
      */
-    NeighbouringVehiclesByEdge getNeighbouringVehicleByEdge() const;
+    EdgeSet getActiveEdgesInPath(const VertexVector &path) const;
+    /*!
+     * @brief Obtener el vértice de destino local.
+     *
+     * @param datagram     [in] Datagrama a enrutar.
+     * @param shortestPath [in] Rutas más cortas.
+     * @return Vértice de destino local y bandera que indica si sí se encontró.
+     */
+    std::pair<Vertex, bool> getLocalDestVertex(inet::Packet *datagram,
+            const ShortestPaths &shortestPath) const;
+
+    /*
+     * Enrutamiento de datagramas.
+     */
     /*!
      * @brief Enrutar datagrama.
      *
@@ -243,9 +284,9 @@ protected:
     /*!
      * @brief Enrutar datagrama hacia el vecino más cercano a una ubicación.
      *
-     * @param datagram [in] Datagrama a enrutar.
+     * @param datagram        [in] Datagrama a enrutar.
      * @param geohashLocation [in] Ubicación hacia la que
-     * se enruta el datagrama.
+     *        se enruta el datagrama.
      * @return Resultado del enrutamiento.
      */
     inet::INetfilter::IHook::Result routeDatagramToLocation(
@@ -255,34 +296,36 @@ protected:
      *
      * @param datagram  [in] Datagrama a enrutar.
      * @param adjacency [in] Adyacencia de la subred a la que se va
-     * a enrutar el paquete.
+     *        a enrutar el paquete.
      * @return Resultado del enrutamiento.
      */
     inet::INetfilter::IHook::Result routeDatagramToAdjacentNetwork(
             inet::Packet *datagram, GeohashLocation::Adjacency adjacency);
     /*!
      * @brief Enrutar el datagrama al vehículo vecino más lejano
-     * en el tramo recto.
+     *        en una secuencia de aristas.
      *
-     * @param datagram     [in] Datagrama a enrutar.
-     * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
+     * @param datagram [in] Datagrama a enrutar.
+     * @param path     [in] Secuencia de aristas hacia las
+     *                      que se va a enrutar el datagrama.
      * @return Resultado del enrutamiento.
      */
-    inet::INetfilter::IHook::Result routeDatagramFurthestInStraightPath(
-            inet::Packet *datagram, const VertexVector &straightPath);
+    inet::INetfilter::IHook::Result routeDatagramFurthestInPath(
+            inet::Packet *datagram, const VertexVector &path);
     /*!
      * @brief Enrutar el datagrama al vehículo vecino más cercano
-     * en el tramo recto.
+     *        en una secuencia de aristas.
      *
-     * @param datagram     [in] Datagrama a enrutar.
-     * @param straightPath [in] Tramo recto hacia el que se va a enrutar.
+     * @param datagram [in] Datagrama a enrutar.
+     * @param path     [in] Secuencia de aristas hacia las
+     *                      que se va a enrutar el datagrama.
      * @return Resultado del enrutamiento.
      */
-    inet::INetfilter::IHook::Result routeDatagramClosestInStraightPath(
-            inet::Packet *datagram, const VertexVector &straightPath);
+    inet::INetfilter::IHook::Result routeDatagramClosestInPath(
+            inet::Packet *datagram, const VertexVector &path);
     /*!
      * @brief Enrutar datagrama al vehículo vecino en la misma arista
-     * que se encuentre más cerca a un vértice.
+     *        que se encuentre más cerca a un vértice.
      *
      * @param datagram [in] Datagrama a enrutar.
      * @param vertex   [in] Vértice hacia el que se enruta el datagrama.
@@ -290,28 +333,16 @@ protected:
      */
     inet::INetfilter::IHook::Result routeDatagramClosestToVertex(
             inet::Packet *datagram, const Vertex vertex);
-    /*!
-     * @brief Se obtiene el conjunto de vértices visitados.
-     *
-     * @param visitedVerticesOption [in] Opción de vértices visitados.
-     * @return Conjunto de vértices visitados.
+
+    /*
+     * Selección del siguiente salto.
      */
-    VertexSet getDatagramVisitedVertices(inet::Packet *datagram) const;
-    /*!
-     * @brief Obtener el vértice de destino local.
-     *
-     * @param datagram [in] Datagrama a enrutar.
-     * @param shortestPath [in] Rutas más cortas.
-     * @return Vértice de destino local y bandera que indica si sí se encontró.
-     */
-    std::pair<Vertex, bool> getLocalDestVertex(inet::Packet *datagram,
-            const ShortestPaths &shortestPath) const;
     /*!
      * @brief Obtener vehículo vecino en la región Geohash adyacente.
      *
      * @param neighbouringGeohashRegion [in] Región Geohash adyacente.
      * @return Dirección IPv6 del siguiente salto, o `::/128`.
-     * si no se encuentra ninguno.
+     *         si no se encuentra ninguno.
      */
     const inet::Ipv6Address& findNextHopInAdjacentNetwork(
             const GeohashLocation::Adjacency adjacencyDirection) const;
@@ -319,47 +350,46 @@ protected:
      * @brief Encontrar siguiente salto más cercano a una ubicación.
      *
      * @return Dirección IPv6 del siguiente salto, o `::/128`.
-     * si no se encuentra ninguno.
+     *         si no se encuentra ninguno.
      */
     const inet::Ipv6Address& findNextHopClosestToLocation(
             const GeohashLocation &geohashLocation) const;
     /*!
-     * @brief Encontrar siguiente salto más lejano en el
-     * tramo recto de la ruta.
+     * @brief Encontrar siguiente salto más lejano en una secuenaia de aristas.
      *
-     * @param shortestPath  [in] Ruta vial a un vértice.
-     * @param shortestPsths [in] Rutas viales más cortas
-     * @return Dirección IPv6 del siguiente salto, o `::/128`.
-     * si no se encuentra ninguno.
+     * @param path [in] Secuencia de aristas en las que se busca
+     *                  el siguiente salto.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`
+     *         si no se encuentra ninguno.
      */
-    const inet::Ipv6Address& findNextHopFurthestInStraightPath(
-            const VertexVector &straightPath) const;
+    const inet::Ipv6Address& findNextHopFurthestInPath(
+            const VertexVector &path) const;
     /*!
-     * @brief Encontrar siguiente salto más cercano en el
-     * tramo recto de la ruta.
+     * @brief Encontrar siguiente salto más cercano en una secuencia de aristas.
      *
-     * @param straightPath [in] Tramo recto de la ruta.
-     * @return Dirección IPv6 del siguiente salto, o `::/128`.
-     * si no se encuentra ninguno.
+     * @param path [in] Secuencia de aristas en las que se busca
+     *                  el siguiente salto.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`
+     *         si no se encuentra ninguno.
      */
-    const inet::Ipv6Address& findNextHopClosestInStraightPath(
-            const VertexVector &straightPath) const;
+    const inet::Ipv6Address& findNextHopClosestInPath(
+            const VertexVector &path) const;
     /*!
      * @brief Buscar vehículo vecino más cercano a un vértice que
-     * se encuentra en una arista.
+     *        se encuentra en una arista.
      *
      * @param vertex [in] Vértice de referencia.
      * @param edge   [in] Arista en la que se encuentran los vehículos
-     * entre los que se hace la búsqueda.
-     * @return Dirección IPv6 del siguiente salto, o `::/128`.
-     * si no se encuentra ninguno.
+     *                    entre los que se hace la búsqueda.
+     * @return Dirección IPv6 del siguiente salto, o `::/128`
+     *         si no se encuentra ninguno.
      */
     const inet::Ipv6Address& findNextHopClosestToVertex(const Vertex vertex,
             const Edge edge,
-            const NeighbouringVehiclesByEdge &NeighbouringVehiclesByEdge) const;
+            const NeighbouringVehiclesByEdge &neighbouringVehiclesByEdge) const;
     /*!
      * @brief Buscar vehículo vecino más cercano a un vértice que
-     * se encuentra en una arista.
+     *        se encuentra en una arista.
      *
      * @param vertex [in] Vértice de referencia.
      * @param edge   [in] Arista en la que se encuentran los vehículos
@@ -369,26 +399,27 @@ protected:
      */
     const inet::Ipv6Address& findNextHopClosestToVertex(
             const Vertex vertex) const;
+
+    /*
+     * Métodos auxiliares.
+     */
+    /*!
+     * @brief Agrupar vehículos vecinos según la arista en la que se encuentran.
+     *
+     * @return Diccinario de vecinos agrupados según la aristan en la
+     *         que se encuentran.
+     */
+    NeighbouringVehiclesByEdge getNeighbouringVehiclesByEdge() const;
     /*!
      * @brief Obtener los vértices visitados del siguiente salto.
      *
-     * @param route        [in] Ruta a la que se agregan los vértices visitados
-     *                          del siguiente salto.
-     * @param shortestPath [in] Ruta vial.
+     * @param nextHopAddress [in] Siguiente salto al que se asocian
+     *                            los vértices visitados.
+     * @param path           [in] Ruta vial.
      * @return Vértices visitados del siguiente salto.
      */
     VertexSet getNextHopVisitedVertices(const inet::Ipv6Address &nextHopAddress,
             const VertexVector &path) const;
-    /*!
-     * @brief Agregar los siguientes vértices visitados de la ruta a la opción
-     * de vértices visitados del datagrama.
-     *
-     * @param datagram [in] Datagrama cuya opción de vértices visitados
-     *                      se actualiza.
-     * @param route    [in] Ruta que tomará el datagrama.
-     */
-    void updateTlvVisitedVerticesOption(inet::Packet *datagram,
-            const inet::Ipv6Route *route) const;
 
     /*
      * Estatus del vehículo.
@@ -403,7 +434,7 @@ protected:
      */
     /*!
      * @brief Procesar datagrama recibido de la capa inferior
-     * antes de enrutarlo.
+     *        antes de enrutarlo.
      *
      * @param datagram [in] Datagrama a procesar.
      * @return Resultado del procesamiento.
@@ -412,7 +443,7 @@ protected:
             inet::Packet *datagram) override;
     /*!
      * @brief Procesar datagrama recibido de la capa superior
-     * antes de enrutarlo.
+     *        antes de enrutarlo.
      *
      * @param datagram [in] Datagrama a procesar.
      * @return Resultado del procesamiento.
