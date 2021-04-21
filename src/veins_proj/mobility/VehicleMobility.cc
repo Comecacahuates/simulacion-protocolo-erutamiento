@@ -121,12 +121,12 @@ void VehicleMobility::updateLocation() {
  */
 GeohashLocation::Adjacency VehicleMobility::getGatewayRegionAdjacency() const {
     const Graph &graph = roadNetwork->getGraph();
-    const Edge &edge = locationOnRoadNetwork.edge;
-    const Vertex &vertexA = boost::source(edge, graph);
-    const Vertex &vertexB = boost::target(edge, graph);
-    if (graph[vertexA].adjacency != GeohashLocation::Adjacency::NONE)
-        return graph[vertexA].adjacency;
-    return graph[vertexB].adjacency;
+    const Edge &uv = locationOnRoadNetwork.edge;
+    const Vertex &u = boost::source(uv, graph);
+    const Vertex &v = boost::target(uv, graph);
+    if (graph[u].adjacency != GeohashLocation::Adjacency::NONE)
+        return graph[u].adjacency;
+    return graph[v].adjacency;
 }
 
 /*!
@@ -138,14 +138,14 @@ GeohashLocation::Adjacency VehicleMobility::getGatewayRegionAdjacency() const {
 bool VehicleMobility::isAtVertex(const Vertex vertex) const {
     const Graph &graph = roadNetwork->getGraph();
     const Edge &edge = locationOnRoadNetwork.edge;
-    Vertex vertexA = boost::source(edge, graph);
-    Vertex vertexB = boost::target(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
-    if (vertex == vertexA)
-        return distanceToVertexA < vertexProximityDistance;
-    else if (vertex == vertexB)
-        return distanceToVertexB < vertexProximityDistance;
+    Vertex u = boost::source(edge, graph);
+    Vertex v = boost::target(edge, graph);
+    const double &distanceToU = locationOnRoadNetwork.distanceToU;
+    const double &distanceToV = locationOnRoadNetwork.distanceToV;
+    if (vertex == u)
+        return distanceToU < vertexProximityDistance;
+    else if (vertex == v)
+        return distanceToV < vertexProximityDistance;
     else
         return false;
 }

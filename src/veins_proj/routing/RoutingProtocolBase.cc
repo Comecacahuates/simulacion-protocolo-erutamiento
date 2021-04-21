@@ -300,11 +300,11 @@ void RoutingProtocolBase::showNeighbouringVehicles() const {
         EV_INFO << "Edge: "
                 << neighbouringVehiclesIt->second.value.locationOnRoadNetwork.edge
                 << std::endl;
-        EV_INFO << "Distance to vertex A: "
-                << neighbouringVehiclesIt->second.value.locationOnRoadNetwork.distanceToVertexA
+        EV_INFO << "Distance to vertex u: "
+                << neighbouringVehiclesIt->second.value.locationOnRoadNetwork.distanceToU
                 << std::endl;
-        EV_INFO << "Distance to vertex B: "
-                << neighbouringVehiclesIt->second.value.locationOnRoadNetwork.distanceToVertexB
+        EV_INFO << "Distance to vertex v: "
+                << neighbouringVehiclesIt->second.value.locationOnRoadNetwork.distanceToV
                 << std::endl;
     }
 }
@@ -423,7 +423,7 @@ TlvDestGeohashLocationOption* RoutingProtocolBase::createTlvDestGeohashLocationO
         uint64_t geohashLocationBits) const {
     TlvDestGeohashLocationOption *tlvOption =
             new TlvDestGeohashLocationOption();
-    tlvOption->setGeohash(geohashLocationBits);
+    tlvOption->setGeohashBits(geohashLocationBits);
     tlvOption->setLength(computeTlvOptionLength(tlvOption));
     tlvOption->setType(IPV6TLVOPTION_TLV_DEST_GEOHASH_LOCATION);
     return tlvOption;
@@ -461,15 +461,15 @@ TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOn
             0, locationOnRoadNetwork);
     const Graph &graph = roadNetwork->getGraph();
     Edge &edge = locationOnRoadNetwork.edge;
-    Vertex vertexA = boost::source(edge, graph);
-    Vertex vertexB = boost::target(edge, graph);
-    double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
+    Vertex u = boost::source(edge, graph);
+    Vertex v = boost::target(edge, graph);
+    double &distanceToU = locationOnRoadNetwork.distanceToU;
 
     TlvDestLocationOnRoadNetworkOption *tlvOption =
             new TlvDestLocationOnRoadNetworkOption();
-    tlvOption->setVertexA(vertexA);
-    tlvOption->setVertexB(vertexB);
-    tlvOption->setDistanceToVertexA(distanceToVertexA);
+    tlvOption->setU(u);
+    tlvOption->setV(v);
+    tlvOption->setDistanceToU(distanceToU);
     tlvOption->setLength(computeTlvOptionLength(tlvOption));
     tlvOption->setType(IPV6TLVOPTION_TLV_DEST_ON_ROAD_NETWORK_LOCATION);
     return tlvOption;

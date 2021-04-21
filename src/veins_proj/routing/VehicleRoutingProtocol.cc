@@ -180,39 +180,12 @@ const inet::Ptr<HelloVehicle> VehicleRoutingProtocol::createHelloVehicle(
     const LocationOnRoadNetwork &locationOnRoadNetwork =
             mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
-    Vertex vertexA = boost::source(edge, graph);
-    Vertex vertexB = boost::target(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+    Vertex u = boost::source(edge, graph);
+    Vertex v = boost::target(edge, graph);
+    const double &distanceToU = locationOnRoadNetwork.distanceToU;
     const GeohashLocation &geohashLocation = mobility->getGeohashLocation();
     double speed = mobility->getSpeed();
     double direction = mobility->getDirection();
-
-    EV_DEBUG << "Address: "
-             << srcAddress.str()
-             << std::endl
-             << "Geohash location: "
-             << geohashLocation.getGeohash()
-             << std::endl
-             << "Speed: "
-             << speed
-             << std::endl
-             << "Adjacency: "
-             << direction
-             << std::endl
-             << "Vertex A: "
-             << vertexA
-             << std::endl
-             << "Vertex B: "
-             << vertexB
-             << std::endl
-             << "Distance to vertex A: "
-             << distanceToVertexA
-             << std::endl
-             << "Distance to vertex B: "
-             << distanceToVertexB
-             << std::endl;
-
     /*
      * Se crea el mensaje y se le agregan los datos.
      */
@@ -222,9 +195,9 @@ const inet::Ptr<HelloVehicle> VehicleRoutingProtocol::createHelloVehicle(
     helloVehicle->setGeohash(geohashLocation.getBits());
     helloVehicle->setSpeed(speed);
     helloVehicle->setDirection(direction);
-    helloVehicle->setVertexA(vertexA);
-    helloVehicle->setVertexB(vertexB);
-    helloVehicle->setDistanceToVertexA(distanceToVertexA);
+    helloVehicle->setU(u);
+    helloVehicle->setV(v);
+    helloVehicle->setDistanceToU(distanceToU);
     return helloVehicle;
 }
 
@@ -242,15 +215,15 @@ void VehicleRoutingProtocol::processHelloVehicle(
     GeohashLocation geohashLocation(HelloVehicle->getGeohash(), 12);
     double speed = HelloVehicle->getSpeed();
     double direction = HelloVehicle->getDirection();
-    Vertex vertexA = (Vertex) HelloVehicle->getVertexA();
-    Vertex vertexB = (Vertex) HelloVehicle->getVertexB();
-    double distanceToVertexA = HelloVehicle->getDistanceToVertexA();
+    Vertex u = (Vertex) HelloVehicle->getU();
+    Vertex v = (Vertex) HelloVehicle->getV();
+    double distanceToU = HelloVehicle->getDistanceToU();
     const Graph &graph =
             roadNetworkDatabase->getRoadNetwork(geohashLocation)->getGraph();
-    Edge edge = boost::edge(vertexA, vertexB, graph).first;
-    double distanceToVertexB = graph[edge].length - distanceToVertexA;
-    LocationOnRoadNetwork locationOnRoadNetwork = { edge, 0, distanceToVertexA,
-            distanceToVertexB };
+    Edge edge = boost::edge(u, v, graph).first;
+    double distanceToV = graph[edge].length - distanceToU;
+    LocationOnRoadNetwork locationOnRoadNetwork = { edge, 0, distanceToU,
+            distanceToV };
     /*
      * Se guarda el registro en el directorio de vehículos vecinos,
      * y se revisa si ya existe una ruta para este, en cuyo caso,
@@ -261,39 +234,6 @@ void VehicleRoutingProtocol::processHelloVehicle(
             + neighbouringVehicleValidityTime;
     neighbouringVehicles.getMap()[srcAddress].value = { geohashLocation, speed,
             direction, locationOnRoadNetwork };
-
-    EV_INFO << "Address: "
-            << srcAddress.str()
-            << std::endl
-            << "Geohash location: "
-            << geohashLocation.getGeohash()
-            << std::endl
-            << "Speed: "
-            << speed
-            << std::endl
-            << "Adjacency: "
-            << direction
-            << std::endl
-            << "Vertex A: "
-            << vertexA
-            << std::endl
-            << "Vertex B: "
-            << vertexB
-            << std::endl
-            << "Edge: "
-            << edge
-            << std::endl
-            << "Distance to vertex A: "
-            << distanceToVertexA
-            << std::endl
-            << "Distance to vertex B: "
-            << distanceToVertexB
-            << std::endl;
-
-    EV_DEBUG << "Number of neighbouring vehicles: "
-             << neighbouringVehicles.getMap().size()
-             << std::endl;
-
     showRoutes();
     schedulePurgeNeighbouringVehiclesTimer();
 }
@@ -446,8 +386,8 @@ bool VehicleRoutingProtocol::validateHopByHopOptionsHeader(
      * se calcula su ubicación vial y se agrega la opción de
      * ubicación vial del destino si hace falta.
      */
-    GeohashLocation destGeohashLocation(destGeohashLocationOption->getGeohash(),
-            12);
+    GeohashLocation destGeohashLocation(
+            destGeohashLocationOption->getGeohashBits(), 12);
     const GeohashLocation &geohashRegion =
             mobility->getRoadNetwork()->getGeohashRegion();
     if (geohashRegion.contains(destGeohashLocation)) {
@@ -648,8 +588,8 @@ std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
     const TlvDestGeohashLocationOption *destGeohashLocationOption =
             findTlvOption<TlvDestGeohashLocationOption>(datagram);
     ASSERT(destGeohashLocationOption != nullptr);
-    GeohashLocation destGeohashLocation(destGeohashLocationOption->getGeohash(),
-            12);
+    GeohashLocation destGeohashLocation(
+            destGeohashLocationOption->getGeohashBits(), 12);
     const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
     const GeohashLocation &geohashRegion = roadNetwork->getGeohashRegion();
     Vertex localDestVertex;
@@ -666,15 +606,15 @@ std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
         const TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption =
                 findTlvOption<TlvDestLocationOnRoadNetworkOption>(datagram);
         ASSERT(destLocationOnRoadNetworkOption != nullptr);
-        Vertex vertexA = (Vertex) destLocationOnRoadNetworkOption->getVertexA();
-        Vertex vertexB = (Vertex) destLocationOnRoadNetworkOption->getVertexB();
-        double routeDistanceA = shortestPaths.getRouteDistance(vertexA);
-        double routeDistanceB = shortestPaths.getRouteDistance(vertexB);
-        localDestVertex = vertexA;
-        localDestVertexFound = shortestPaths.routeToVertexFound(vertexA);
-        if (routeDistanceB < routeDistanceA) {
-            localDestVertex = vertexB;
-            localDestVertexFound = shortestPaths.routeToVertexFound(vertexB);
+        Vertex u = (Vertex) destLocationOnRoadNetworkOption->getU();
+        Vertex v = (Vertex) destLocationOnRoadNetworkOption->getV();
+        double routeDistanceU = shortestPaths.getRouteDistance(u);
+        double routeDistanceV = shortestPaths.getRouteDistance(v);
+        localDestVertex = u;
+        localDestVertexFound = shortestPaths.routeToVertexFound(u);
+        if (routeDistanceV < routeDistanceU) {
+            localDestVertex = v;
+            localDestVertexFound = shortestPaths.routeToVertexFound(v);
         }
         /*
          * Si la ubicación del destino se encuentra en otra región Geohash,
@@ -863,7 +803,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
                 findTlvOption<TlvDestGeohashLocationOption>(datagram);
         ASSERT(destGeohashLocationOption != nullptr);
         GeohashLocation destGeohashLocation(
-                destGeohashLocationOption->getGeohash(), 12);
+                destGeohashLocationOption->getGeohashBits(), 12);
         const GeohashLocation &geohashRegion =
                 mobility->getRoadNetwork()->getGeohashRegion();
         if (geohashRegion.contains(destGeohashLocation)) {
@@ -1423,8 +1363,8 @@ void VehicleRoutingProtocol::showStatus() const {
     const LocationOnRoadNetwork &locationOnRoadNetwork =
             mobility->getLocationOnRoadNetwork();
     const Edge &edge = locationOnRoadNetwork.edge;
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+    const double &distanceToU = locationOnRoadNetwork.distanceToU;
+    const double &distanceToV = locationOnRoadNetwork.distanceToV;
 
     EV_INFO << "Address: "
             << configurator->getUnicastAddress(
@@ -1434,10 +1374,10 @@ void VehicleRoutingProtocol::showStatus() const {
             << edge
             << std::endl
             << "Distance to vertex A: "
-            << distanceToVertexA
+            << distanceToU
             << std::endl
             << "Distance to vertex B: "
-            << distanceToVertexB
+            << distanceToV
             << std::endl;
 }
 

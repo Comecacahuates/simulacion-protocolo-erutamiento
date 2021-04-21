@@ -259,7 +259,7 @@ void RoadNetwork::getOnEdgePosition(const Edge edge,
     double alpha = std::acos(cosalpha);
     locationOnRoadNetwork.edge = edge;
     locationOnRoadNetwork.distanceToEdge = b * std::sin(alpha);
-    locationOnRoadNetwork.distanceToVertexA = b * cosalpha;
-    locationOnRoadNetwork.distanceToVertexB = graph[edge].length
-            - locationOnRoadNetwork.distanceToVertexA;
+    locationOnRoadNetwork.distanceToU = b * cosalpha;
+    locationOnRoadNetwork.distanceToV = graph[edge].length
+            - locationOnRoadNetwork.distanceToU;
 }

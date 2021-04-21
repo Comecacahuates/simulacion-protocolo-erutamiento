@@ -23,7 +23,7 @@ namespace veins_proj;
 //
 // Tipos de mensajes.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 enum PacketType {
     // Tipo de mensajes HOLA-VEHIC
@@ -35,7 +35,7 @@ enum PacketType {
 //
 // Clase abstracta base para los mensajes de enrutamiento.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 class RoutingPacket extends inet::FieldsChunk {
     // Tipo de mensaje
@@ -45,7 +45,7 @@ class RoutingPacket extends inet::FieldsChunk {
 //
 // Mensaje HOLA-VEHIC.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 class HelloVehicle extends RoutingPacket {
     chunkLength = inet::B(40);
@@ -59,17 +59,17 @@ class HelloVehicle extends RoutingPacket {
 	// Dirección de movimiento (2 bytes)
 	double direction;
 	// Vértice A (2 bytes)
-	unsigned int vertexA;
+	unsigned int u;
 	// Vértice B (2 bytes)
-	unsigned int vertexB;
+	unsigned int v;
 	// Distancia al Vértice A (2 bytes)
-	double distanceToVertexA;
+	double distanceToU;
 }
 
 //
 // Mensaje HOLA-HOST.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 class HelloHost extends RoutingPacket {
     chunkLength = inet::B(28);
@@ -83,31 +83,31 @@ class HelloHost extends RoutingPacket {
 //
 // Opción de ubicación del destino.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 class TlvDestGeohashLocationOption extends inet::TlvOptionBase {
     // Ubicación Geohash (8 bytes)
-	uint64_t geohash;
+	uint64_t geohashBits;
 }
 
 //
 // Opción de ubicación vial del destino.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 class TlvDestLocationOnRoadNetworkOption extends inet::TlvOptionBase {
 	// Vértice A (2 bytes)
-	unsigned int vertexA;
+	unsigned int u;
 	// Vértice B (2 bytes)
-	unsigned int vertexB;
+	unsigned int v;
 	// Distancia al Vértice A (2 bytes)
-	double distanceToVertexA;
+	double distanceToU;
 }
 
 //
 // Opción de vértices visitados.
 //
-// @author Adrián Juárez
+// @author Adrián Juárez Monroy
 //
 class TlvVisitedVerticesOption extends inet::TlvOptionBase {
     // Vértices que ha recorrido el paquete (2 bytes por Vértice)

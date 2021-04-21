@@ -29,6 +29,13 @@
 
 namespace veins_proj {
 
+class GeohashLocation;
+/*!
+ * Sinónimo de la clase `GeohashLocation` para representar
+ * semáticamente regiones Geohash.
+ */
+typedef GeohashLocation GeohashRegion;
+
 /*!
  * @brief Clase que representa ubicaciones y regiones en codificación Geohash.
  */

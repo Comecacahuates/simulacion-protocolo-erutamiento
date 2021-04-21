@@ -112,10 +112,10 @@ double veins_proj::getDirectionDifference(double direction1,
  */
 bool veins_proj::inEdgeDomain(
         const LocationOnRoadNetwork &locationOnRoadNetwork) {
-    if (locationOnRoadNetwork.distanceToVertexA < 0)
+    if (locationOnRoadNetwork.distanceToU < 0)
         return false;
 
-    if (locationOnRoadNetwork.distanceToVertexB < 0)
+    if (locationOnRoadNetwork.distanceToV < 0)
         return false;
 
     if (locationOnRoadNetwork.distanceToEdge > 20.0)
@@ -142,8 +142,8 @@ double veins_proj::getDistanceToVertex(
     const Edge &edge = locationOnRoadNetwork.edge;
     Vertex vertexA = boost::source(edge, graph);
     Vertex vertexB = boost::target(edge, graph);
-    const double &distanceToVertexA = locationOnRoadNetwork.distanceToVertexA;
-    const double &distanceToVertexB = locationOnRoadNetwork.distanceToVertexB;
+    const double &distanceToVertexA = locationOnRoadNetwork.distanceToU;
+    const double &distanceToVertexB = locationOnRoadNetwork.distanceToV;
 
     if (vertex == vertexA)
         return distanceToVertexA;

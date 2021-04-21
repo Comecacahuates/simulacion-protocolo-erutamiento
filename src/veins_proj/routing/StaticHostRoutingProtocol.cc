@@ -107,16 +107,16 @@ void StaticHostRoutingProtocol::processHelloVehicle(
     GeohashLocation geohashLocation(helloVehicle->getGeohash(), 12);
     double speed = helloVehicle->getSpeed();
     double direction = helloVehicle->getDirection();
-    Vertex vertexA = (Vertex) helloVehicle->getVertexA();
-    Vertex vertexB = (Vertex) helloVehicle->getVertexB();
-    double distanceToVertexA = helloVehicle->getDistanceToVertexA();
+    Vertex u = (Vertex) helloVehicle->getU();
+    Vertex v = (Vertex) helloVehicle->getV();
+    double distanceToU = helloVehicle->getDistanceToU();
     const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
     if (!roadNetwork->getGeohashRegion().contains(geohashLocation))
         return;
     const Graph &graph = roadNetwork->getGraph();
-    Edge edge = boost::edge(vertexA, vertexB, graph).first;
-    double distanceToVertexB = graph[edge].length - distanceToVertexA;
-    LocationOnRoadNetwork locationOnRoadNetwork = { edge, 0, distanceToVertexA,
+    Edge uv = boost::edge(u, v, graph).first;
+    double distanceToVertexB = graph[uv].length - distanceToU;
+    LocationOnRoadNetwork locationOnRoadNetwork = { uv, 0, distanceToU,
             distanceToVertexB };
     /*
      * Se guarda el registro en el directorio de vehículos vecinos.
@@ -139,16 +139,16 @@ void StaticHostRoutingProtocol::processHelloVehicle(
             << direction
             << std::endl
             << "Vertex A: "
-            << vertexA
+            << u
             << std::endl
             << "Vertex B: "
-            << vertexB
+            << v
             << std::endl
             << "Edge: "
-            << edge
+            << uv
             << std::endl
             << "Distance to vertex A: "
-            << distanceToVertexA
+            << distanceToU
             << std::endl
             << "Distance to vertex B: "
             << distanceToVertexB

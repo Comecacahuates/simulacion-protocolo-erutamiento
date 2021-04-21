@@ -177,9 +177,9 @@ protected:
      * @param name           [in] Nombre del mensaje.
      * @param srcAddress     [in] Dirección de origen del mensaje.
      * @param destAddress    [in] Dirección de destino del mensaje.
-     * @param delayed        [in] Indica si la transmisión del paquete
-     * se va a demorar. Se utiliza si se tienen que enviar
-     * dos mensajes consecutivamente.
+     * @param delayed        [in] Indica si la transmisión del paquete se va
+     *                            a demorar. Se utiliza si se tienen que enviar
+     *                            dos mensajes consecutivamente.
      */
     void sendRoutingMessage(const inet::Ptr<RoutingPacket> routingMessage,
             const char *name, const inet::Ipv6Address &srcAddress,
