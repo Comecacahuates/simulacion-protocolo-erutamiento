@@ -111,23 +111,33 @@ public:
      *
      * @param [in] vertex Vértice del que se quiere la ruta más corta.
      * @return Vector de vértices que indican la ruta desde el vértice de la
-     * arista de origen.
+     *         arista de origen.
      */
-    VertexVector getShortestPathToVertex(Vertex targetVertex) const;
+    VertexVector getShortestPathToVertex(const Vertex targetVertex) const;
     /*!
      * @brief Calcular el primer tramo recto en la ruta.
      *
-     * @param path [in] Ruta de la que se obtiene el primer tramo recto.
+     * @param path [in] Secuencia de aristas de la que se obtiene
+     *                  el primer tramo recto.
      * @return Primer tramo recto de la ruta.
      */
     VertexVector getStraightPath(const VertexVector &path) const;
     /*!
      * @brief Calcular el primer tramo recto desde una arista.
      *
-     * @param edge [in] Arista desde la que se busca el tramo recto.
+     * @param edge        [in] Arista desde la que se busca el tramo recto.
+     * @param includeEdge [in] Incluir arista en el tramo recto.
      * @return Tramo recto desde la arista.
      */
-    VertexVector getStraightPathFromEdge(const Edge edge) const;
+    VertexVector getStraightPathFromEdge(const Edge edge, bool includeEdge =
+            true) const;
+    /*!
+     * @brief Verificar si una secuencia de aristas forma un tramo recto.
+     *
+     * @param path [in] Secuencia de aristas a verificar.
+     * @return `true` si la secuencia de aristas forma un tramo recto.
+     */
+    bool isStraightPath(const VertexVector &path) const;
 private:
     /*!
      * @brief Calcular el peso de una arista a partir de otra.

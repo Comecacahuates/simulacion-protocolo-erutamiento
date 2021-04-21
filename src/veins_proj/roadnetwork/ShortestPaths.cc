@@ -196,22 +196,27 @@ VertexVector ShortestPaths::getStraightPath(const VertexVector &path) const {
 /*!
  * @brief Calcular el primer tramo recto desde una arista.
  *
- * @param edge [in] Arista desde la que se busca el tramo recto.
+ * @param edge        [in] Arista desde la que se busca el tramo recto.
+ * @param includeEdge [in] Incluir arista en el tramo recto.
  * @return Tramo recto desde la arista.
  */
-VertexVector ShortestPaths::getStraightPathFromEdge(const Edge edge) const {
+VertexVector ShortestPaths::getStraightPathFromEdge(const Edge edge,
+        bool includeEdge) const {
     const Graph &graph = *this->graph;
     Vertex u = boost::source(edge, graph);
     Vertex v = boost::target(edge, graph);
     Vertex w = v;
-    VertexVector straightPath( { u, v });
+    VertexVector straightPath;
+    if (includeEdge)
+        straightPath.push_back(u);
+    straightPath.push_back(v);
     double minDistance = 0.0;
     /*
      * Se buscan las aristas que formen tramos rectos.
      */
     do {
         /*
-         * Se recorren los vértices adyacentes a *a* y se busca uno que
+         * Se recorren los vértices adyacentes a *v* y se busca uno que
          * forme un tramo recto.
          */
         OutEdgeIt it, endIt;
@@ -246,6 +251,34 @@ VertexVector ShortestPaths::getStraightPathFromEdge(const Edge edge) const {
 }
 
 /*!
+ * @brief Verificar si una secuencia de aristas forma un tramo recto.
+ *
+ * @param path [in] Secuencia de aristas a verificar.
+ * @return `true` si la secuencia de aristas forma un tramo recto.
+ */
+bool ShortestPaths::isStraightPath(const VertexVector &path) const {
+    const Graph &graph = *this->graph;
+    /*
+     * Se recorre cada vértice y se revisa su distancia de ruta
+     * para saber si forma un tramo recto.
+     */
+    bool isStraightPath = true;
+    for (int i = 0; i < path.size() - 2; i++) {
+        Vertex u = path[i];
+        Vertex v = path[i + 1];
+        Vertex w = path[i + 2];
+        Edge uv = boost::edge(u, v, graph).first;
+        Edge vw = boost::edge(v, w, graph).first;
+        double weight = getEdgeWeight(uv, vw);
+        if (weight > 15) {
+            isStraightPath = false;
+            break;
+        }
+    }
+    return isStraightPath;
+}
+
+/*!
  * @brief Obtener la ruta más corta a un vértice específico.
  *
  * Una vez calculada las rutas más cortas, devuelve la ruta más corta a
@@ -254,23 +287,24 @@ VertexVector ShortestPaths::getStraightPathFromEdge(const Edge edge) const {
  *
  * @param [in] vertex Vértice del que se quiere la ruta más corta.
  * @return Vector de vértices que indican la ruta desde el vértice de la
- * arista de origen.
+ *         arista de origen.
  */
-VertexVector ShortestPaths::getShortestPathToVertex(Vertex vertex) const {
-    Vertex a = boost::source(sourceEdge, *graph);
-    Vertex b = boost::target(sourceEdge, *graph);
+VertexVector ShortestPaths::getShortestPathToVertex(const Vertex vertex) const {
+    Vertex u = boost::source(sourceEdge, *graph);
+    Vertex v = boost::target(sourceEdge, *graph);
+    Vertex w = vertex;
     /*
      * Se agrega a la ruta el vértice buscado y sus predecesores.
      */
-    VertexVector shortestPath = { vertex };
-    while (!(vertex == a || vertex == b)) {
-        vertex = predecessors[vertex];
-        shortestPath.push_back(vertex);
+    VertexVector shortestPath = { w };
+    while (w != u && w != v) {
+        w = predecessors[w];
+        shortestPath.push_back(w);
     }
-    if (vertex == a)
-        shortestPath.push_back(b);
+    if (w == u)
+        shortestPath.push_back(v);
     else
-        shortestPath.push_back(a);
+        shortestPath.push_back(u);
     /*
      * Se invierte el orden de la ruta para que al inicio esté el primer
      * vértice de la ruta y al final el vértice de destino.
@@ -297,37 +331,36 @@ double ShortestPaths::getEdgeWeight(const Edge sourceEdge,
     const Graph &graph = *this->graph;
     const Edge &e1 = sourceEdge;
     const Edge &e2 = edge;
-    Vertex vertexA1 = boost::source(e1, graph);
-    Vertex vertexB1 = boost::target(e1, graph);
+    Vertex u1 = boost::source(e1, graph);
+    Vertex v1 = boost::target(e1, graph);
 
-    if (!sortedVertices(vertexA1, vertexB1, graph))
-        boost::swap(vertexA1, vertexB1);
+    if (!sortedVertices(u1, v1, graph))
+        boost::swap(u1, v1);
 
-    Vertex vertexA2 = boost::source(e2, graph);
-    Vertex vertexB2 = boost::target(e2, graph);
-    if (!sortedVertices(vertexA2, vertexB2, graph))
-        boost::swap(vertexA2, vertexB2);
+    Vertex u2 = boost::source(e2, graph);
+    Vertex v2 = boost::target(e2, graph);
+    if (!sortedVertices(u2, v2, graph))
+        boost::swap(u2, v2);
 
-    double directionE1, directionE2;
+    double direction1, direction2;
 
-    if (vertexB1 == vertexA2) {
-        directionE1 = graph[e1].direction1;
-        directionE2 = graph[e2].direction1;
+    if (v1 == u2) {
+        direction1 = graph[e1].direction1;
+        direction2 = graph[e2].direction1;
 
-    } else if (vertexB1 == vertexB2) {
-        directionE1 = graph[e1].direction1;
-        directionE2 = graph[e2].direction2;
+    } else if (v1 == v2) {
+        direction1 = graph[e1].direction1;
+        direction2 = graph[e2].direction2;
 
-    } else if (vertexA1 == vertexA2) {
-        directionE1 = graph[e1].direction2;
-        directionE2 = graph[e2].direction1;
+    } else if (u1 == u2) {
+        direction1 = graph[e1].direction2;
+        direction2 = graph[e2].direction1;
 
-    } else /* if (vertexA1 == vertexB2) */
-    {
-        directionE1 = graph[e1].direction2;
-        directionE2 = graph[e2].direction2;
+    } else /* if (vertexA1 == vertexB2) */{
+        direction1 = graph[e1].direction2;
+        direction2 = graph[e2].direction2;
     }
 
-    return getDirectionDifference(directionE1, directionE2);
+    return getDirectionDifference(direction1, direction2);
 }
 
