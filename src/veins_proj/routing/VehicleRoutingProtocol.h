@@ -279,7 +279,7 @@ protected:
      * @param datagram [in] Datagrama a enrutar.
      * @return Resultado del enrutamiento.
      */
-    inet::INetfilter::IHook::Result routeToNeighbouringHost(
+    inet::INetfilter::IHook::Result routeDatagramToNeighbouringHost(
             inet::Packet *datagram);
     /*!
      * @brief Enrutar datagrama hacia el vecino más cercano a una ubicación.
@@ -420,14 +420,6 @@ protected:
      */
     VertexSet getNextHopVisitedVertices(const inet::Ipv6Address &nextHopAddress,
             const VertexVector &path) const;
-
-    /*
-     * Estatus del vehículo.
-     */
-    /*!
-     * @brief Mostrar la dirección IPv6 del vehículo y su ubicación vial.
-     */
-    void showStatus() const;
 
     /*
      * Netfilter.
