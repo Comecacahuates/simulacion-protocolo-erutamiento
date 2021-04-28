@@ -109,7 +109,7 @@ protected:
      * @brief Programar el temporizador de transmisión de mensajes HOLA_HOST.
      *
      * @param start [in] Indica si se va a programar el temporizador
-     * a la hora de inicio.
+     *                   a la hora de inicio.
      */
     virtual void scheduleHelloHostTimer(bool start = false);
     /*!
@@ -151,7 +151,7 @@ protected:
      */
     /*!
      * @brief Procesar datagrama recibido de la capa inferior
-     * antes de enrutarlo.
+     *        antes de enrutarlo.
      *
      * @param datagram [in] Datagrama a procesar.
      *
@@ -161,7 +161,7 @@ protected:
             inet::Packet *datagram) override;
     /*!
      * @brief Procesar datagrama recibido de la capa superior
-     * antes de enrutarlo.
+     *        antes de enrutarlo.
      *
      * Se agrega la opción TLV de ubicación del destino y se enruta el paquete.
      *

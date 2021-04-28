@@ -460,9 +460,9 @@ TlvDestLocationOnRoadNetworkOption* RoutingProtocolBase::createTlvDestLocationOn
     roadNetwork->getLocationOnRoadNetwork(destGeohashLocation.getLocation(), 0,
             0, locationOnRoadNetwork);
     const Graph &graph = roadNetwork->getGraph();
-    Edge &edge = locationOnRoadNetwork.edge;
-    Vertex u = boost::source(edge, graph);
-    Vertex v = boost::target(edge, graph);
+    Edge &uv = locationOnRoadNetwork.edge;
+    Vertex u = boost::source(uv, graph);
+    Vertex v = boost::target(uv, graph);
     double &distanceToU = locationOnRoadNetwork.distanceToU;
 
     TlvDestLocationOnRoadNetworkOption *tlvOption =

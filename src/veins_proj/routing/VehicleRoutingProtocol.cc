@@ -176,9 +176,9 @@ const inet::Ptr<HelloVehicle> VehicleRoutingProtocol::createHelloVehicle(
             mobility->getGeohashLocation())->getGraph();
     const LocationOnRoadNetwork &locationOnRoadNetwork =
             mobility->getLocationOnRoadNetwork();
-    const Edge &edge = locationOnRoadNetwork.edge;
-    Vertex u = boost::source(edge, graph);
-    Vertex v = boost::target(edge, graph);
+    const Edge &uv = locationOnRoadNetwork.edge;
+    Vertex u = boost::source(uv, graph);
+    Vertex v = boost::target(uv, graph);
     const double &distanceToU = locationOnRoadNetwork.distanceToU;
     const GeohashLocation &geohashLocation = mobility->getGeohashLocation();
     double speed = mobility->getSpeed();
@@ -458,9 +458,9 @@ EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
     EdgeSet activeEdges;
     const Graph &graph = roadNetworkDatabase->getRoadNetwork(
             mobility->getGeohashLocation())->getGraph();
-    Edge edge = mobility->getLocationOnRoadNetwork().edge;
-    ShortestPaths shortestPaths(graph, edge);
-    VertexVector straightPath = shortestPaths.getStraightPathFromEdge(edge,
+    Edge uv = mobility->getLocationOnRoadNetwork().edge;
+    ShortestPaths shortestPaths(graph, uv);
+    VertexVector straightPath = shortestPaths.getStraightPathFromEdge(uv,
             false);
     EdgeSet activeEdgesInStraightPath = getActiveEdgesInPath(straightPath);
     activeEdges.insert(activeEdgesInStraightPath.begin(),
@@ -468,10 +468,10 @@ EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
     /*
      * Se obtienen las aristas activas en el segundo tramo recto.
      */
-    Vertex vertexA = boost::source(edge, graph);
-    Vertex vertexB = boost::target(edge, graph);
-    edge = boost::edge(vertexB, vertexA, graph).first;
-    straightPath = shortestPaths.getStraightPathFromEdge(edge, false);
+    Vertex u = boost::source(uv, graph);
+    Vertex v = boost::target(uv, graph);
+    uv = boost::edge(v, u, graph).first;
+    straightPath = shortestPaths.getStraightPathFromEdge(uv, false);
     activeEdgesInStraightPath = getActiveEdgesInPath(straightPath);
     activeEdges.insert(activeEdgesInStraightPath.begin(),
             activeEdgesInStraightPath.end());
@@ -479,10 +479,10 @@ EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
      * Se verifica si el vehículo se encuentra en uno de los vértices.
      */
     Vertex vertex;
-    if (mobility->isAtVertex(vertexA))
-        vertex = vertexA;
-    else if (mobility->isAtVertex(vertexB))
-        vertex = vertexB;
+    if (mobility->isAtVertex(u))
+        vertex = u;
+    else if (mobility->isAtVertex(v))
+        vertex = v;
     else
         return activeEdges;
     /*
@@ -494,9 +494,9 @@ EdgeSet VehicleRoutingProtocol::getActiveEdges() const {
         OutEdgeIt it, endIt;
         boost::tie(it, endIt) = boost::out_edges(vertex, graph);
         while (it != endIt) {
-            Edge edge = *it++;
-            if (!activeEdges.count(edge)) {
-                straightPath = shortestPaths.getStraightPathFromEdge(edge);
+            Edge uv = *it++;
+            if (!activeEdges.count(uv)) {
+                straightPath = shortestPaths.getStraightPathFromEdge(uv);
                 activeEdgesInStraightPath = getActiveEdgesInPath(straightPath);
                 activeEdges.insert(activeEdgesInStraightPath.begin(),
                         activeEdgesInStraightPath.end());
@@ -571,7 +571,7 @@ std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
     GeohashLocation destGeohashLocation(
             destGeohashLocationOption->getGeohashBits(), 12);
     const RoadNetwork *roadNetwork = mobility->getRoadNetwork();
-    const GeohashRegion &geohashRegion = roadNetwork->getGeohashRegion();
+    const GeohashRegion localGeohashRegion(mobility->getLocation(), 6);
     Vertex localDestVertex;
     bool localDestVertexFound = false;
     /*
@@ -582,7 +582,7 @@ std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
      * Si no se encuentra una ruta hacia ninguno de los dos vértices,
      * `destVertexFound` vale `false`.
      */
-    if (geohashRegion.contains(destGeohashLocation)) {
+    if (localGeohashRegion.contains(destGeohashLocation)) {
         const TlvDestLocationOnRoadNetworkOption *destLocationOnRoadNetworkOption =
                 findTlvOption<TlvDestLocationOnRoadNetworkOption>(datagram);
         ASSERT(destLocationOnRoadNetworkOption != nullptr);
@@ -605,7 +605,7 @@ std::pair<Vertex, bool> VehicleRoutingProtocol::getLocalDestVertex(
     } else {
         const GeographicLib::GeoCoords &destLocation =
                 destGeohashLocation.getLocation();
-        const Bounds &localRegionBounds = geohashRegion.getBounds();
+        const Bounds &localRegionBounds = localGeohashRegion.getBounds();
         VertexVector tentativeGatewayVertices;
         /*
          * Si el destino se encuentra al norte de la región local,
@@ -751,8 +751,8 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
      */
     const Graph &graph = roadNetworkDatabase->getRoadNetwork(
             mobility->getGeohashLocation())->getGraph();
-    const Edge &edge = mobility->getLocationOnRoadNetwork().edge;
-    ShortestPaths shortestPaths(graph, edge);
+    const Edge &uv = mobility->getLocationOnRoadNetwork().edge;
+    ShortestPaths shortestPaths(graph, uv);
     EdgeSet activeEdges = getActiveEdges();
     VertexSet visitedVertices = getDatagramVisitedVertices(datagram);
     shortestPaths.computeShortestPaths(visitedVertices, activeEdges);
@@ -795,11 +795,11 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
             ASSERT(destLocationOnRoadNetworkOption != nullptr);
             Vertex u = shortestPath[0];
             Vertex v = shortestPath[1];
-            Edge edge = boost::edge(u, v, graph).first;
+            Edge localEdge = boost::edge(u, v, graph).first;
             u = destLocationOnRoadNetworkOption->getU();
             v = destLocationOnRoadNetworkOption->getV();
             Edge destEdge = boost::edge(u, v, graph).first;
-            if (edge == destEdge)
+            if (localEdge == destEdge)
                 return routeDatagramToLocation(datagram, destGeohashLocation);
             /*
              * Si el destino está en una arista adyacente,
@@ -812,7 +812,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
                 v = boost::source(destEdge, graph);
                 bool edgeExists = boost::edge(u, v, graph).second;
                 if (!edgeExists)
-                    v = boost::source(destEdge, graph);
+                    v = boost::target(destEdge, graph);
                 edgeExists = boost::edge(u, v, graph).second;
                 ASSERT(edgeExists);
                 shortestPath.push_back(v);
@@ -831,7 +831,7 @@ inet::INetfilter::IHook::Result VehicleRoutingProtocol::routeDatagram(
             /*
              * Si el destino está en otra región,
              * y el vértice de destino local es *gateway*,
-             * se enruta el datagrama hacia la subred adyacente.
+             * se enruta el datagrama hacia la subred adyacente. TODO: Verificar si hay vehículo vecino en la subred adyacente.
              */
         } else {
             const GeohashLocation::Adjacency &adjacency =
@@ -1196,9 +1196,9 @@ const inet::Ipv6Address& VehicleRoutingProtocol::findNextHopClosestInPath(
     for (int i = 0; i < path.size() - 1; i++) {
         Vertex u = path[i];
         Vertex v = path[i + 1];
-        Edge edge = boost::edge(u, v, graph).first;
+        Edge uv = boost::edge(u, v, graph).first;
         const inet::Ipv6Address &nextHopAddress = findNextHopClosestToVertex(u,
-                edge, neighbouringVehiclesByEdge);
+                uv, neighbouringVehiclesByEdge);
         if (!nextHopAddress.isUnspecified())
             return nextHopAddress;
     }

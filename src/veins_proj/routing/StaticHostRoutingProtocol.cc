@@ -170,7 +170,7 @@ void StaticHostRoutingProtocol::processHelloVehicle(
  * @brief Programar el temporizador de transmisión de mensajes HOLA_HOST.
  *
  * @param start [in] Indica si se va a programar el temporizador
- * a la hora de inicio.
+ *                   a la hora de inicio.
  */
 void StaticHostRoutingProtocol::scheduleHelloHostTimer(bool start) {
     if (start && omnetpp::simTime() < startTime)
@@ -244,32 +244,46 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::routeDatagram(
         inet::Packet *datagram) {
     /*
      * Se eliminan las rutas expiradas de la tabla de enrutamiento
-     * y se verifica si en la tabal de enrutamiento existe una ruta hacia esta,
-     * en cuyo caso, se acepta el datagrama.
+     * y se verifica si el destino es un vehículo vecino,
+     * en cuyo caso, se usa como siguiente salto.
      */
     const inet::Ptr<const inet::NetworkHeaderBase> &networkHeader =
             inet::getNetworkProtocolHeader(datagram);
     inet::Ipv6Address destAddress =
             networkHeader->getDestinationAddress().toIpv6();
     removeExpiredRoutes(omnetpp::simTime());
-    if (routingTable->doLongestPrefixMatch(destAddress))
-        return inet::INetfilter::IHook::ACCEPT;
-    /*
-     * Si el destino es un vehículo vecino,
-     * se usa su dirección como siguiente salto.
-     * TODO: Verificar si es correcto.
-     */
     inet::Ipv6Address nextHopAddress;
     if (neighbouringVehicles.getMap().count(destAddress))
         nextHopAddress = destAddress;
     /*
-     * Si no existe una ruta, se busca el vehículo vecino más cercano
-     * y se usa como siguiente salto para crear una ruta.
-     * Si este no se encuentra, se descarta el datagrama.
+     * Si el destino es un *host*,
+     * se agrega la opción de ubicación del destino
+     * a la cabecera de opciones de salto por salto.
      */
-    else
+    else {
+        const GeohashLocation &destGeohashLocation =
+                locationService->getHostLocation(destAddress);
+        TlvDestGeohashLocationOption *destGeohashLocationOption =
+                createTlvDestGeohashLocationOption(
+                        destGeohashLocation.getBits());
+        setTlvOption<TlvDestGeohashLocationOption>(datagram,
+                destGeohashLocationOption);
+        /*
+         * Se verifica si existe una ruta hacia el destino,
+         * en cuyo caso, se acepta el datagrama.
+         */
+        if (routingTable->doLongestPrefixMatch(destAddress))
+            return inet::INetfilter::IHook::ACCEPT;
+        /*
+         * Si no exite la ruta hacia el destino,
+         * se usa el vehículo vecino más cercano como siguiente salto.
+         */
         nextHopAddress = findClosestNeighbouringVehicle(
                 mobility->getGeohashLocation());
+    }
+    /*
+     * Si no se encuentra el siguiente salto, se descarta el datagrama.
+     */
     if (nextHopAddress.isUnspecified()) {
         if (hasGUI())
             inet::getContainingNode(host)->bubble(
@@ -297,7 +311,7 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::routeDatagram(
 
 /*!
  * @brief Procesar datagrama recibido de la capa inferior
- * antes de enrutarlo.
+ *        antes de enrutarlo.
  *
  * @param datagram [in] Datagrama a procesar.
  *
@@ -337,7 +351,7 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::datagramPreRoutingHoo
 
 /*!
  * @brief Procesar datagrama recibido de la capa superior
- * antes de enrutarlo.
+ *        antes de enrutarlo.
  *
  * Se agrega la opción TLV de ubicación del destino y se enruta el paquete.
  *
@@ -371,16 +385,6 @@ inet::INetfilter::IHook::Result StaticHostRoutingProtocol::datagramLocalOutHook(
     if (interfaceTable->isLocalAddress(inet::L3Address(destAddress))
             || destAddress.isMulticast())
         return inet::INetfilter::IHook::ACCEPT;
-    /*
-     * Si el datagrama se tiene que enrutar,
-     * se agrega la opción TLV de ubicación del destino.
-     */
-    const GeohashLocation &destGeohashLocation =
-            locationService->getHostLocation(destAddress);
-    TlvDestGeohashLocationOption *destGeohashLocationOption =
-            createTlvDestGeohashLocationOption(destGeohashLocation.getBits());
-    setTlvOption<TlvDestGeohashLocationOption>(datagram,
-            destGeohashLocationOption);
     /*
      * Se busca una ruta para el datagrama.
      */
